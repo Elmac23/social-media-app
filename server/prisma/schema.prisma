@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String          @id @default(uuid())
+  email                  String          @unique
+  login                  String          @unique
+  hashedPassword         String
+  role                   Role            @default(USER)
+  name                   String
+  lastname               String?
+  avatarUrl              String?
+  dateOfBirth            String?
+  bio                    String?
+  friendRequestsSent     FriendRequest[] @relation("sentRequests")
+  friendRequestsReceived FriendRequest[] @relation("receivedRequests")
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  userData               UserData?
+
+  posts Post[]
+
+  friendRelations1 FriendRelation[] @relation("user1Relations")
+  friendRelations2 FriendRelation[] @relation("user2Relations")
+  likedPosts       Like[]
+  comments         Comment[]
+  commentLikes     CommentLike[]
+  sharedPosts      SharedPost[]
+  followers        FollowedUser[]   @relation("followedRelation")
+  followed         FollowedUser[]   @relation("followerRelation")
+}
+
+model Post {
+  id          String       @id @default(uuid())
+  content     String
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  imageUrl    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  likes       Like[]
+  comments    Comment[]
+  sharedPosts SharedPost[]
+}
+
+model FollowedUser {
+  id         String   @id @default(uuid())
+  followerId String
+  followedId String
+  follower   User     @relation("followerRelation", fields: [followerId], references: [id], onDelete: Cascade)
+  followed   User     @relation("followedRelation", fields: [followedId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([followerId, followedId])
+}
+
+model SharedPost {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Comment {
+  id              String        @id @default(uuid())
+  content         String
+  authorId        String
+  postId          String?
+  parentCommentId String?
+  parentComment   Comment?      @relation("CommentToComment", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  subComments     Comment[]     @relation("CommentToComment")
+  author          User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post            Post?         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  likes           CommentLike[]
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  userId    String
+  commentId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+model UserData {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  user            User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sex             Sex?
+  city            String?
+  country         String?
+  phoneNumber     String?
+  primaryLanguage String?
+  otherLanguages  String?
+  schools         String?
+  jobs            String?
+  hobbies         String?
+}
+
+model FriendRequest {
+  id       String @id @default(uuid())
+  senderId String
+
+  recipentId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sender     User     @relation("sentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  recipent   User     @relation("receivedRequests", fields: [recipentId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, recipentId])
+}
+
+model FriendRelation {
+  id        String   @id @default(uuid())
+  userId1   String
+  userId2   String
+  user1     User     @relation("user1Relations", fields: [userId1], references: [id], onDelete: Cascade)
+  user2     User     @relation("user2Relations", fields: [userId2], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId1, userId2])
+}

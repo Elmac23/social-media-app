@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "social-media-app",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

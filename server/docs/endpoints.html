@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>API Endpoints — social-media-app</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        margin: 24px;
+      }
+      h2 {
+        margin-top: 28px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 8px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f4f4f4;
+      }
+      code {
+        background: #f7f7f7;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 600;
+      }
+      .GET {
+        background: #2d9cdb;
+      }
+      .POST {
+        background: #27ae60;
+      }
+      .PATCH {
+        background: #f39c12;
+      }
+      .DELETE {
+        background: #e74c3c;
+      }
+      .PUT {
+        background: #8e44ad;
+      }
+      .small {
+        font-size: 12px;
+        color: #666;
+      }
+      .Claims-true {
+        color: green;
+        font-weight: 700;
+      }
+      .Claims-false {
+        color: #999;
+      }
+      .resource {
+        margin-bottom: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>API Endpoints — social-media-app</h1>
+    <p>
+      Grouped by resource. Method shown as colored badge. "Claims" = route
+      requires special permission/guard (e.g. admin, self, author).
+    </p>
+
+    <nav>
+      <strong>Jump to:</strong>
+      <a href="#auth">Auth</a> • <a href="#users">Users</a> •
+      <a href="#followers">Followers</a> • <a href="#friends">Friends</a> •
+      <a href="#invites">Invites</a> • <a href="#posts">Posts</a> •
+      <a href="#post-subresources">Post subresources</a> •
+      <a href="#comments">Comments</a> •
+      <a href="#comment-subresources">Comment subresources</a>
+    </nav>
+
+    <div class="resource" id="auth">
+      <h2 id="auth">Auth</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/auth/login</code></td>
+            <td>Login. Returns accessToken and sets refreshToken cookie.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/auth/refresh</code></td>
+            <td>Refresh access token from refresh cookie.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/auth/register</code></td>
+            <td>Create new user.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/auth/me</code></td>
+            <td>Get authenticated user profile.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/auth/logout</code></td>
+            <td>Logout and clear refresh cookie.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource" id="followers">
+      <h2 id="followers">Followers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/users/:id/followers</code></td>
+            <td>Follow a user.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/users/:id/followers</code></td>
+            <td>Get followers for a user.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/users/:id/followers</code></td>
+            <td>Unfollow a user.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource" id="users">
+      <h2 id="users">Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/users</code></td>
+            <td>List users.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/users/invitable</code></td>
+            <td>Users you can invite.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/users/:id</code></td>
+            <td>Get user by id or login.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/users</code></td>
+            <td>Delete current user.</td>
+            <td class="Claims-true">auth + self/admin</td>
+          </tr>
+          <tr>
+            <td><span class="badge PATCH">PATCH</span></td>
+            <td><code>/users/:id</code></td>
+            <td>
+              Update user (supports avatar upload via 'avatar' file field).
+            </td>
+            <td class="Claims-true">auth + self/admin</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource" id="posts">
+      <h2 id="posts">Posts</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/posts</code></td>
+            <td>Get feed posts for current user.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/posts/:id</code></td>
+            <td>Get a single post by id.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/posts</code></td>
+            <td>Create post (field 'image' for upload).</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge PATCH">PATCH</span></td>
+            <td><code>/posts/:id</code></td>
+            <td>Update post.</td>
+            <td class="Claims-true">auth + post-author</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/posts/:id</code></td>
+            <td>Delete post.</td>
+            <td class="Claims-true">auth + post-author</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource" id="post-subresources">
+      <h2 id="post-subresources">Post subresources</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/posts/:postId/comments</code></td>
+            <td>Get comments for a post.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/posts/:postId/likes</code></td>
+            <td>List likes for a post.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/posts/:postId/likes</code></td>
+            <td>Like a post.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/posts/:postId/likes</code></td>
+            <td>Unlike a post.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/posts/:postId/reposts</code></td>
+            <td>Repost a post (forbids self-repost).</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/posts/:postId/reposts</code></td>
+            <td>Remove your repost.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource" id="comments">
+      <h2 id="comments">Comments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/comments</code></td>
+            <td>List comments.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/comments/:id</code></td>
+            <td>Get comment by id.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/comments/:id/children</code></td>
+            <td>Get sub-comments.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/comments</code></td>
+            <td>Create comment.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge PATCH">PATCH</span></td>
+            <td><code>/comments/:id</code></td>
+            <td>Update comment.</td>
+            <td class="Claims-true">auth + comment-author</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/comments/:id</code></td>
+            <td>Delete comment.</td>
+            <td class="Claims-true">auth + comment-author</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource" id="comment-subresources">
+      <h2 id="comment-subresources">Comment subresources</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/comments/:id/likes</code></td>
+            <td>Get likes for a comment.</td>
+            <td class="Claims-false">no</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/comments/:id/likes</code></td>
+            <td>Like a comment.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/comments/:id/likes</code></td>
+            <td>Unlike a comment.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource">
+      <h2>Invites</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/invites</code></td>
+            <td>List all invites (admin).</td>
+            <td class="Claims-true">admin</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/invites</code></td>
+            <td>Send invite.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/invites/:inviteId</code></td>
+            <td>Delete invite.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge POST">POST</span></td>
+            <td><code>/invites/:inviteId/accept</code></td>
+            <td>Accept invite.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="resource">
+      <h2>Friends</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge GET">GET</span></td>
+            <td><code>/users/:id/friends</code></td>
+            <td>Get friends list.</td>
+            <td class="Claims-true">auth</td>
+          </tr>
+          <tr>
+            <td><span class="badge DELETE">DELETE</span></td>
+            <td><code>/users/:id/friends/:friendId</code></td>
+            <td>Remove friend.</td>
+            <td class="Claims-true">auth + self/admin</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="small">
+      Notes: 'Claims' is derived from guards found in controller implementation
+      and is an approximation. For exact requirements check the controller
+      files.
+    </p>
+  </body>
+</html>

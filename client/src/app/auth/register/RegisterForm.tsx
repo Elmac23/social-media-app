@@ -14,9 +14,11 @@ import Input from "@/components/ui/formControl/Input";
 import Label from "@/components/ui/formControl/Label";
 import Typography from "@/components/ui/Typography";
 import { AxiosError } from "axios";
+import { useDeviceId } from "@/hooks/useDeviceId";
 
 function RegisterForm() {
   const [errorMessage, setErrorMessage] = React.useState("");
+  const deviceId = useDeviceId();
   const router = useRouter();
   const { mutate } = useMutation({
     mutationFn: registerUser,
@@ -42,6 +44,7 @@ function RegisterForm() {
       dateOfBirth: "2000-01-01",
       lastname: "ee",
       name: "jakuc",
+      deviceId: deviceId,
     },
     resolver: zodResolver(registerSchema),
   });
@@ -50,13 +53,13 @@ function RegisterForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl className="mb-4" error={errors.login?.message}>
         <Label>Login</Label>
-        <Input {...register("login")} />
+        <Input {...register("login")} fullWidth />
         <FormError />
       </FormControl>
 
       <FormControl className="mb-4" error={errors.email?.message}>
         <Label>Email</Label>
-        <Input {...register("email")} />
+        <Input {...register("email")} fullWidth />
         <FormError />
       </FormControl>
 
@@ -76,13 +79,13 @@ function RegisterForm() {
 
       <FormControl className="mb-4" error={errors.dateOfBirth?.message}>
         <Label>Date of birth</Label>
-        <Input type="date" {...register("dateOfBirth")} />
+        <Input type="date" {...register("dateOfBirth")} fullWidth />
         <FormError />
       </FormControl>
 
       <FormControl className="mb-4" error={errors.password?.message}>
         <Label>Password</Label>
-        <Input type="password" {...register("password")} />
+        <Input type="password" {...register("password")} fullWidth />
         <FormError />
       </FormControl>
       <Typography className="text-red-500 mb-4">{errorMessage}</Typography>

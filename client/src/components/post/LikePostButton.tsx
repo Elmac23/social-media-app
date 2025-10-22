@@ -5,19 +5,20 @@ import { MdFavorite } from "react-icons/md";
 import Button from "../ui/Button";
 
 import { useLikePost } from "@/hooks/useLikePost";
+import { Post } from "@/types/post";
 
 function LikePostButton({
   likeCount,
-  postId,
+  post,
   isLiked,
 }: {
   likeCount: number;
   isLiked?: boolean;
-  postId: string;
+  post: Post;
 }) {
   const { handleLike, newLikeCount, value } = useLikePost({
     likeCount,
-    postId,
+    post,
     isLiked,
   });
   return (

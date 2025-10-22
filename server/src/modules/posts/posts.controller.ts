@@ -14,7 +14,7 @@ import { PostsService } from './posts.service';
 import { AuthenticationGuard } from 'src/guards/authentication';
 import { PostDto, postSchema, updatePostSchema } from './posts.schema';
 import { ZodValidationPipe } from 'src/pipes/ZodValidationPipe';
-import { PostAuthorGuard } from '../../guards/post-author';
+import { UsersPostGuard } from '../../guards/users-post';
 import { UserId } from 'src/decorators/user-id';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
@@ -60,7 +60,7 @@ export class PostsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthenticationGuard, PostAuthorGuard)
+  @UseGuards(AuthenticationGuard, UsersPostGuard)
   async updatePost(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updatePostSchema)) body,
@@ -69,7 +69,7 @@ export class PostsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthenticationGuard, PostAuthorGuard)
+  @UseGuards(AuthenticationGuard, UsersPostGuard)
   async deletePost(@Param('id') id: string) {
     return await this.postsService.deletePost(id);
   }

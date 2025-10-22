@@ -12,13 +12,15 @@ import EditPost from "./EditPost";
 import PostHeader from "./PostHeader";
 import { profile } from "console";
 import { TextToLinksParser } from "@/lib/TextToLinksParser";
+import { cn } from "@/lib/cn";
 
 type PostProps = {
   post: Post;
   profileId?: string;
+  className?: string;
 };
 
-function Post({ post, profileId }: PostProps) {
+function Post({ post, profileId, className }: PostProps) {
   const {
     toggle: toggleIsEdit,
     value: isEdit,
@@ -30,7 +32,7 @@ function Post({ post, profileId }: PostProps) {
 
   const isYourPost = user?.id === author.id;
   return (
-    <Card className="pb-2">
+    <Card className={cn("pb-4", className)}>
       <PostHeader
         isYourPost={isYourPost}
         post={post}

@@ -4,6 +4,9 @@ import React from "react";
 
 const typographyVariants = cva("font-sans", {
   variants: {
+    bold: {
+      true: "font-bold",
+    },
     size: {
       sm: "text-sm",
       md: "text-base",
@@ -22,6 +25,7 @@ const typographyVariants = cva("font-sans", {
   defaultVariants: {
     size: "md",
     color: "primary",
+    // bold: false,
   },
 });
 export type TypographyProps = {
@@ -32,6 +36,7 @@ export type TypographyProps = {
 function Typography({
   size,
   color,
+  bold,
   as = "p",
   className,
   ...props
@@ -39,7 +44,7 @@ function Typography({
   const Component = as;
   return (
     <Component
-      className={cn(typographyVariants({ size, color }), className)}
+      className={cn(typographyVariants({ size, color, bold }), className)}
       {...props}
     />
   );

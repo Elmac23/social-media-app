@@ -25,6 +25,8 @@ async function FriendsPage() {
 
   const { sentInvites, receivedInvites } = invites.data;
 
+  console.log(receivedInvites);
+
   return (
     <main className="container mx-auto">
       <pre></pre>
@@ -38,7 +40,7 @@ async function FriendsPage() {
         {receivedInvites.map((request) => (
           <UserMiniProfile key={request.id} user={request.sender} isBody>
             <div className="flex gap-4">
-              <AcceptFriendButton inviteId={request.id} />
+              <AcceptFriendButton invite={request} />
               <DeclineInviteButton inviteId={request.id} variant="ghost">
                 Decline
               </DeclineInviteButton>

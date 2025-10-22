@@ -7,6 +7,7 @@ import FormError from "@/components/ui/formControl/FormError";
 import Input from "@/components/ui/formControl/Input";
 import Label from "@/components/ui/formControl/Label";
 import Typography from "@/components/ui/Typography";
+import { useDeviceId } from "@/hooks/useDeviceId";
 import { loginSchema, LoginDto } from "@/schema/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -16,9 +17,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 function LoginForm() {
-  const { setAccessToken, accessToken } = useAuth();
+  const { setAccessToken } = useAuth();
   const [errorMessage, setErrorMessage] = React.useState("");
   const router = useRouter();
+  const deviceId = useDeviceId();
 
   const { mutate } = useMutation({
     mutationFn: login,
@@ -43,6 +45,7 @@ function LoginForm() {
     defaultValues: {
       loginOrEmail: "a@wp.pl",
       password: "zaq1@WSX",
+      deviceId,
     },
     resolver: zodResolver(loginSchema),
   });
@@ -50,14 +53,15 @@ function LoginForm() {
   const onSubmit = (data: LoginDto) => mutate(data);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <input type="hidden" {...register("deviceId")} />
       <FormControl className="mb-4" error={errors.loginOrEmail?.message}>
         <Label>Login or Email:</Label>
-        <Input {...register("loginOrEmail")} />
+        <Input {...register("loginOrEmail")} fullWidth />
         <FormError />
       </FormControl>
       <FormControl className="mb-4" error={errors.password?.message}>
         <Label>Password:</Label>
-        <Input {...register("password")} type="password" />
+        <Input {...register("password")} type="password" fullWidth />
         <FormError />
       </FormControl>
       <Typography className="text-red-500 mb-4">{errorMessage}</Typography>

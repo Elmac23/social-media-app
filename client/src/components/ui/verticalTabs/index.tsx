@@ -5,6 +5,7 @@ import Card from "../Card";
 import { cn } from "@/lib/cn";
 import NavLink from "@/components/navbar/NavLink";
 import { useSearchParams } from "next/navigation";
+import { useTimeout } from "@/hooks/useTimeout";
 
 const tabContext = React.createContext<{
   tab: string | null;
@@ -28,7 +29,7 @@ export function VerticalTabsButtons({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2 pr-4 border-r-2 border-background/30">
+    <div className="space-y-2 pr-4 border-r-2 border-background/30 sticky top-20 self-start">
       {children}
     </div>
   );

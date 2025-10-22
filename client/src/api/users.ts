@@ -1,8 +1,10 @@
-import { UpdateUser, UserProfile } from "@/types/user";
+import { UpdateUser, User, UserProfile } from "@/types/user";
 import { api } from ".";
+import { Query } from "@/types/query";
+import { withQuery } from "@/lib/withQuery";
 
-export const getUsers = () => {
-  return api.get("/users");
+export const getUsers = (query: Query) => {
+  return api.get<User[]>(withQuery("/users", query));
 };
 
 export const updateUser = (

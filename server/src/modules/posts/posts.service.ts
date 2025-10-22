@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpdatePostDto } from './posts.schema';
 import { unzipCountFields } from 'src/utils/unzip-count-fields';
@@ -79,6 +79,8 @@ export class PostsService {
         },
       },
     });
+
+    if (!post) throw new NotFoundException('Post not found');
 
     const unzippedData = unzipCountFields(post, ['likes', 'comments']);
 

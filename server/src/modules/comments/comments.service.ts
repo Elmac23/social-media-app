@@ -69,6 +69,8 @@ export class CommentsService {
       },
     });
 
+    if (!comment) return null;
+
     const unzippedComment = unzipCountFields(comment, ['likes', 'subComments']);
 
     if (!userId) return unzippedComment;

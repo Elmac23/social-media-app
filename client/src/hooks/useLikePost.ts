@@ -5,15 +5,19 @@ import { useAuth } from "@/components/AuthProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useToggle } from "./useToggle";
+import { useSocket } from "@/components/SocketProvider";
+import { Post } from "@/types/post";
 
 type UseLikePostProps = {
   likeCount: number;
   isLiked?: boolean;
-  postId: string;
+  post: Post;
 };
 
-export function useLikePost({ likeCount, postId, isLiked }: UseLikePostProps) {
-  const { accessToken } = useAuth();
+export function useLikePost({ likeCount, post, isLiked }: UseLikePostProps) {
+  const postId = post.id;
+  const { socket } = useSocket();
+  const { accessToken, user } = useAuth();
   const { value, setFalse, setTrue } = useToggle(isLiked || false);
   const [newLikeCount, setNewLikeCount] = useState(likeCount);
   const { mutate: likePostMutation } = useMutation({
@@ -21,6 +25,11 @@ export function useLikePost({ likeCount, postId, isLiked }: UseLikePostProps) {
     onSuccess: () => {
       setTrue();
       setNewLikeCount((count) => count + 1);
+      socket?.emit("like-post", {
+        entityId: postId,
+        senderId: user?.id,
+        userId: post.author.id,
+      });
     },
     onError: () => {
       setFalse();

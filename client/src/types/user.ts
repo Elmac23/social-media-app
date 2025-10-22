@@ -33,3 +33,32 @@ export type UserWithToken = User & {
 };
 
 export type UserUpdateKey = keyof User | `:${keyof UserData}`;
+
+export const PRIVACY_OPTIONS = ["PUBLIC", "FRIENDS", "PRIVATE"] as const;
+export type PrivacyOptions = (typeof PRIVACY_OPTIONS)[number];
+
+export type UserPrivacy = {
+  email: PrivacyOptions;
+  phoneNumber: PrivacyOptions;
+  dateOfBirth: PrivacyOptions;
+  primaryLanguage: PrivacyOptions;
+  otherLanguages: PrivacyOptions;
+  location: PrivacyOptions;
+  schools: PrivacyOptions;
+  hobbies: PrivacyOptions;
+  jobs: PrivacyOptions;
+  friendsList: PrivacyOptions;
+};
+
+export type UserPrivacyPartial = {
+  email: PrivacyOptions;
+  phoneNumber: PrivacyOptions;
+  dateOfBirth: PrivacyOptions;
+  primaryLanguage: PrivacyOptions;
+  otherLanguages: PrivacyOptions;
+  location: PrivacyOptions;
+  schools: PrivacyOptions;
+  hobbies: PrivacyOptions;
+  jobs: PrivacyOptions;
+  friendsList: PrivacyOptions;
+};

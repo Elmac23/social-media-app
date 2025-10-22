@@ -7,19 +7,24 @@ import { useMutation } from "@tanstack/react-query";
 import { addRepost, deleteRepost } from "@/api/posts";
 import { useAuth } from "../AuthProvider";
 import { useRouter } from "next/navigation";
+import { useSocket } from "../SocketProvider";
+import { Post } from "@/types/post";
 
 type ShareButtonProps = {
-  postId: string;
+  post: Post;
   isSharedByMe?: boolean;
 };
 
-function ShareButton({ postId, isSharedByMe }: ShareButtonProps) {
+function ShareButton({ post, isSharedByMe }: ShareButtonProps) {
+  const postId = post.id;
   const router = useRouter();
+  const { socket } = useSocket();
   const { accessToken } = useAuth();
   const { mutate: share } = useMutation({
     mutationFn: async () => addRepost(postId, accessToken),
     onSuccess: () => {
       router.refresh();
+      socket?.emit("share-post", { entityId: postId, userId: post.author.id });
     },
   });
 

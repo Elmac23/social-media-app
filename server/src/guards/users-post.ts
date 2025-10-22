@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { PostsService } from '../modules/posts/posts.service';
 
 @Injectable()
-export class PostAuthorGuard implements CanActivate {
+export class UsersPostGuard implements CanActivate {
   constructor(private postsService: PostsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

@@ -20,12 +20,12 @@ type PostBottomProps = {
 
 const commentContext = React.createContext<{
   selectedCommentId?: string;
-  postId: string;
+  post: Post;
   setSelectedCommentId: (id?: string) => void;
 }>({
   selectedCommentId: undefined,
   setSelectedCommentId: () => {},
-  postId: "",
+  post: {} as Post,
 });
 
 export function useCommentContext() {
@@ -46,7 +46,7 @@ function PostBottom({ post }: PostBottomProps) {
 
   return (
     <commentContext.Provider
-      value={{ selectedCommentId, setSelectedCommentId, postId: post.id }}
+      value={{ selectedCommentId, setSelectedCommentId, post }}
     >
       <div
         className={cn(
@@ -56,7 +56,7 @@ function PostBottom({ post }: PostBottomProps) {
       >
         <LikePostButton
           likeCount={post.likesCount}
-          postId={post.id}
+          post={post}
           isLiked={post.isLikedByMe}
         />
         <Button
@@ -73,13 +73,11 @@ function PostBottom({ post }: PostBottomProps) {
           Comment ({post.commentsCount || 0})
         </Button>
         {post.author.id !== user?.id && (
-          <ShareButton postId={post.id} isSharedByMe={post.isSharedByMe} />
+          <ShareButton post={post} isSharedByMe={post.isSharedByMe} />
         )}
       </div>
 
-      {isCommentVisible && !selectedCommentId && (
-        <AddComment postId={post.id} />
-      )}
+      {isCommentVisible && !selectedCommentId && <AddComment />}
 
       {isCommentVisible &&
         comments &&

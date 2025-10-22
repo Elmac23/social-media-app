@@ -5,6 +5,7 @@ import { Tab } from "@/components/ui/verticalTabs";
 import { ReceivedFriendIvite, SentFriendInvite } from "@/types/friendRequest";
 import { User } from "@/types/user";
 import React from "react";
+import Typography from "@/components/ui/Typography";
 
 type UsersListProps = {
   users: User[];
@@ -15,33 +16,37 @@ type UsersListProps = {
 function UsersList({ users, receivedInvites, sentInvites }: UsersListProps) {
   return (
     <div>
+      {users.length === 0 && (
+        <Typography color="muted">No users found...</Typography>
+      )}
       {users.length > 0 && (
         <ul className="grid grid-cols-4 gap-8 items-stretch">
           {users.map((user) => {
-            const hasInvitedYou = receivedInvites.some(
+            const receivedInvite = receivedInvites.find(
               (r) => r.sender.id === user.id
             );
-            const youHaveInvited = sentInvites.some(
+            const sentInvite = sentInvites.find(
               (r) => r.recipent.id === user.id
             );
+
             return (
               <li key={user.id}>
                 <UserMiniProfile
-                  isBody={hasInvitedYou || youHaveInvited}
+                  isBody={!!receivedInvite || !!sentInvite}
                   user={user}
                   className="h-full"
                 >
-                  {hasInvitedYou && (
+                  {receivedInvite && (
                     <div className="flex gap-2">
-                      <AcceptFriendButton inviteId="" />
+                      <AcceptFriendButton inviteId={receivedInvite.id} />
                       <DeclineInviteButton variant="ghost" inviteId={user.id}>
                         Decline
                       </DeclineInviteButton>
                     </div>
                   )}
-                  {youHaveInvited && (
+                  {sentInvite && (
                     <>
-                      <DeclineInviteButton inviteId={user.id}>
+                      <DeclineInviteButton inviteId={sentInvite.id}>
                         Cancel
                       </DeclineInviteButton>
                     </>

@@ -8,13 +8,16 @@ import { useAddComment } from "@/hooks/useAddComment";
 
 type AddCommentProps = {
   parentCommentId?: string;
-  postId: string;
+  parentCommentAuthorId?: string;
 };
 
-function AddComment({ parentCommentId, postId }: AddCommentProps) {
+function AddComment({
+  parentCommentAuthorId,
+  parentCommentId,
+}: AddCommentProps) {
   const { message, mutate, setMessage } = useAddComment({
+    parentCommentAuthorId,
     parentCommentId,
-    postId,
   });
 
   return (

@@ -18,7 +18,6 @@ export class SelfOrAdminGuard implements CanActivate {
     if (!user) return false;
 
     if (userId === paramId) return true;
-
     return user.role === 'ADMIN';
   }
 }

@@ -3,19 +3,20 @@
 import React from "react";
 import Button from "../ui/Button";
 import { useLikeComment } from "@/hooks/useLikeComment";
+import { Comment } from "@/types/comment";
 
 function LikeCommentButton({
   likeCount,
-  commentId,
+  comment,
   isLiked,
 }: {
   likeCount: number;
   isLiked?: boolean;
-  commentId: string;
+  comment: Comment;
 }) {
   const { handleLike, newLikeCount, value } = useLikeComment({
     likeCount,
-    commentId,
+    comment,
     isLiked,
   });
   return (

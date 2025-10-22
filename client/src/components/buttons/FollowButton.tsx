@@ -7,6 +7,7 @@ import { useToggle } from "@/hooks/useToggle";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useSocket } from "../SocketProvider";
 
 type FollowButtonProps = {
   initialIsFollowing?: boolean;
@@ -23,12 +24,14 @@ function FollowButton({ userId, initialIsFollowing }: FollowButtonProps) {
   const router = useRouter();
 
   const { accessToken } = useAuth();
+  const { socket } = useSocket();
 
   const { mutate: followMutation } = useMutation({
     mutationFn: () => follow(userId, accessToken),
     onSuccess: () => {
       router.refresh();
       setFollow();
+      socket?.emit("follow-user", { userId, entityId: userId });
     },
   });
 

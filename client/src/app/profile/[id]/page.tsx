@@ -9,18 +9,21 @@ import { getUserProfileById } from "@/api/users";
 import YourBio from "./YourBio";
 import Bio from "./Bio";
 
-import { getUsersFeed, getUsersPosts } from "@/api/posts";
+import { getPostById, getUsersFeed } from "@/api/posts";
 import PostsList from "./PostsList";
-import JSONDebug from "@/components/JSONDebug";
 import CreatePost from "@/components/createPost";
-import FullScreenImage from "@/components/fullScreenImage";
+import { tryOrUndefined } from "@/lib/tryOrUndefined";
+import { Post as PostType } from "@/types/post";
+import Post from "@/components/post";
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-async function UserProfile({ params }: Props) {
+async function UserProfile({ params, searchParams }: Props) {
   const { id } = await params;
+  const { featuredPostId } = await searchParams;
   const loggedInUser = await getUser();
   if (!loggedInUser) redirect("/auth/login");
 
@@ -31,9 +34,29 @@ async function UserProfile({ params }: Props) {
 
   const isSelf = loggedInUser.id === user.data.id;
 
+  let featuredPost: PostType | undefined = undefined;
+  if (featuredPostId && typeof featuredPostId === "string") {
+    const response = await tryOrUndefined(getPostById(featuredPostId));
+    featuredPost = response?.data;
+  }
+
+  if (featuredPost && featuredPost.author.id !== user.data.id)
+    featuredPost = undefined;
   return (
     <div className="flex gap-8 flex-col-reverse lg:flex-row">
       <div className="grow">
+        {featuredPost && (
+          <>
+            <Typography size="lg" bold={true} color="primary" className="mb-2">
+              Featured
+            </Typography>
+            <Post
+              post={featuredPost}
+              profileId={id}
+              className="mb-4 ring-4 ring-primary-500 "
+            />
+          </>
+        )}
         <Typography as="h3" className="font-bold mb-4" size="xl">
           Posts
         </Typography>
@@ -42,6 +65,7 @@ async function UserProfile({ params }: Props) {
         {feedPosts.data.length === 0 && (
           <Typography color="muted">No posts yet</Typography>
         )}
+
         {feedPosts.data.length > 0 && (
           <PostsList profileId={id} posts={feedPosts.data} />
         )}
@@ -72,9 +96,11 @@ async function UserProfile({ params }: Props) {
             <Typography color="muted">No friends yet</Typography>
           )}
           {friends.data.length > 0 &&
-            friends.data.map((friend) => (
-              <UserMiniProfile user={friend} key={friend.id} />
-            ))}
+            friends.data
+              .slice(0, 8)
+              .map((friend) => (
+                <UserMiniProfile user={friend} key={friend.id} />
+              ))}
         </div>
       </div>
     </div>

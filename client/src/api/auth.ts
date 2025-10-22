@@ -5,6 +5,7 @@ export const register = (data: RegisterDto) => {
   return api.post("/auth/register", data);
 };
 export const login = (data: LoginDto) => {
+  console.log("API LOGIN CALL", data);
   return api.post("/auth/login", data);
 };
 

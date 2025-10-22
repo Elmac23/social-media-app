@@ -3,6 +3,7 @@ import z from 'zod';
 export const loginSchema = z.object({
   loginOrEmail: z.string().min(1, 'Login or email is required'),
   password: z.string(),
+  deviceId: z.string().min(1, 'Device ID is required'),
 });
 
 export const registerSchema = z.object({
@@ -12,6 +13,7 @@ export const registerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   lastname: z.string().min(1, 'Lastname is required'),
   dateOfBirth: z.iso.date(),
+  deviceId: z.string().min(1, 'Device ID is required'),
 });
 
 export type LoginDto = z.infer<typeof loginSchema>;

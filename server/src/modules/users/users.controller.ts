@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -16,13 +17,15 @@ import { UsersService } from './users.service';
 
 import { ZodValidationPipe } from 'src/pipes/ZodValidationPipe';
 import { AuthenticationGuard } from 'src/guards/authentication';
-import { Request } from 'express';
-import { Req } from '@nestjs/common';
+
 import { userDataSchema, UserUpdateDto, userUpdateSchema } from './user.schema';
 import { PostsService } from 'src/modules/posts/posts.service';
 import { UserId } from 'src/decorators/user-id';
 import { SelfOrAdminGuard } from 'src/guards/self-or-admin';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UserPrivacyInterceptor } from 'src/interceptors/user-privacy';
+import { QueryPipe } from 'src/pipes/query.pipe';
+import { Query as QueryType } from 'src/types/query';
 
 @Controller('users')
 export class UsersController {
@@ -31,8 +34,8 @@ export class UsersController {
     private postsService: PostsService,
   ) {}
   @Get()
-  async getUsers() {
-    return await this.usersService.getUsers();
+  async getUsers(@Query(new QueryPipe()) { limit, page, search }: QueryType) {
+    return await this.usersService.getUsers({ search, page, limit });
   }
 
   @Get('/invitable')
@@ -43,6 +46,7 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthenticationGuard)
+  @UseInterceptors(UserPrivacyInterceptor)
   async getUserById(@Param('id') id: string, @UserId() viewerId?: string) {
     return await this.usersService.getUserByIdOrLogin(id, viewerId);
   }

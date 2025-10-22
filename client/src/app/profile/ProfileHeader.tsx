@@ -8,7 +8,6 @@ import Button from "@/components/ui/Button";
 import FollowButton from "../../components/buttons/FollowButton";
 import { getInvites, getUserFriends } from "@/api/friends";
 import AddFriendButton from "../../components/buttons/AddFriendButton";
-import JSONDebug from "@/components/JSONDebug";
 import AcceptFriendButton from "../../components/buttons/AcceptFriendButton";
 import DeclineInviteButton from "../../components/buttons/DeclineInviteButton";
 import RemoveFriendButton from "@/components/buttons/RemoveFriendButton";
@@ -30,25 +29,17 @@ async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
     await getUserFriends(loggedInUser.id, loggedInUser.accessToken)
   ).data;
 
-  const hasSentYouInvite = receivedInvites.some(
-    (invite) => invite.sender.id === user.id
-  );
-  const hasBeenInvited = sentInvites.some(
-    (invite) => invite.recipent.id === user.id
-  );
-
   const isFriend = yourFriends.some((friend) => friend.id === user.id);
 
-  const isInvitable =
-    !hasSentYouInvite && !hasBeenInvited && !isFriend && !isSelf;
-
-  const sentInviteId = sentInvites.find(
+  const sentInvite = sentInvites.find(
     (invite) => invite.recipent.id === user.id
-  )?.id;
+  );
 
-  const receivedInviteId = receivedInvites.find(
+  const receivedInvite = receivedInvites.find(
     (invite) => invite.sender.id === user.id
-  )?.id;
+  );
+
+  const isInvitable = !receivedInvite && !sentInvite && !isFriend && !isSelf;
 
   return (
     <header className="flex mb-8 gap-4">
@@ -79,19 +70,19 @@ async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
               Friends
             </RemoveFriendButton>
           )}
-          {hasSentYouInvite && (
+          {receivedInvite && (
             <>
-              <AcceptFriendButton inviteId={receivedInviteId!} />
+              <AcceptFriendButton invite={receivedInvite} />
               <DeclineInviteButton
                 variant="outline"
-                inviteId={receivedInviteId!}
+                inviteId={receivedInvite.id}
               >
                 Dismiss
               </DeclineInviteButton>
             </>
           )}
-          {hasBeenInvited && (
-            <DeclineInviteButton variant="outline" inviteId={sentInviteId!}>
+          {sentInvite && (
+            <DeclineInviteButton variant="outline" inviteId={sentInvite.id}>
               Invite Sent
             </DeclineInviteButton>
           )}

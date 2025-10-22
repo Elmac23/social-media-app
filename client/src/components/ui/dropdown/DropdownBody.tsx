@@ -12,25 +12,42 @@ function DropdownBody({
   ...props
 }: React.ComponentProps<typeof Card>) {
   const isMounted = useMounted();
-  const { isOpen, close } = useDropdown();
+  const { isOpen, close, closeOnHoverExit } = useDropdown();
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.addEventListener("click", close);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        close();
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener("click", close);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [close]);
+
+  const handleMouseLeave = () => {
+    if (closeOnHoverExit) {
+      close();
+    }
+  };
 
   if (!isMounted) return null;
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          ref={dropdownRef}
           className="relative z-50"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          onMouseLeave={close}
+          onMouseLeave={handleMouseLeave}
           transition={{ duration: 0.2, ease: "easeInOut" }}
         >
           <Card className={cn(className, "absolute z-50")} {...props} />

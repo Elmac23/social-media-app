@@ -7,7 +7,7 @@ type ContentFieldProps = React.PropsWithChildren & {
 };
 
 function ContentField({ label, value, children }: ContentFieldProps) {
-  if (!value && !children) return null;
+  if (!value && !React.Children.toArray(children).length) return null;
   return (
     <div className="flex items-center gap-4">
       <div>

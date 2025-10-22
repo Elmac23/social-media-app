@@ -5,12 +5,48 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Prisma } from 'generated/prisma';
+import { Query } from 'src/types/query';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
-  async getUsers() {
+  async getUsers({ limit, page, search }: Query) {
+    if (search.split(' ').length === 1)
+      return await this.prismaService.user.findMany({
+        where: {
+          OR: [
+            { login: { contains: search, mode: 'insensitive' } },
+            { name: { contains: search, mode: 'insensitive' } },
+            { lastname: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        omit: { hashedPassword: true },
+      });
+
+    const names = search.split(' ');
+    const firstName = names[0];
+    const lastName = names[1];
     return await this.prismaService.user.findMany({
+      where: {
+        OR: [
+          {
+            AND: [
+              { name: { contains: firstName, mode: 'insensitive' } },
+              { lastname: { contains: lastName, mode: 'insensitive' } },
+            ],
+          },
+          {
+            AND: [
+              { name: { contains: lastName, mode: 'insensitive' } },
+              { lastname: { contains: firstName, mode: 'insensitive' } },
+            ],
+          },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: limit,
       omit: { hashedPassword: true },
     });
   }

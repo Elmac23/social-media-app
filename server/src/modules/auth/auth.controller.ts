@@ -29,7 +29,10 @@ export class AuthController {
 
   @Post('login')
   @UsePipes(new ZodValidationPipe(loginSchema))
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res) {
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const { accessToken, refreshToken } = await this.authService.login(body);
 
     res.cookie('refreshToken', refreshToken, {
@@ -63,6 +66,11 @@ export class AuthController {
     if (!userId) throw new BadRequestException('User ID not found');
 
     return await this.authService.getMe(userId);
+  }
+
+  @Post('confirm-session')
+  async confirmSession(@Body('deviceId') deviceId: string) {
+    return await this.authService.confirmLoginSession(deviceId);
   }
 
   @Post('logout')

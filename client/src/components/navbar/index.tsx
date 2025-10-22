@@ -3,6 +3,8 @@ import React from "react";
 import NavLink from "./NavLink";
 import { getUser } from "@/lib/getUser";
 import LoggedIn from "./LoggedIn";
+import Typography from "../ui/Typography";
+import SearchUsers from "../search";
 
 async function Navbar() {
   const user = await getUser();
@@ -10,9 +12,12 @@ async function Navbar() {
   return (
     <div className="bg-background-lighter border-b-2 border-black/40 shadow-2xl w-full z-50 fixed top-0">
       <div className="flex p-4 justify-between items-center gap-4 container mx-auto ">
-        <h1 className="text-2xl font-bold">
-          <Link href="/">MyApp</Link>
-        </h1>
+        <div className="flex items-center gap-12 flex-1">
+          <Typography size="2xl" className="font-bold">
+            <Link href="/">Friendsy</Link>
+          </Typography>
+          {user && <SearchUsers />}
+        </div>
         <nav>
           <ul className="flex items-center gap-8">
             {user && <LoggedIn user={user} />}

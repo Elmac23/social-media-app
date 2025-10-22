@@ -10,6 +10,7 @@ import { getUser } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 import React from "react";
 import OvierviewTab from "./OverviewTab";
+import { getPrivacy } from "@/api/privacy";
 
 type AboutPageProps = {
   params: Promise<{ id: string }>;
@@ -24,6 +25,11 @@ async function AboutPage({ params }: AboutPageProps) {
 
   const userProfile = await getUserProfileById(id, loggedUser.accessToken);
   const { data: profile } = userProfile;
+
+  const { data: privacySettings } = await getPrivacy(
+    id,
+    loggedUser.accessToken
+  );
 
   const isSelf = loggedUser.id === profile.id;
 
@@ -44,7 +50,11 @@ async function AboutPage({ params }: AboutPageProps) {
         </VerticalTabsButtons>
         <VerticalTabsSection>
           <Tab tabName="overview">
-            <OvierviewTab profile={profile} isSelf={isSelf} />
+            <OvierviewTab
+              privacySettings={privacySettings}
+              profile={profile}
+              isSelf={isSelf}
+            />
           </Tab>
           <Tab tabName="education">test</Tab>
           <Tab tabName="work">

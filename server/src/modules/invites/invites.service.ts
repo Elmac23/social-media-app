@@ -2,12 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendRequestDto } from './invites.schema';
 import { UserFollowersService } from '../users/user-followers/user-followers.service';
+import { GroupChatsService } from '../group-chats/group-chats.service';
 
 @Injectable()
 export class InvitesService {
   constructor(
     private prismaService: PrismaService,
     private userFollowersService: UserFollowersService,
+    private groupChatsService: GroupChatsService,
   ) {}
 
   async getAllInvites() {
@@ -42,6 +44,14 @@ export class InvitesService {
       },
     });
 
+    await this.groupChatsService.createGroupChat({
+      name: null,
+      avatarUrl: null,
+      description: null,
+      memberIds: [senderId, recipentId],
+      type: 'DIRECT',
+    });
+
     try {
       await this.userFollowersService.follow(recipentId, senderId);
     } catch (error) {}
@@ -56,6 +66,19 @@ export class InvitesService {
     recipentId,
     senderId,
   }: FriendRequestDto & { senderId: string }) {
+    const existingInvite = await this.prismaService.friendRequest.findUnique({
+      where: {
+        senderId_recipentId: {
+          recipentId: senderId,
+          senderId: recipentId,
+        },
+      },
+    });
+
+    if (existingInvite) {
+      return this.acceptInvite(existingInvite.id);
+    }
+
     try {
       await this.prismaService.friendRequest.create({
         data: {

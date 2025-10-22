@@ -11,5 +11,5 @@ export type Comment = {
   author: User;
   likesCount: number;
   subCommentsCount: number;
-  isLikedByMe?: boolean;
+  isLikedByMe: boolean;
 };

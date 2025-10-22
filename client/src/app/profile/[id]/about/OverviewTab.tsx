@@ -2,7 +2,7 @@
 
 import React from "react";
 import AboutFieldWrapper, { UserEdit } from "./AboutFieldWrapper";
-import { UpdateUser, UserProfile } from "@/types/user";
+import { UpdateUser, UserPrivacy, UserProfile } from "@/types/user";
 import EditableInput from "./EditableInput";
 import { updateUser } from "@/api/users";
 import { useAuth } from "@/components/AuthProvider";
@@ -12,9 +12,11 @@ import { Option } from "@/components/ui/formControl/Select";
 function AboutTab({
   profile,
   isSelf,
+  privacySettings,
 }: {
   profile: UserProfile;
   isSelf: boolean;
+  privacySettings: UserPrivacy;
 }) {
   const { accessToken } = useAuth();
 
@@ -26,7 +28,7 @@ function AboutTab({
     if (name || lastname) {
       return `${name || ""} ${lastname || ""}`.trim();
     }
-    return "No name provided";
+    return "";
   };
 
   const displayLogin = ({ login }: UserEdit) => {
@@ -43,7 +45,7 @@ function AboutTab({
       case "FEMALE":
         return "Female";
       default:
-        return "Not specified";
+        return "";
     }
   };
 
@@ -74,11 +76,13 @@ function AboutTab({
         isYour={isSelf}
         displayValue={displayName}
         mainLabel={"Name"}
+        privacySettings={privacySettings}
       >
         <EditableInput label="Name" name="name" />
         <EditableInput label="Lastname" name="lastname" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
+        privacySettings={privacySettings}
         onSubmit={async (value) =>
           submit({
             login: value.login,
@@ -94,6 +98,7 @@ function AboutTab({
         <EditableInput label="Login" name="login" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
+        privacySettings={privacySettings}
         onSubmit={async (value) =>
           submit({
             email: value.email,
@@ -102,13 +107,16 @@ function AboutTab({
         initialValues={{
           email: profile.email,
         }}
-        isYour={false}
+        isYour={isSelf}
+        forbidEdit
         displayValue={displayEmail}
         mainLabel="Email"
+        withPrivacy
       >
         <EditableInput label="Email" name="email" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
+        privacySettings={privacySettings}
         onSubmit={async (value) =>
           submit({
             userData: {
@@ -124,11 +132,13 @@ function AboutTab({
         isYour={isSelf}
         displayValue={displayLocation}
         mainLabel="Location"
+        withPrivacy
       >
         <EditableInput label="Country" name="country" />
         <EditableInput label="City" name="city" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
+        privacySettings={privacySettings}
         initialValues={{
           sex: profile.userData?.sex,
         }}

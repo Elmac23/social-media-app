@@ -1,7 +1,7 @@
 "use client";
 
 import { useToggle } from "@/hooks/useToggle";
-import { User, UserData } from "@/types/user";
+import { User, UserData, UserPrivacy } from "@/types/user";
 import React from "react";
 import ContentField from "./ContentField";
 import Button from "@/components/ui/Button";
@@ -9,7 +9,7 @@ import { MdAdd, MdEdit, MdSave } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { AxiosResponse } from "axios";
-import Select, { Option } from "@/components/ui/formControl/Select";
+import PrivacySelect from "./PrivacySelect";
 
 export type UserEdit = Partial<Record<keyof (User & UserData), string>>;
 
@@ -20,6 +20,8 @@ type AboutFieldContext = {
   value: UserEdit;
   setValue: (value: UserEdit) => void;
   mainLabel: string;
+  privacyName: string;
+  privacySettings: UserPrivacy;
 };
 
 const aboutFieldContext = React.createContext<AboutFieldContext>({
@@ -27,6 +29,8 @@ const aboutFieldContext = React.createContext<AboutFieldContext>({
   setEditTrue: () => {},
   setEditFalse: () => {},
   value: {} as UserEdit,
+  privacySettings: {} as UserPrivacy,
+  privacyName: "",
   setValue: (value: UserEdit) => {
     console.log(value);
   },
@@ -39,7 +43,11 @@ export function useAboutField() {
 
 type AboutFieldWrapperProps = React.PropsWithChildren & {
   initialValues: UserEdit;
+  withPrivacy?: boolean;
+  privacyName?: string;
+  privacySettings: UserPrivacy;
   isYour: boolean;
+  forbidEdit?: boolean;
   displayValue: (value: UserEdit) => string;
   mainLabel: string;
   onSubmit: (value: UserEdit) => Promise<AxiosResponse<unknown, unknown>>;
@@ -49,13 +57,16 @@ function AboutFieldWrapper({
   children,
   initialValues,
   isYour,
+  forbidEdit = false,
   displayValue,
   onSubmit,
+  privacyName,
+  privacySettings,
   mainLabel,
+  withPrivacy,
 }: AboutFieldWrapperProps) {
   const { value: isEdited, setFalse, setTrue } = useToggle(false);
   const [value, setValue] = React.useState<UserEdit>(initialValues);
-
   const router = useRouter();
 
   const { mutate } = useMutation({
@@ -66,9 +77,9 @@ function AboutFieldWrapper({
     },
   });
 
-  const [privacy, setPrivacy] = React.useState<"public" | "private">("public");
-
   const isAddable = isYour && !displayValue(value);
+
+  console.log(mainLabel, withPrivacy, isYour);
 
   return (
     <aboutFieldContext.Provider
@@ -79,11 +90,13 @@ function AboutFieldWrapper({
         value,
         setValue,
         mainLabel,
+        privacyName: privacyName || mainLabel.toLocaleLowerCase(),
+        privacySettings,
       }}
     >
       {!isEdited && (
         <ContentField label={mainLabel} value={displayValue(value)}>
-          {isYour && (
+          {isYour && !forbidEdit && (
             <>
               <Button
                 size="small"
@@ -93,18 +106,9 @@ function AboutFieldWrapper({
               >
                 {isAddable ? "Add" : "Edit"}
               </Button>
-              <Select
-                size="small"
-                className="bg-primary-500"
-                value={privacy}
-                setValue={(v) => setPrivacy(v as "public" | "private")}
-              >
-                <Option value="public">Public</Option>
-                <Option value="friends">Friends</Option>
-                <Option value="private">Hidden</Option>
-              </Select>
             </>
           )}
+          {withPrivacy && isYour ? <PrivacySelect /> : undefined}
         </ContentField>
       )}
 

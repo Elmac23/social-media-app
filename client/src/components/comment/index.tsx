@@ -21,6 +21,7 @@ import DeleteCommentButton from "./DeleteCommentButton";
 import EditComment from "./EditComment";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
 import { TextToLinksParser } from "@/lib/TextToLinksParser";
+import JSONDebug from "../JSONDebug";
 
 type CommentProps = React.PropsWithChildren & {
   comment: AppComment;
@@ -38,8 +39,7 @@ function Comment({ comment }: CommentProps) {
   const { value: answerVisible, toggle: toggleAnswerVisible } =
     useToggle(false);
 
-  const { setSelectedCommentId, selectedCommentId, postId } =
-    useCommentContext();
+  const { setSelectedCommentId, selectedCommentId } = useCommentContext();
 
   const {
     data: subComments,
@@ -101,7 +101,7 @@ function Comment({ comment }: CommentProps) {
             <div className="flex justify-between grow">
               <Typography size="sm" color="muted">
                 @{author.login}
-              </Typography>
+              </Typography>{" "}
               <Typography size="sm" color="muted">
                 {new Date(comment.createdAt).toLocaleDateString()}
               </Typography>
@@ -120,7 +120,7 @@ function Comment({ comment }: CommentProps) {
             <LikeCommentButton
               isLiked={comment.isLikedByMe}
               likeCount={comment.likesCount}
-              commentId={comment.id}
+              comment={comment}
             />
             <Button
               variant="link"
@@ -144,7 +144,10 @@ function Comment({ comment }: CommentProps) {
         {answerVisible && (
           <>
             {selectedCommentId === comment.id && (
-              <AddComment parentCommentId={comment.id} postId={postId} />
+              <AddComment
+                parentCommentId={comment.id}
+                parentCommentAuthorId={comment.authorId}
+              />
             )}
             {subCommentsLoading && (
               <Typography size="sm">Loading...</Typography>

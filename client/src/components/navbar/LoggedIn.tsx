@@ -1,7 +1,7 @@
 import React from "react";
 import NavLink from "./NavLink";
 import Avatar from "../ui/Avatar";
-import { User } from "@/types/user";
+import { UserWithToken } from "@/types/user";
 import Dropdown from "../ui/dropdown";
 import DropdownTrigger from "../ui/dropdown/DropdownTrigger";
 import DropdownBody from "../ui/dropdown/DropdownBody";
@@ -15,14 +15,17 @@ import {
   MdSettings,
 } from "react-icons/md";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
+import Notifications from "../notifications";
+import { getUserNotifications } from "@/api/notifications";
 
 export type LoggedInProps = {
-  user: User;
+  user: UserWithToken;
 };
 
-function LoggedIn({ user }: LoggedInProps) {
+async function LoggedIn({ user }: LoggedInProps) {
   const avatarUrl = getAvatarUrl(user.avatarUrl);
   const displayedName = `${user.name} ${user.lastname}`;
+  const userNotifications = await getUserNotifications(user.accessToken);
   return (
     <>
       <li>
@@ -31,10 +34,11 @@ function LoggedIn({ user }: LoggedInProps) {
         </NavLink>
       </li>
       <li>
-        <NavLink icon={<MdChat />} href="/">
+        <NavLink icon={<MdChat />} href="/chat">
           Chat
         </NavLink>
       </li>
+      <Notifications initialNotifications={userNotifications.data} />
       <Dropdown>
         <DropdownTrigger>
           <Button variant="ghost" className="flex items-center gap-2">

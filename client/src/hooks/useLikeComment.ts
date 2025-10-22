@@ -3,19 +3,23 @@ import { useAuth } from "@/components/AuthProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useToggle } from "./useToggle";
+import { useSocket } from "@/components/SocketProvider";
+import { Comment } from "@/types/comment";
 
 type UseLikePostProps = {
   likeCount: number;
   isLiked?: boolean;
-  commentId: string;
+  comment: Comment;
 };
 
 export function useLikeComment({
-  commentId,
+  comment,
   likeCount,
   isLiked,
 }: UseLikePostProps) {
+  const commentId = comment.id;
   const { accessToken } = useAuth();
+  const { socket } = useSocket();
   const { value, setFalse, setTrue } = useToggle(isLiked || false);
   const [newLikeCount, setNewLikeCount] = useState(likeCount);
   const { mutate: likeCommentMutation } = useMutation({
@@ -23,6 +27,10 @@ export function useLikeComment({
     onSuccess: () => {
       setTrue();
       setNewLikeCount((count) => count + 1);
+      socket?.emit("like-comment", {
+        userId: comment.authorId,
+        entityId: comment.id,
+      });
     },
     onError: () => {
       setFalse();

@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { useToggle } from "./useToggle";
 
-export function useFocus() {
-  const { value, setTrue, setFalse } = useToggle(true);
+export function useFocus(el?: HTMLElement | null) {
+  const { value, setTrue, setFalse } = useToggle(false);
   useEffect(() => {
-    window.addEventListener("focus", setTrue);
-    window.addEventListener("blur", setFalse);
+    if (!el) return;
+    el.addEventListener("focus", setTrue);
+    el.addEventListener("blur", setFalse);
     return () => {
-      window.removeEventListener("focus", setTrue);
-      window.removeEventListener("blur", setFalse);
+      el.removeEventListener("focus", setTrue);
+      el.removeEventListener("blur", setFalse);
     };
-  }, [setTrue, setFalse]);
+  }, [setTrue, setFalse, el]);
 
   return value;
 }

@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { password, ...userData } = registerDto;
+    const { password, deviceId, ...userData } = registerDto;
     const saltRounds = this.configService.get<number>('PASSWORD_SALT', 10);
     const salt = await bcrypt.genSalt(Number(saltRounds));
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -26,6 +26,13 @@ export class AuthService {
           hashedPassword,
           userData: {
             create: {},
+          },
+          privacy: { create: {} },
+          loginSessions: {
+            create: {
+              isVerified: true,
+              deviceId,
+            },
           },
         },
       }),
@@ -65,16 +72,37 @@ export class AuthService {
     return userData;
   }
 
+  async confirmLoginSession(deviceId: string) {
+    const session = await this.prismaService.loginSession.findUnique({
+      where: { id: deviceId },
+    });
+    if (!session) throw new UnauthorizedException('Session not found');
+    await this.prismaService.loginSession.update({
+      where: { id: deviceId },
+      data: { isVerified: true },
+    });
+    return { message: 'Session confirmed' };
+  }
+
   async login({
     loginOrEmail,
     password,
+    deviceId,
   }: {
     loginOrEmail: string;
     password: string;
+    deviceId: string;
   }) {
     const user = await this.prismaService.user.findFirst({
       where: {
         OR: [{ login: loginOrEmail }, { email: loginOrEmail }],
+      },
+      include: {
+        loginSessions: {
+          where: {
+            deviceId: deviceId,
+          },
+        },
       },
     });
 
@@ -86,6 +114,26 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
 
     const { createdAt, hashedPassword, updatedAt, ...payload } = user;
+
+    if (user.loginSessions.length === 0) {
+      await this.prismaService.loginSession.create({
+        data: {
+          userId: user.id,
+          deviceId,
+          isVerified: true, // DEV ONLY
+        },
+      });
+
+      throw new UnauthorizedException(
+        'New device detected. Please verify your login.',
+      );
+    }
+
+    if (!user.loginSessions[0].isVerified) {
+      throw new UnauthorizedException(
+        'Device not verified. Please confirm your login session.',
+      );
+    }
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '30s' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });

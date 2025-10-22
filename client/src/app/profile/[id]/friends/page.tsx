@@ -13,6 +13,7 @@ import React from "react";
 import UsersList from "./UsersList";
 import { getFollowers } from "@/api/followers";
 import JSONDebug from "@/components/JSONDebug";
+import UsersListWithSearch from "./UsersListWithSearch";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -36,6 +37,8 @@ async function FriendsPage({ params }: Props) {
 
   if (!user) return notFound();
 
+  const isSelf = loggedInUser.id === id;
+
   return (
     <div>
       <Typography as="h3" className="font-bold mb-4" size="xl">
@@ -45,17 +48,29 @@ async function FriendsPage({ params }: Props) {
       <VerticalTabs initial="friends">
         <VerticalTabsButtons>
           <VerticalTabsButton tabName="friends">Friends</VerticalTabsButton>
+          {isSelf && (
+            <VerticalTabsButton tabName="invites">Invites</VerticalTabsButton>
+          )}
           <VerticalTabsButton tabName="followers">Followers</VerticalTabsButton>
           <VerticalTabsButton tabName="following">Following</VerticalTabsButton>
         </VerticalTabsButtons>
         <VerticalTabsSection>
           <Tab tabName="friends">
-            <UsersList
+            <UsersListWithSearch
               users={userFriends.data}
               receivedInvites={receivedInvites}
               sentInvites={sentInvites}
             />
           </Tab>
+          {isSelf && (
+            <Tab tabName="invites">
+              <UsersList
+                users={receivedInvites.map((invite) => invite.sender)}
+                receivedInvites={receivedInvites}
+                sentInvites={sentInvites}
+              />
+            </Tab>
+          )}
           <Tab tabName="followers">
             <UsersList
               users={followers}

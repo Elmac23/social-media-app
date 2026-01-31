@@ -2,13 +2,14 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { GroupChatMemberGuard } from 'src/guards/group-chat-member.guard';
 import { QueryPipe } from 'src/pipes/query.pipe';
-import { Query as QueryType } from 'src/types/query';
+import { QueryType } from 'src/types/query';
+import { AuthenticationGuard } from 'src/guards/authentication';
 
 @Controller('group-chats/:groupChatId/messages')
 export class GroupChatMessagesController {
   constructor(private messagesService: MessagesService) {}
 
-  @UseGuards(GroupChatMemberGuard)
+  @UseGuards(AuthenticationGuard, GroupChatMemberGuard)
   @Get()
   async getGroupChatMessages(
     @Param('groupChatId') groupChatId: string,

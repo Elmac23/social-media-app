@@ -39,10 +39,10 @@ function SearchUsers() {
   );
   const isFocus = useFocus(inputRef.current);
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = (isLink: boolean) => (e?: React.FormEvent) => {
     e?.preventDefault();
     if (input.trim() === "") return;
-    if (data && data.data.length === 1) {
+    if (data && (data.data.length === 1 || isLink)) {
       dispatch(
         addSearch({
           content: data.data[0].name + " " + data.data[0].lastname,
@@ -51,6 +51,7 @@ function SearchUsers() {
           type: "USER",
         })
       );
+      setInput("");
       return router.push(`/profile/${data?.data[0].id}`);
     }
     dispatch(
@@ -66,7 +67,7 @@ function SearchUsers() {
   const isEmptyInput = input.trim() === "";
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(false)}>
       <Dropdown isOpen={isFocus}>
         <DropdownTrigger>
           <Input
@@ -84,7 +85,7 @@ function SearchUsers() {
             data?.data.slice(0, 5).map((user) => (
               <SearchElement
                 key={user.id}
-                onClick={handleSubmit}
+                onClick={handleSubmit(true)}
                 search={{
                   content: user.name + " " + user.lastname,
                   avatarUrl: user.avatarUrl,

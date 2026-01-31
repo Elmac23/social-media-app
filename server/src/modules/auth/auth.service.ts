@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './auth.schema';
 import { ConfigService } from '@nestjs/config';
 import { tryOrUndefined } from 'src/utils/try-or-undefined';
+import { capitalizeFirstLetter } from 'src/utils/capitalize';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { password, deviceId, ...userData } = registerDto;
+    const { password, deviceId, name, lastname, ...userData } = registerDto;
     const saltRounds = this.configService.get<number>('PASSWORD_SALT', 10);
     const salt = await bcrypt.genSalt(Number(saltRounds));
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -23,6 +24,8 @@ export class AuthService {
       this.prismaService.user.create({
         data: {
           ...userData,
+          name: capitalizeFirstLetter(name),
+          lastname: capitalizeFirstLetter(lastname),
           hashedPassword,
           userData: {
             create: {},

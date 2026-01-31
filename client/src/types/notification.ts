@@ -27,9 +27,16 @@ export type FriendNotification = FlatNotification & {
   profileId: string;
 };
 
+export type GroupChatNotification = FlatNotification & {
+  notificationType: "NEW_MESSAGE" | "GROUPCHAT_ADDED" | "GROUPCHAT_REMOVED";
+  groupChatId: string;
+  entityName?: string;
+};
+
 export type Notification =
   | PostNotificationType
   | CommentNotification
+  | GroupChatNotification
   | FriendNotification;
 
 export type NotificationType = Notification["notificationType"];

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateGroupChatDto } from './group-chats.schema';
-import { Query } from 'src/types/query';
+import { CreateGroupChatDto, UpdateGroupChatDto } from './group-chats.schema';
+import { QueryType } from 'src/types/query';
 
 @Injectable()
 export class GroupChatsService {
@@ -24,8 +24,17 @@ export class GroupChatsService {
     return groupChat;
   }
 
+  async updateGroupChat(groupChatId: string, data: UpdateGroupChatDto) {
+    return this.prismaService.groupChat.update({
+      where: {
+        id: groupChatId,
+      },
+      data,
+    });
+  }
+
   async addMember(groupChatId: string, userId: string) {
-    return this.prismaService.userInGroupChat.create({
+    return await this.prismaService.userInGroupChat.create({
       data: {
         groupChatId,
         userId,
@@ -33,8 +42,8 @@ export class GroupChatsService {
     });
   }
 
-  async getUsersGroupChats(userId: string, query?: Query) {
-    const { limit, page, search } = query;
+  async getUsersGroupChats(userId: string, query?: QueryType) {
+    const { limit, page, search } = query || { limit: 10, page: 1, search: '' };
 
     const searchQuery = search
       ? {
@@ -85,6 +94,9 @@ export class GroupChatsService {
     const result = await this.prismaService.groupChat.findMany({
       skip: (page - 1) * limit,
       take: limit,
+      orderBy: {
+        lastMessageAt: 'desc',
+      },
       include: {
         usersInGroupChat: {
           include: {
@@ -94,6 +106,15 @@ export class GroupChatsService {
               },
             },
           },
+        },
+        messages: {
+          include: {
+            sender: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
         },
       },
       where,
@@ -123,11 +144,11 @@ export class GroupChatsService {
         },
       });
 
-    return { groupData, members: usersInGroupChat.map((u) => u.user) };
+    return { ...groupData, members: usersInGroupChat.map((u) => u.user) };
   }
 
   async removeMember(groupChatId: string, userId: string) {
-    return this.prismaService.userInGroupChat.deleteMany({
+    await this.prismaService.userInGroupChat.deleteMany({
       where: {
         groupChatId,
         userId,

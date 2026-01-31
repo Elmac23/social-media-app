@@ -19,6 +19,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { NotificationType } from 'generated/prisma';
 import { CommentsService } from '../comments/comments.service';
+import {
+  CreateMessageDto,
+  createMessageSchema,
+} from '../messages/messages.schema';
 
 type PostNotificationPayload = {
   senderId: string;
@@ -37,6 +41,19 @@ type CommentNotificationPayload = {
 type InviteNotificationPayload = {
   senderId: string;
   userId: string;
+  type: NotificationType;
+};
+
+type MessageNotificationPayload = {
+  senderId: string;
+  groupChatId: string;
+  type: NotificationType;
+};
+
+type GroupChatNotificationPayload = {
+  senderId: string;
+  groupChatId: string;
+  recipentId: string;
   type: NotificationType;
 };
 
@@ -85,6 +102,96 @@ export class NotificationsGateway {
     const sender = await this.usersService.getUserByIdOrLogin(senderId);
 
     this.server.to(userId).emit('notification', { ...response, sender });
+  }
+
+  async handleMessageNotification({
+    senderId,
+    type,
+    groupChatId,
+  }: MessageNotificationPayload) {
+    let redirectUrl = '';
+
+    switch (type) {
+      case 'NEW_MESSAGE':
+        redirectUrl = `/chat/${groupChatId}`;
+        break;
+
+      default:
+        redirectUrl = `/`;
+    }
+
+    const groupChat = await this.prismaService.groupChat.findUnique({
+      where: { id: groupChatId },
+      include: { usersInGroupChat: true },
+    });
+    if (!groupChat) return;
+
+    groupChat.usersInGroupChat.forEach(async (member) => {
+      if (member.userId === senderId) return;
+      const response = await this.notificationService.createNotification({
+        entityId: groupChatId,
+        notificationType: type,
+        userId: member.userId,
+        entityName: groupChat.name,
+        redirectUrl,
+        senderId,
+      });
+
+      if (!response) return;
+
+      const sender = await this.usersService.getUserByIdOrLogin(senderId);
+
+      this.server.to(member.userId).emit('notification', {
+        ...response,
+        sender,
+        entityName: groupChat.name,
+        groupChatName: groupChat.name,
+      });
+    });
+  }
+
+  async handleGroupchatMembership({
+    groupChatId,
+    recipentId,
+    senderId,
+    type,
+  }: GroupChatNotificationPayload) {
+    let redirectUrl = '';
+
+    switch (type) {
+      case 'GROUPCHAT_ADDED':
+        redirectUrl = `/chat/${groupChatId}`;
+        break;
+
+      default:
+        redirectUrl = `/`;
+    }
+
+    const groupChat = await this.prismaService.groupChat.findUnique({
+      where: { id: groupChatId },
+      include: { usersInGroupChat: true },
+    });
+    if (!groupChat) return;
+
+    if (recipentId === senderId) return;
+    const response = await this.notificationService.createNotification({
+      entityId: groupChatId,
+      notificationType: type,
+      userId: recipentId,
+      entityName: groupChat.name,
+      redirectUrl,
+      senderId,
+    });
+
+    if (!response) return;
+
+    const sender = await this.usersService.getUserByIdOrLogin(senderId);
+
+    this.server.to(recipentId).emit('notification', {
+      ...response,
+      sender,
+      groupChatName: groupChat.name,
+    });
   }
 
   async handlePostNotification({
@@ -192,6 +299,50 @@ export class NotificationsGateway {
       postId: data.entityId,
       userId: data.userId,
       type: 'POST_COMMENT',
+    });
+  }
+
+  @SubscribeMessage('send-message')
+  @UseGuards(WebSocketAuthenticationGuard)
+  async handleNewMessage(
+    @SocketClientId() userId: string,
+    @MessageBody(new ZodValidationPipe(createMessageSchema))
+    data: CreateMessageDto,
+  ) {
+    this.handleMessageNotification({
+      senderId: userId,
+      groupChatId: data.groupChatId,
+      type: 'NEW_MESSAGE',
+    });
+  }
+
+  @SubscribeMessage('groupchat-add')
+  @UseGuards(WebSocketAuthenticationGuard)
+  async handleAddedToGroupChat(
+    @SocketClientId() userId: string,
+    @MessageBody(new ZodValidationPipe(notificationCreateSchema))
+    data: NotificationDto,
+  ) {
+    this.handleGroupchatMembership({
+      senderId: userId,
+      recipentId: data.userId,
+      groupChatId: data.entityId,
+      type: 'GROUPCHAT_ADDED',
+    });
+  }
+
+  @SubscribeMessage('groupchat-remove')
+  @UseGuards(WebSocketAuthenticationGuard)
+  async handleRemovedFromGroupChat(
+    @SocketClientId() userId: string,
+    @MessageBody(new ZodValidationPipe(notificationCreateSchema))
+    data: NotificationDto,
+  ) {
+    this.handleGroupchatMembership({
+      senderId: userId,
+      recipentId: data.userId,
+      groupChatId: data.entityId,
+      type: 'GROUPCHAT_REMOVED',
     });
   }
 

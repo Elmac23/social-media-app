@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { QueryType } from 'src/types/query';
 
 @Injectable()
 export class FriendsService {
@@ -17,26 +18,43 @@ export class FriendsService {
     return {};
   }
 
-  async getFriends(userId: string) {
+  async getFriends(
+    userId: string,
+    query: QueryType = { page: 1, limit: 10, search: '' },
+  ) {
     const friends = await this.prismaService.user.findMany({
       where: {
-        AND: {
-          id: { not: userId },
-          OR: [
-            {
-              friendRelations1: {
-                some: { OR: [{ userId1: userId }, { userId2: userId }] },
+        AND: [
+          {
+            OR: [
+              {
+                name: {
+                  contains: query.search,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              friendRelations2: {
-                some: { OR: [{ userId1: userId }, { userId2: userId }] },
+            ],
+          },
+          { id: { not: userId } },
+          {
+            OR: [
+              {
+                friendRelations1: {
+                  some: { OR: [{ userId1: userId }, { userId2: userId }] },
+                },
               },
-            },
-          ],
-        },
+              {
+                friendRelations2: {
+                  some: { OR: [{ userId1: userId }, { userId2: userId }] },
+                },
+              },
+            ],
+          },
+        ],
       },
       omit: { hashedPassword: true },
+      skip: (query.page - 1) * query.limit,
+      take: query.limit,
     });
 
     return friends;

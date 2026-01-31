@@ -4,13 +4,15 @@ import React from "react";
 import { User } from "@/types/user";
 import { getUser } from "@/lib/getUser";
 import ProfileAvatar from "./ProfileAvatar";
-import Button from "@/components/ui/Button";
 import FollowButton from "../../components/buttons/FollowButton";
 import { getInvites, getUserFriends } from "@/api/friends";
 import AddFriendButton from "../../components/buttons/AddFriendButton";
 import AcceptFriendButton from "../../components/buttons/AcceptFriendButton";
 import DeclineInviteButton from "../../components/buttons/DeclineInviteButton";
 import RemoveFriendButton from "@/components/buttons/RemoveFriendButton";
+import ButtonLink from "@/components/ui/ButtonLink";
+import MessageButton from "@/components/buttons/MessageButton";
+import JSONDebug from "@/components/JSONDebug";
 
 type ProfileHeaderProps = {
   user: User;
@@ -86,7 +88,7 @@ async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
               Invite Sent
             </DeclineInviteButton>
           )}
-          <Button>Message</Button>
+          <MessageButton chatId={user.chatId} recipentId={user.id} />
           <FollowButton
             initialIsFollowing={user.isFollowed}
             userId={user.id}

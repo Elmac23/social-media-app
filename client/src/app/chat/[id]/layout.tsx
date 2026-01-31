@@ -18,9 +18,9 @@ async function ChatLayout({ children }: ChatLayoutProps) {
         Chats
       </Typography>
       <Card className="flex divide-black/50 gap-4 divide-x h-175">
-        <GroupChatList groupChats={groupChats.data} />
+        <GroupChatList groupChats={groupChats.data}></GroupChatList>
 
-        <div className="grow p-4">{children}</div>
+        {children}
       </Card>
     </main>
   );

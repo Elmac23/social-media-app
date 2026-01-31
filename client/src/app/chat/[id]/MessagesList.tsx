@@ -15,16 +15,24 @@ import { MdSend } from "react-icons/md";
 import MessageComponent from "./Message";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getGroupChatsMessages } from "@/api/messages";
-import Button from "@/components/ui/Button";
 import { motion, useInView } from "motion/react";
 import { useSocket } from "@/components/SocketProvider";
+import { queryClient } from "@/components/QueryProvider";
+import Typography from "@/components/ui/Typography";
+import { User } from "@/types/user";
+import { useRouter } from "next/navigation";
 
 type MessagesListProps = {
   initialMessages: Message[];
   groupChatId: string;
+  children?: React.ReactNode;
 };
 
-function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
+function MessagesList({
+  initialMessages,
+  groupChatId,
+  children,
+}: MessagesListProps) {
   const { user } = useAuth();
   const { socket } = useSocket();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -32,7 +40,10 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
   const previousHeightRef = useRef<number>(0);
   const loaderRef = useRef<HTMLDivElement>(null);
 
+  const [writtingList, setWrittingList] = useState<User[]>([]);
+
   const isInView = useInView(loaderRef);
+  const formInputRef = useRef<HTMLInputElement>(null);
 
   const { data, fetchNextPage } = useInfiniteQuery<Message[], Error>({
     queryKey: ["messages", groupChatId],
@@ -46,7 +57,7 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
         {
           limit: 10,
           page: pageParam as number,
-        }
+        },
       );
       return res.data;
     },
@@ -87,7 +98,7 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
     }
   }, [data?.pages]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const el = scrollAreaRef.current;
     if (!el) return;
     const id = requestAnimationFrame(() => {
@@ -96,10 +107,16 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
     return () => cancelAnimationFrame(id);
   }, [currentMessages]);
 
+  const router = useRouter();
+
   useEffect(() => {
     if (!socket) return;
 
     function handleNewMessage(message: Message) {
+      queryClient.refetchQueries({
+        queryKey: ["group-chats"],
+      });
+      if (message.groupChatId !== groupChatId) return;
       setCurrentMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -108,12 +125,47 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
         },
       ]);
     }
-    socket.on("new-message", handleNewMessage);
-    socket.emit("join-room", { groupChatId });
 
+    function handleStartWritting({
+      user,
+      groupChatId: socketGroupChatId,
+    }: {
+      user: User;
+      groupChatId: string;
+    }) {
+      setWrittingList((prev) => {
+        if (groupChatId !== socketGroupChatId) return prev;
+        if (prev.find((u) => u.id === user.id)) return prev;
+        return [...prev, user];
+      });
+    }
+
+    function handleStopWritting({ user }: { user: User; groupChatId: string }) {
+      setWrittingList((prev) => prev.filter((u) => u.id !== user.id));
+    }
+
+    function handleRemovedFromChat(chatId: string) {
+      if (chatId === groupChatId) router.push("/chat");
+    }
+    socket.on("user-writting", handleStartWritting);
+    socket.on("user-stopped-writting", handleStopWritting);
+    socket.on("remove-from-groupchat", handleRemovedFromChat);
+    socket.emit("user-stopped-writting", {
+      groupChatId,
+      userId: user?.id,
+    });
+    socket.on("new-message", handleNewMessage);
+    socket.emit("join-all-rooms");
     return () => {
       socket.off("new-message", handleNewMessage);
-      socket.emit("exit-room", { groupChatId });
+      socket.off("user-writting", handleStartWritting);
+      socket.off("user-stopped-writting", handleStopWritting);
+      socket.off("remove-from-groupchat", handleRemovedFromChat);
+      socket.emit("exit-all-rooms");
+      socket.emit("user-stopped-writting", {
+        groupChatId,
+        userId: user?.id,
+      });
     };
   }, [socket, groupChatId]);
 
@@ -139,12 +191,15 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
         createdAt: new Date().toISOString(),
       },
     ]);
+
+    formInputRef.current?.blur();
     setNewMessage("");
   };
 
   return (
-    <div className="grid h-full">
-      <div className="overflow-auto mb-4" ref={scrollAreaRef}>
+    <div className="flex flex-col h-full">
+      {children}
+      <div className="flex-1 overflow-auto" ref={scrollAreaRef}>
         <motion.div ref={loaderRef}></motion.div>
         <ul className="pr-4 space-y-4">
           {data?.pages
@@ -158,7 +213,7 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
                     message={message}
                     isYourMessage={message.senderId === user?.id}
                   />
-                ))
+                )),
             )}
           {currentMessages?.map((message) => {
             return (
@@ -171,15 +226,36 @@ function MessagesList({ initialMessages, groupChatId }: MessagesListProps) {
           })}
         </ul>
       </div>
-      <form className="flex h-min self-end" onSubmit={handleSendMessage}>
+      {writtingList.length > 1 && (
+        <Typography className="mt-2 px-4 py-1 rounded-lg bg-background">{`${writtingList[0].name} ${
+          writtingList[0].lastname
+        } and ${writtingList.length - 1} are writting...`}</Typography>
+      )}
+      {writtingList.length === 1 && (
+        <Typography className="mt-2 px-4 py-1 rounded-lg bg-background">{`${writtingList[0].name} ${writtingList[0].lastname} is writting...`}</Typography>
+      )}
+
+      <form className="flex h-min mt-2" onSubmit={handleSendMessage}>
         <Input
+          ref={formInputRef}
           type="text"
           placeholder="Type your message..."
           fullWidth
           value={newMessage}
+          onFocus={() =>
+            socket?.emit("user-writting", {
+              groupChatId,
+              userId: user?.id,
+            })
+          }
+          onBlur={() =>
+            socket?.emit("user-stopped-writting", {
+              groupChatId,
+              userId: user?.id,
+            })
+          }
           onInput={(e) => setNewMessage(e.currentTarget.value)}
         />
-
         <IconButton
           type="submit"
           className="rounded-none ring-2 ring-primary-500 rounded-r-sm"

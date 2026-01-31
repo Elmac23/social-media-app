@@ -60,7 +60,7 @@ function SelectArrow() {
   const { isOpen } = useDropdown();
   return (
     <MotionArrow
-      className="absolute right-1 top-1/2 bottom-0  text-2xl -translate-y-1/2"
+      className="absolute right-1 top-1/2 bottom-0 text-primary-foreground text-2xl -translate-y-1/2"
       animate={{
         rotateZ: isOpen ? 180 : 0,
       }}

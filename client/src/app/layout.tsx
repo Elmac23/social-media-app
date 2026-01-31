@@ -8,7 +8,6 @@ import QueryProvider from "@/components/QueryProvider";
 import { getUser } from "@/lib/getUser";
 import Footer from "@/components/footer";
 import SocketProvider from "@/components/SocketProvider";
-import NotificationsList from "@/components/notifications/NotificationsList";
 
 const roboto = Roboto({
   subsets: ["latin"],

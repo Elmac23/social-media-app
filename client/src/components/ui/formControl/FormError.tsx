@@ -4,7 +4,7 @@ import { useFormControl } from ".";
 
 function FormError({ children }: React.PropsWithChildren) {
   const { error } = useFormControl();
-  if (!error) return null;
+  if (!error && !children) return null;
   return (
     <Typography size="sm" className="text-red-500 mt-2">
       {error}

@@ -44,13 +44,25 @@ export class InvitesService {
       },
     });
 
-    await this.groupChatsService.createGroupChat({
-      name: null,
-      avatarUrl: null,
-      description: null,
-      memberIds: [senderId, recipentId],
-      type: 'DIRECT',
+    const existingChat = await this.prismaService.groupChat.findFirst({
+      where: {
+        type: 'DIRECT',
+        usersInGroupChat: {
+          every: {
+            OR: [{ userId: senderId }, { userId: recipentId }],
+          },
+        },
+      },
     });
+
+    if (!existingChat) {
+      await this.groupChatsService.createGroupChat({
+        name: null,
+        description: null,
+        memberIds: [senderId, recipentId],
+        type: 'DIRECT',
+      });
+    }
 
     try {
       await this.userFollowersService.follow(recipentId, senderId);

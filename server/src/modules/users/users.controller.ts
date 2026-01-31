@@ -25,7 +25,7 @@ import { SelfOrAdminGuard } from 'src/guards/self-or-admin';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserPrivacyInterceptor } from 'src/interceptors/user-privacy';
 import { QueryPipe } from 'src/pipes/query.pipe';
-import { Query as QueryType } from 'src/types/query';
+import { QueryType } from 'src/types/query';
 
 @Controller('users')
 export class UsersController {

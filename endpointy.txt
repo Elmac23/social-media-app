@@ -1,0 +1,50 @@
+endpointy
+
+POST: /auth/login
+POST: /auth/register
+DELETE: /auth/logout
+
+GET: /users/
+GET: /users/invitable
+GET: /users/{id}
+POST: /users
+PATCH: /users/{id}
+DELETE: /users/{id}
+
+GET: /users/{id}/friends
+DELETE: /users/{id}/friends/{friendId}
+
+GET: /users/{id}/invites
+GET: /users/{id}/invites/received
+GET: /users/{id}/invites/sent
+
+GET: /invites
+POST: /invites
+DELETE:/invites/{inviteId}
+POST: /invites/{id}/accept
+
+GET: /posts/
+GET: /posts/{id}
+POST: /posts
+PATCH: /posts/{id}
+DELETE: /posts/{id}
+
+GET: users/{id}/posts
+
+GET: /posts/{id}/likes
+POST: /posts/{id}/likes
+DELETE: /posts/{id}/likes
+
+GET: /comments
+GET: /comments/{id}
+GET: /comments/{id}/children
+PATCH: /comments/{id}
+DELETE: /comments/{id}
+POST: /comments
+
+GET: /comments/{id}/likes
+POST: /comments/{id}/likes
+DELETE: /comments/{id}/likes
+
+
+GET: /posts/{id}/comments

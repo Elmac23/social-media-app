@@ -1,6 +1,8 @@
 import { ReceivedFriendIvite, SentFriendInvite } from "@/types/friendRequest";
 import { api } from ".";
 import { User } from "@/types/user";
+import { Query } from "@/types/query";
+import { withQuery } from "@/lib/withQuery";
 
 export const inviteFriend = (token: string, recipentId: string) => {
   return api.post(
@@ -10,7 +12,7 @@ export const inviteFriend = (token: string, recipentId: string) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
 };
 
@@ -23,8 +25,12 @@ export const getInvites = (userId: string, token: string) => {
   });
 };
 
-export const getUserFriends = (userId: string, token: string) => {
-  return api.get<User[]>(`users/${userId}/friends`, {
+export const getUserFriends = (
+  userId: string,
+  token: string,
+  query?: Query,
+) => {
+  return api.get<User[]>(withQuery(`users/${userId}/friends`, query), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -43,7 +49,7 @@ export const acceptFriend = (inviteId: string, token: string) => {
     {},
     {
       headers: { Authorization: `Bearer ${token}` },
-    }
+    },
   );
 };
 
@@ -56,7 +62,7 @@ export const declineInvite = (token: string, inviteId: string) => {
 export const removeFriend = (
   userId: string,
   friendId: string,
-  token: string
+  token: string,
 ) => {
   return api.delete(`/users/${userId}/friends/${friendId}`, {
     headers: { Authorization: `Bearer ${token}` },

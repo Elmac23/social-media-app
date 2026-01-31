@@ -7,6 +7,9 @@ const typographyVariants = cva("font-sans", {
     bold: {
       true: "font-bold",
     },
+    center: {
+      true: "text-center",
+    },
     size: {
       sm: "text-sm",
       md: "text-base",
@@ -15,7 +18,7 @@ const typographyVariants = cva("font-sans", {
       "2xl": "text-2xl",
     },
     color: {
-      primary: "text-primary-foreground",
+      primary: "text-foreground",
       muted: "text-muted",
       danger: "text-red-500",
       success: "text-green-500",
@@ -36,6 +39,7 @@ export type TypographyProps = {
 function Typography({
   size,
   color,
+  center,
   bold,
   as = "p",
   className,
@@ -44,7 +48,10 @@ function Typography({
   const Component = as;
   return (
     <Component
-      className={cn(typographyVariants({ size, color, bold }), className)}
+      className={cn(
+        typographyVariants({ size, color, bold, center }),
+        className,
+      )}
       {...props}
     />
   );

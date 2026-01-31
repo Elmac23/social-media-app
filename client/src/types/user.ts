@@ -8,6 +8,7 @@ export type User = {
   dateOfBirth?: string;
   bio?: string;
   isFollowed?: boolean;
+  chatId?: string;
 };
 
 export type UserData = {

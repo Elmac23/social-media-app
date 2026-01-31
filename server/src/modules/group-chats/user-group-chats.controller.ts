@@ -2,7 +2,7 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { GroupChatsService } from './group-chats.service';
 import { AuthenticationGuard } from 'src/guards/authentication';
 import { UserId } from 'src/decorators/user-id';
-import { Query as QueryType } from 'src/types/query';
+import { QueryType } from 'src/types/query';
 import { QueryPipe } from 'src/pipes/query.pipe';
 
 @Controller('users/:userId/group-chats')

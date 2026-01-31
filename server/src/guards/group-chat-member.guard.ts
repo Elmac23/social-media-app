@@ -8,7 +8,15 @@ export class GroupChatMemberGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const userId = request.userId;
-    const groupChatId = request.params.groupChatId;
+    const groupChatId = request.params.groupChatId || request.params.id;
+
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    const allMemberships = await this.prismaService.userInGroupChat.findMany();
 
     const membership = await this.prismaService.userInGroupChat.findFirst({
       where: {
@@ -16,6 +24,7 @@ export class GroupChatMemberGuard implements CanActivate {
         userId: userId,
       },
     });
+
     return !!membership;
   }
 }

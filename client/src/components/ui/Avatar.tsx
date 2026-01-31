@@ -3,13 +3,18 @@ import Image from "next/image";
 import { cn } from "@/lib/cn";
 
 export type AvatarProps = {
-  url: string;
+  url?: string;
   alt: string;
   size?: "sm" | "md" | "lg";
   className?: string;
 };
 
-function Avatar({ className, url, alt, size = "md" }: AvatarProps) {
+function Avatar({
+  className,
+  url = "https://picsum.photos/200",
+  alt,
+  size = "md",
+}: AvatarProps) {
   return (
     <Image
       src={url}

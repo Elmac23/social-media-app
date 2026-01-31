@@ -46,7 +46,9 @@ function Message({ message, isYourMessage }: MessageProps) {
           <div
             className={cn(
               "py-2 px-4 rounded-lg w-max",
-              isYourMessage ? "bg-background ml-auto" : "bg-primary-500"
+              isYourMessage
+                ? "bg-background ml-auto"
+                : "bg-primary-500 text-primary-foreground"
             )}
           >
             {message.content}

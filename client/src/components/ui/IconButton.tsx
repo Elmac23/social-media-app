@@ -18,7 +18,7 @@ const buttonVariants = cva(
         outline:
           "border border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-primary-foreground transition-colors",
         ghost:
-          "text-primary-foreground hover:text-primary hover:bg-background/90 hover:text-primary-500",
+          "text-foreground hover:text-primary hover:bg-background/90 hover:text-primary-500",
       },
       size: {
         small: "text-xs",

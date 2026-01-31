@@ -32,6 +32,16 @@ function Notification({ notification, onDelete }: NotificationProps) {
     <div className="flex items-center justify-between px-4 py-2 hover:bg-background/50 rounded-lg">
       <Link
         href={notification.redirectUrl}
+        onClick={() => {
+          switch (notification.notificationType) {
+            case "FRIEND_REQUEST":
+            case "FRIEND_REQUEST_ACCEPTED":
+            case "NEW_FOLLOWER":
+              break;
+            default:
+              mutate();
+          }
+        }}
         className="flex items-center gap-2 flex-1"
       >
         <Avatar
@@ -70,11 +80,19 @@ function getNotificationText(notification: Notification) {
     case "POST_COMMENT":
       return `commented on your post`;
     case "POST_LIKE":
-      return `liked your post and he also likes pizza pineapple spiderman blah blah blah test`;
+      return `liked your post`;
     case "POST_SHARE":
       return `shared your post`;
     case "NEW_FOLLOWER":
       return `started following you`;
+    case "NEW_MESSAGE":
+      return notification.entityName
+        ? `sent a message to ${notification.entityName}`
+        : `sent you a message`;
+    case "GROUPCHAT_ADDED":
+      return `added you to ${notification.entityName}`;
+    case "GROUPCHAT_REMOVED":
+      return `removed you from ${notification.entityName}`;
     default:
       return "You have a new notification";
   }

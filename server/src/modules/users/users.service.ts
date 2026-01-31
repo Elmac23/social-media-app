@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Prisma } from 'generated/prisma';
-import { Query } from 'src/types/query';
+import { QueryType } from 'src/types/query';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
-  async getUsers({ limit, page, search }: Query) {
+  async getUsers({ limit, page, search }: QueryType) {
     if (search.split(' ').length === 1)
       return await this.prismaService.user.findMany({
         where: {
@@ -142,6 +142,29 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
+    const chat = await this.prismaService.groupChat.findFirst({
+      where: {
+        AND: [
+          { type: 'DIRECT' },
+          {
+            usersInGroupChat: {
+              some: { userId: user.id },
+            },
+          },
+          {
+            usersInGroupChat: {
+              some: { userId: yourId },
+            },
+          },
+        ],
+      },
+    });
+
+    const result = {
+      ...user,
+      chatId: chat ? chat.id : null,
+    };
+
     const followedRelation = await this.prismaService.followedUser.findFirst({
       where: {
         followedId: id,
@@ -151,11 +174,11 @@ export class UsersService {
 
     if (followedRelation) {
       return {
-        ...user,
+        ...result,
         isFollowed: true,
       };
     }
 
-    return user;
+    return result;
   }
 }

@@ -1,7 +1,6 @@
 import AcceptFriendButton from "@/components/buttons/AcceptFriendButton";
 import DeclineInviteButton from "@/components/buttons/DeclineInviteButton";
 import UserMiniProfile from "@/app/friends/UserMiniProfile";
-import { Tab } from "@/components/ui/verticalTabs";
 import { ReceivedFriendIvite, SentFriendInvite } from "@/types/friendRequest";
 import { User } from "@/types/user";
 import React from "react";
@@ -23,10 +22,10 @@ function UsersList({ users, receivedInvites, sentInvites }: UsersListProps) {
         <ul className="grid grid-cols-4 gap-8 items-stretch">
           {users.map((user) => {
             const receivedInvite = receivedInvites.find(
-              (r) => r.sender.id === user.id
+              (r) => r.sender.id === user.id,
             );
             const sentInvite = sentInvites.find(
-              (r) => r.recipent.id === user.id
+              (r) => r.recipent.id === user.id,
             );
 
             return (
@@ -38,7 +37,7 @@ function UsersList({ users, receivedInvites, sentInvites }: UsersListProps) {
                 >
                   {receivedInvite && (
                     <div className="flex gap-2">
-                      <AcceptFriendButton inviteId={receivedInvite.id} />
+                      <AcceptFriendButton invite={receivedInvite} />
                       <DeclineInviteButton variant="ghost" inviteId={user.id}>
                         Decline
                       </DeclineInviteButton>

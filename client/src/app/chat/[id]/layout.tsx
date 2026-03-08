@@ -11,9 +11,9 @@ type ChatLayoutProps = React.PropsWithChildren & {};
 async function ChatLayout({ children }: ChatLayoutProps) {
   const user = await getUser();
   if (!user) redirect("/auth/login");
-  const groupChats = await getUsersGroupChats(user.accessToken, user.id);
+  const groupChats = await getUsersGroupChats(user.id, {}, user.accessToken);
   return (
-    <main className="max-w-7xl mx-auto p-8">
+    <main className="p-8 max-w-[1500px] mx-auto">
       <Typography size="2xl" bold className="mb-4">
         Chats
       </Typography>

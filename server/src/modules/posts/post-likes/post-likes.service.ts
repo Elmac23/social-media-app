@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import getResponse from 'src/utils/getResponse';
 
 @Injectable()
 export class PostLikesService {
   constructor(private prismaService: PrismaService) {}
 
   async getLikes(postId: string) {
-    return this.prismaService.like.findMany({
+    const data = await this.prismaService.like.findMany({
       where: { postId },
       include: {
         user: {
@@ -20,6 +21,10 @@ export class PostLikesService {
         },
       },
     });
+
+    const count = await this.prismaService.like.count({ where: { postId } });
+
+    return getResponse(data, count);
   }
 
   async likePost(postId: string, userId: string) {

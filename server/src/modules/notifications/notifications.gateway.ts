@@ -242,7 +242,7 @@ export class NotificationsGateway {
     type,
     userId,
   }: CommentNotificationPayload) {
-    const comment = await this.commentsService.getComment(commentId);
+    const comment = await this.commentsService.getCommentAsUser(commentId);
     if (!comment) return;
 
     if (comment.authorId === senderId) return;

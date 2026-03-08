@@ -31,9 +31,7 @@ const aboutFieldContext = React.createContext<AboutFieldContext>({
   value: {} as UserEdit,
   privacySettings: {} as UserPrivacy,
   privacyName: "",
-  setValue: (value: UserEdit) => {
-    console.log(value);
-  },
+  setValue: (value: UserEdit) => {},
   mainLabel: "",
 });
 
@@ -78,8 +76,6 @@ function AboutFieldWrapper({
   });
 
   const isAddable = isYour && !displayValue(value);
-
-  console.log(mainLabel, withPrivacy, isYour);
 
   return (
     <aboutFieldContext.Provider

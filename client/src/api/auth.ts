@@ -1,27 +1,37 @@
 import { LoginDto, RegisterDto } from "@/schema/authSchema";
-import { api } from "./index";
+import { api, authApi } from "./index";
+import extractDataFromAxios from "@/lib/extractDataFromAxios";
 
-export const register = (data: RegisterDto) => {
-  return api.post("/auth/register", data);
-};
-export const login = (data: LoginDto) => {
-  console.log("API LOGIN CALL", data);
-  return api.post("/auth/login", data);
+type LoginResponse = {
+  accessToken: string;
 };
 
-export const refresh = (cookies?: string) => {
-  return api.post(
+export const register = async (data: RegisterDto): Promise<LoginResponse> => {
+  return extractDataFromAxios(
+    authApi.post<LoginResponse>("/auth/register", data),
+  );
+};
+
+export const login = async (data: LoginDto): Promise<LoginResponse> => {
+  return extractDataFromAxios(authApi.post<LoginResponse>("/auth/login", data));
+};
+
+// Use authApi to avoid triggering interceptors (prevents infinite loop)
+export const refresh = async (cookies?: string): Promise<LoginResponse> => {
+  const fn = authApi.post<LoginResponse>(
     "/auth/refresh",
     {},
     {
       withCredentials: true,
-      headers: { Cookie: cookies },
-    }
+      headers: cookies ? { Cookie: cookies } : undefined,
+    },
   );
+
+  return extractDataFromAxios(fn);
 };
 
-export const logout = (token: string) => {
-  return api.post("/auth/logout", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const logout = () => {
+  const fn = api.post("/auth/logout");
+
+  return extractDataFromAxios(fn);
 };

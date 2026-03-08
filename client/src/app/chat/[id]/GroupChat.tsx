@@ -38,10 +38,12 @@ function GroupChatComponent({
     chatName.current = groupChat.name
       ? groupChat.name
       : groupChat.members
-          .map((member) => {
-            return `${member.name} ${member.lastname}`;
-          })
-          .join(", ");
+        ? groupChat.members
+            .map((member) => {
+              return `${member.name} ${member.lastname}`;
+            })
+            .join(", ")
+        : "";
     chatAvatarUrl.current = getAvatarUrl(groupChat.avatarUrl);
   }
 

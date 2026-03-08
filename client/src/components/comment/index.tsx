@@ -21,7 +21,6 @@ import DeleteCommentButton from "./DeleteCommentButton";
 import EditComment from "./EditComment";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
 import { TextToLinksParser } from "@/lib/TextToLinksParser";
-import JSONDebug from "../JSONDebug";
 
 type CommentProps = React.PropsWithChildren & {
   comment: AppComment;
@@ -47,7 +46,7 @@ function Comment({ comment }: CommentProps) {
     isError: subCommentsError,
   } = useQuery({
     queryKey: ["comments", comment.id],
-    queryFn: () => getCommentsByParentId(comment.id).then((res) => res.data),
+    queryFn: () => getCommentsByParentId(comment.id),
     enabled: answerVisible,
   });
 
@@ -157,8 +156,8 @@ function Comment({ comment }: CommentProps) {
                 Error loading comments
               </Typography>
             )}
-            {subComments &&
-              subComments.map((subComment) => (
+            {subComments?.data &&
+              subComments.data.map((subComment) => (
                 <Comment key={subComment.id} comment={subComment} />
               ))}
           </>

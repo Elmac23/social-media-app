@@ -15,36 +15,57 @@ import { GroupChat } from "@/types/groupChat";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { MdRemove, MdAdd, MdDelete, MdCancel } from "react-icons/md";
+import { MdRemove, MdAdd, MdCancel } from "react-icons/md";
+import { useMessagesContext } from "./MessagesContextProvider";
+import { User } from "@/types/user";
 
 type GroupChatInfoProps = {
   groupChat: GroupChat;
 };
 
 function GroupChatInfo({ groupChat }: GroupChatInfoProps) {
-  const { accessToken, user } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const { socket } = useSocket();
   const removeFromChatMutation = useMutation({
-    mutationFn: (userId: string) =>
-      removeFromGroupChat(accessToken, groupChat.id, userId),
-    onSuccess: (_, userId) => {
+    mutationFn: (recipent: User) =>
+      removeFromGroupChat(groupChat.id, recipent.id),
+    onSuccess: (_, recipent) => {
       router.push(`/chat/${groupChat.id}`);
       socket?.emit("groupchat-remove", {
-        userId: userId,
+        userId: recipent.id,
         entityId: groupChat.id,
+      });
+      addCurrentMessage({
+        content: `${recipent?.name} ${recipent?.lastname}`,
+        createdAt: new Date().toISOString(),
+        groupChatId: groupChat.id,
+        id: Math.random().toString(36).substring(2, 15),
+        senderId: "",
+        type: "SYSTEM_REMOVE_USER",
+        sender: user!,
       });
     },
   });
 
+  const { addCurrentMessage } = useMessagesContext();
+
   const addToChatMutation = useMutation({
-    mutationFn: (userId: string) =>
-      addMember(accessToken, groupChat.id, userId),
-    onSuccess: (_, userId) => {
+    mutationFn: (recipent: User) => addMember(groupChat.id, recipent.id),
+    onSuccess: (_, recipent) => {
       router.push(`/chat/${groupChat.id}`);
       socket?.emit("groupchat-add", {
-        userId: userId,
+        userId: recipent.id,
         entityId: groupChat.id,
+      });
+      addCurrentMessage({
+        content: `${recipent?.name} ${recipent?.lastname}`,
+        createdAt: new Date().toISOString(),
+        groupChatId: groupChat.id,
+        id: Math.random().toString(36).substring(2, 15),
+        senderId: "",
+        type: "SYSTEM_ADD_USER",
+        sender: user!,
       });
     },
   });
@@ -54,14 +75,14 @@ function GroupChatInfo({ groupChat }: GroupChatInfoProps) {
 
   const friends = useQuery({
     queryFn: () =>
-      getUserFriends(user?.id ?? "", accessToken, {
+      getUserFriends(user.id, {
         search: debouncedFriendSearch,
       }),
     queryKey: ["addable-friends", debouncedFriendSearch],
   });
 
-  const addableFriends = friends.data?.data.filter(
-    (friend) => !groupChat.members.some((m) => m.id === friend.id),
+  const addableFriends = friends.data?.data?.filter(
+    (friend) => !groupChat.members?.some((m) => m.id === friend.id),
   );
   return (
     <>
@@ -75,7 +96,7 @@ function GroupChatInfo({ groupChat }: GroupChatInfoProps) {
       </Typography>
 
       <List variant="ul" className="max-h-96 overflow-y-scroll mb-4">
-        {groupChat.members.map((member) => (
+        {groupChat.members?.map((member) => (
           <ListItem key={member.id}>
             <Avatar
               alt={member.login}
@@ -87,7 +108,7 @@ function GroupChatInfo({ groupChat }: GroupChatInfoProps) {
               <IconButton
                 variant="ghost"
                 className="ml-auto"
-                onClick={() => removeFromChatMutation.mutate(member.id)}
+                onClick={() => removeFromChatMutation.mutate(member)}
               >
                 <MdRemove />
               </IconButton>
@@ -119,7 +140,7 @@ function GroupChatInfo({ groupChat }: GroupChatInfoProps) {
               <IconButton
                 variant="ghost"
                 className="ml-auto"
-                onClick={() => addToChatMutation.mutate(friend.id)}
+                onClick={() => addToChatMutation.mutate(friend)}
               >
                 <MdAdd />
               </IconButton>
@@ -127,7 +148,7 @@ function GroupChatInfo({ groupChat }: GroupChatInfoProps) {
           </ListItem>
         ))}
       </List>
-      <Button onClick={() => removeFromChatMutation.mutate(user?.id ?? "")}>
+      <Button onClick={() => removeFromChatMutation.mutate(user)}>
         Quit <MdCancel />
       </Button>
     </>

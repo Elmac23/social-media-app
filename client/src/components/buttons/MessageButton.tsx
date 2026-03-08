@@ -20,10 +20,9 @@ function MessageButton({ chatId, recipentId }: MessageButtonProps) {
   const router = useRouter();
 
   const { mutate } = useMutation({
-    mutationFn: (data: CreateGroupChat) =>
-      createGroupChat(user?.accessToken || "", data),
+    mutationFn: (data: CreateGroupChat) => createGroupChat(data),
     onSuccess: (data) => {
-      router.push(`/chat/${data.data.id}`);
+      router.push(`/chat/${data.id}`);
     },
   });
 

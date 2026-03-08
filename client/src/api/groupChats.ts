@@ -3,59 +3,80 @@ import { api } from ".";
 import { Query } from "@/types/query";
 import { withQuery } from "@/lib/withQuery";
 import { UpdateGroupChatDto } from "@/app/chat/[id]/GroupChatEdit";
+import extractDataFromAxios from "@/lib/extractDataFromAxios";
+import { WithCount } from "@/types/withCount";
+import withToken from "@/lib/withToken";
+
+export const getGroupChats = (query: Query, accessToken?: string) => {
+  const url = withQuery(`/group-chats`, query);
+  const fn = api.get<WithCount<GroupChat>>(url, withToken(accessToken));
+  return extractDataFromAxios(fn);
+};
 
 export const getUsersGroupChats = (
-  token: string,
   userId: string,
   query?: Query,
+  accessToken?: string,
 ) => {
   const url = withQuery(`/users/${userId}/group-chats`, query);
-  return api.get<GroupChat[]>(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.get<WithCount<GroupChat>>(url, withToken(accessToken));
+  return extractDataFromAxios(fn);
 };
 
 export const updateGroupChat = (
-  token: string,
   groupChatId: string,
   data: UpdateGroupChatDto,
+  accessToken?: string,
 ) => {
-  return api.patch(`/group-chats/${groupChatId}`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.patch(
+    `/group-chats/${groupChatId}`,
+    data,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };
 
 export const createGroupChat = (
-  token: string,
   groupChatData: CreateGroupChat,
+  accessToken?: string,
 ) => {
-  return api.post<GroupChat>(`/group-chats`, groupChatData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.post<GroupChat>(
+    `/group-chats`,
+    groupChatData,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };
 
-export const getGroupChatById = (token: string, groupChatId: string) => {
-  return api.get<GroupChat>(`/group-chats/${groupChatId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getGroupChatById = (groupChatId: string, accessToken?: string) => {
+  const fn = api.get<GroupChat>(
+    `/group-chats/${groupChatId}`,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };
 
 export const removeFromGroupChat = (
-  token: string,
   groupChatId: string,
   userId: string,
+  accessToken?: string,
 ) => {
-  return api.delete(`/group-chats/${groupChatId}/users/${userId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.delete(
+    `/group-chats/${groupChatId}/users/${userId}`,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };
 
 export const addMember = (
-  token: string,
   groupChatId: string,
   userId: string,
+  accessToken?: string,
 ) => {
-  return api.post(`/group-chats/${groupChatId}/users/${userId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.post(
+    `/group-chats/${groupChatId}/users/${userId}`,
+    {},
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };

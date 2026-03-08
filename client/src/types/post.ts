@@ -7,6 +7,7 @@ export type Post = {
   imageUrl?: string;
   likesCount: number;
   commentsCount: number;
+  sharedPostsCount: number;
   createdAt: string;
   isLikedByMe?: boolean;
   isSharedByMe?: boolean;

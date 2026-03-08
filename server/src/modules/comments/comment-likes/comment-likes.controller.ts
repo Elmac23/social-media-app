@@ -14,11 +14,6 @@ import { AuthenticationGuard } from 'src/guards/authentication';
 export class CommentLikesController {
   constructor(private commentLikesService: CommentLikesService) {}
 
-  @Get()
-  async getLikes(@Param('id') id: string) {
-    return await this.commentLikesService.getLikes(id);
-  }
-
   @Post()
   @UseGuards(AuthenticationGuard)
   async likeComment(@Param('id') commentId: string, @UserId() userId: string) {

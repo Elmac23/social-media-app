@@ -10,7 +10,6 @@ import AddFriendButton from "../../components/buttons/AddFriendButton";
 import AcceptFriendButton from "../../components/buttons/AcceptFriendButton";
 import DeclineInviteButton from "../../components/buttons/DeclineInviteButton";
 import RemoveFriendButton from "@/components/buttons/RemoveFriendButton";
-import ButtonLink from "@/components/ui/ButtonLink";
 import MessageButton from "@/components/buttons/MessageButton";
 import JSONDebug from "@/components/JSONDebug";
 
@@ -24,21 +23,24 @@ async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
   if (!loggedInUser) return null;
   const isSelf = loggedInUser.id === user.id;
 
-  const { receivedInvites, sentInvites } = (
-    await getInvites(loggedInUser.id, loggedInUser.accessToken)
-  ).data;
-  const yourFriends = (
-    await getUserFriends(loggedInUser.id, loggedInUser.accessToken)
-  ).data;
-
-  const isFriend = yourFriends.some((friend) => friend.id === user.id);
-
-  const sentInvite = sentInvites.find(
-    (invite) => invite.recipent.id === user.id
+  const { receivedInvites, sentInvites } = await getInvites(
+    loggedInUser.id,
+    loggedInUser.accessToken,
+  );
+  const yourFriends = await getUserFriends(
+    loggedInUser.id,
+    {},
+    loggedInUser.accessToken,
   );
 
-  const receivedInvite = receivedInvites.find(
-    (invite) => invite.sender.id === user.id
+  const isFriend = yourFriends.data.some((friend) => friend.id === user.id);
+
+  const sentInvite = sentInvites.data.find(
+    (invite) => invite.recipent.id === user.id,
+  );
+
+  const receivedInvite = receivedInvites.data.find(
+    (invite) => invite.sender.id === user.id,
   );
 
   const isInvitable = !receivedInvite && !sentInvite && !isFriend && !isSelf;

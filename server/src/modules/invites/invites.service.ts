@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FriendRequestDto } from './invites.schema';
 import { UserFollowersService } from '../users/user-followers/user-followers.service';
 import { GroupChatsService } from '../group-chats/group-chats.service';
+import getResponse from 'src/utils/getResponse';
 
 @Injectable()
 export class InvitesService {
@@ -13,7 +14,10 @@ export class InvitesService {
   ) {}
 
   async getAllInvites() {
-    return await this.prismaService.friendRequest.findMany();
+    const data = await this.prismaService.friendRequest.findMany();
+    const count = await this.prismaService.friendRequest.count();
+
+    return getResponse(data, count);
   }
 
   async acceptInvite(inviteId: string) {
@@ -104,28 +108,41 @@ export class InvitesService {
   }
 
   async getUserInvites(userId: string) {
-    const receivedInvites = await this.prismaService.friendRequest.findMany({
-      where: { recipentId: userId },
-      select: {
-        sender: {
-          omit: { hashedPassword: true },
+    const whereRecipent = { recipentId: userId };
+    const [receivedInvites, receivedInvitesCount] = await Promise.all([
+      this.prismaService.friendRequest.findMany({
+        where: whereRecipent,
+        select: {
+          sender: {
+            omit: { hashedPassword: true },
+          },
+          id: true,
+          createdAt: true,
         },
-        id: true,
-        createdAt: true,
-      },
-    });
+      }),
+      this.prismaService.friendRequest.count({ where: whereRecipent }),
+    ]);
 
-    const sentInvites = await this.prismaService.friendRequest.findMany({
-      where: { senderId: userId },
-      select: {
-        recipent: {
-          omit: { hashedPassword: true },
+    const whereSender = { senderId: userId };
+
+    const [sentInvites, sentInvitedCount] = await Promise.all([
+      this.prismaService.friendRequest.findMany({
+        where: whereSender,
+        select: {
+          recipent: {
+            omit: { hashedPassword: true },
+          },
+          id: true,
+          createdAt: true,
         },
-        id: true,
-        createdAt: true,
-      },
-    });
-    return { sentInvites, receivedInvites };
+      }),
+      this.prismaService.friendRequest.count({ where: whereSender }),
+    ]);
+
+    return {
+      sentInvites: getResponse(sentInvites, receivedInvitesCount),
+      receivedInvites: getResponse(receivedInvites, sentInvitedCount),
+    };
   }
 
   async deleteInvite(inviteId: string) {

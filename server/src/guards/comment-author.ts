@@ -14,7 +14,7 @@ export class CommentAuthorGuard implements CanActivate {
 
     if (!userId || !commentId) return false;
 
-    const comment = await this.commentsService.getComment(commentId);
+    const comment = await this.commentsService.getCommentAsUser(commentId);
     const commentAuthor = comment?.authorId;
 
     return userId && commentAuthor && userId === commentAuthor;

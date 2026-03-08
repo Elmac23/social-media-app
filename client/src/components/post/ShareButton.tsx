@@ -19,9 +19,8 @@ function ShareButton({ post, isSharedByMe }: ShareButtonProps) {
   const postId = post.id;
   const router = useRouter();
   const { socket } = useSocket();
-  const { accessToken } = useAuth();
   const { mutate: share } = useMutation({
-    mutationFn: async () => addRepost(postId, accessToken),
+    mutationFn: async () => addRepost(postId),
     onSuccess: () => {
       router.refresh();
       socket?.emit("share-post", { entityId: postId, userId: post.author.id });
@@ -29,7 +28,7 @@ function ShareButton({ post, isSharedByMe }: ShareButtonProps) {
   });
 
   const { mutate: deleteShare } = useMutation({
-    mutationFn: async () => deleteRepost(postId, accessToken),
+    mutationFn: async () => deleteRepost(postId),
     onSuccess: () => {
       router.refresh();
     },

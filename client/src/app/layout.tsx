@@ -31,14 +31,14 @@ export default async function RootLayout({
       <body className={`${roboto.variable} antialiased bg-background`}>
         <QueryProvider>
           <StoreProvider>
-            <AuthProvider user={user}>
-              <SocketProvider>
+            <SocketProvider>
+              <AuthProvider user={user}>
                 <Navbar />
 
                 <div className="pt-20">{children}</div>
-              </SocketProvider>
-              <Footer />
-            </AuthProvider>
+                <Footer />
+              </AuthProvider>
+            </SocketProvider>
           </StoreProvider>
         </QueryProvider>
       </body>

@@ -6,6 +6,7 @@ import MessagesList from "./MessagesList";
 import { getGroupChatById } from "@/api/groupChats";
 import GroupChatHeader from "./GroupChatHeader";
 import { tryOrUndefined } from "@/lib/tryOrUndefined";
+import MessagesContextProvider from "./MessagesContextProvider";
 
 type ChatPageProps = {
   params: Promise<{ id: string }>;
@@ -16,19 +17,21 @@ async function ChatPage({ params }: ChatPageProps) {
   const user = await getUser();
   if (!user) redirect("/auth/login");
   const messages = await tryOrUndefined(
-    getGroupChatsMessages(user.accessToken, id),
+    getGroupChatsMessages(id, {}, user.accessToken),
   );
   const groupChat = await tryOrUndefined(
-    getGroupChatById(user.accessToken, id),
+    getGroupChatById(id, user.accessToken),
   );
 
   if (!messages || !groupChat) redirect("/chat");
 
   return (
     <div className="grow p-4">
-      <MessagesList initialMessages={messages.data} groupChatId={id}>
-        <GroupChatHeader groupChat={groupChat.data} />
-      </MessagesList>
+      <MessagesContextProvider initialMessages={messages.data} groupChatId={id}>
+        <MessagesList>
+          <GroupChatHeader groupChat={groupChat} />
+        </MessagesList>
+      </MessagesContextProvider>
     </div>
   );
 }

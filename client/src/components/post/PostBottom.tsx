@@ -39,7 +39,7 @@ function PostBottom({ post }: PostBottomProps) {
 
   const { data: comments } = useQuery({
     queryKey: ["comments", post.id],
-    queryFn: () => getPostComments(post.id).then((res) => res.data),
+    queryFn: () => getPostComments(post.id),
   });
 
   const { user } = useAuth();
@@ -51,7 +51,7 @@ function PostBottom({ post }: PostBottomProps) {
       <div
         className={cn(
           "flex gap-4 border-t-2 border-background/30 pt-2",
-          isCommentVisible && "border-b-2 pb-2"
+          isCommentVisible && "border-b-2 pb-2",
         )}
       >
         <LikePostButton
@@ -81,7 +81,7 @@ function PostBottom({ post }: PostBottomProps) {
 
       {isCommentVisible &&
         comments &&
-        comments.map((comment) => (
+        comments.data.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}
     </commentContext.Provider>

@@ -9,27 +9,38 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
 
-type SelectProps = React.ComponentProps<typeof Input> & {
-  setValue: (value: string) => void;
-  value: string;
+type SelectProps<T extends string | number> = React.ComponentProps<
+  typeof Input
+> & {
+  setValue: (value: T) => void;
+  value: T;
 };
 
 const selectContext = React.createContext<{
-  value: string | undefined;
-  setValue: (value: string) => void;
+  value: number | string | undefined;
+  setValue: (value: number | string) => void;
 }>({
   value: undefined,
   setValue: () => {},
 });
 
-export const useSelect = () => React.useContext(selectContext);
+export const useSelect = <T extends string | number = string | number>() =>
+  React.useContext(selectContext) as {
+    value: T | undefined;
+    setValue: (value: T) => void;
+  };
 
-function Select({ children, setValue, className, ...props }: SelectProps) {
+function Select<T extends number | string>({
+  children,
+  setValue,
+  className,
+  ...props
+}: SelectProps<T>) {
   const found = React.Children.toArray(children).find(
     (child) =>
       React.isValidElement(child) &&
-      (child.props as OptionProps).value === props.value
-  ) as React.ReactElement<OptionProps> | undefined;
+      (child.props as OptionProps<T>).value === props.value,
+  ) as React.ReactElement<OptionProps<T>> | undefined;
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -46,7 +57,7 @@ function Select({ children, setValue, className, ...props }: SelectProps) {
         <selectContext.Provider
           value={{
             value: props.value,
-            setValue,
+            setValue: setValue as (value: string | number) => void,
           }}
         >
           {children}
@@ -71,13 +82,16 @@ function SelectArrow() {
 
 const MotionArrow = motion.create(MdKeyboardArrowDown);
 
-type OptionProps = {
+type OptionProps<T extends string | number = string | number> = {
   children: string;
-  value: string;
+  value: T;
 };
 
-export function Option({ children, value }: OptionProps) {
-  const { setValue } = useSelect();
+export function Option<T extends string | number = string | number>({
+  children,
+  value,
+}: OptionProps<T>) {
+  const { setValue } = useSelect<T>();
   const { close } = useDropdown();
   return (
     <div

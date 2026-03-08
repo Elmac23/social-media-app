@@ -20,16 +20,12 @@ export function useAddComment({
 }: UseAddCommentProps) {
   const [message, setMessage] = React.useState("");
   const { socket } = useSocket();
-  const { accessToken } = useAuth();
   const router = useRouter();
   const { post } = useCommentContext();
 
   const { mutate } = useMutation({
     mutationFn: (message: string) =>
-      createComment(
-        { content: message, parentCommentId, postId: post.id },
-        accessToken
-      ),
+      createComment({ content: message, parentCommentId, postId: post.id }),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments"] });

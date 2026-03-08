@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,17 +18,25 @@ import {
   commentSchema,
   UpdateCommentDto,
   updateCommentSchema,
-} from './comment.schema';
+} from './comments.schema';
 import { UserId } from 'src/decorators/user-id';
 import { ZodValidationPipe } from 'src/pipes/ZodValidationPipe';
 import { CommentAuthorGuard } from 'src/guards/comment-author';
+import { AdminGuard } from 'src/guards/admin';
+import { QueryPipe } from 'src/pipes/query.pipe';
+import { QueryType, QueryWithOrderedBy } from 'src/types/query';
+import { CommentOrderByKeys } from './comments.schema';
 
 @Controller('comments')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
   @Get()
-  async getComments() {
-    return await this.commentsService.getComments();
+  @UseGuards(AuthenticationGuard, AdminGuard)
+  async getComments(
+    @Query(new QueryPipe(CommentOrderByKeys))
+    query: QueryWithOrderedBy<CommentOrderByKeys>,
+  ) {
+    return await this.commentsService.getComments(query);
   }
 
   @Delete(':id')
@@ -48,7 +57,7 @@ export class CommentsController {
 
   @Get(':id')
   async getComment(@Param('id') id: string, @UserId() userId: string) {
-    return await this.commentsService.getComment(id, userId);
+    return await this.commentsService.getCommentAsUser(id, userId);
   }
 
   @Get(':id/children')

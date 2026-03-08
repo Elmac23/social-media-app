@@ -41,7 +41,6 @@ function CreatePost() {
   } = useForm<CreatePost>({
     resolver: zodResolver(postSchema),
   });
-  const { accessToken } = useAuth();
 
   const router = useRouter();
 
@@ -72,7 +71,7 @@ function CreatePost() {
       if (selectedImage) {
         formData.append("image", selectedImage);
       }
-      createPost(formData, accessToken);
+      createPost(formData);
     },
   });
 

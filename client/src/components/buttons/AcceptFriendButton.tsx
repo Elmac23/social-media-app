@@ -1,7 +1,6 @@
 "use client";
 
 import { acceptFriend } from "@/api/friends";
-import { useAuth } from "@/components/AuthProvider";
 import Button from "@/components/ui/Button";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -16,11 +15,10 @@ type AcceptFriendButtonProps = {
 
 function AcceptFriendButton({ invite }: AcceptFriendButtonProps) {
   const { id: inviteId } = invite;
-  const { accessToken } = useAuth();
   const { socket } = useSocket();
   const router = useRouter();
   const { mutate } = useMutation({
-    mutationFn: () => acceptFriend(inviteId || "", accessToken),
+    mutationFn: () => acceptFriend(inviteId || ""),
     onSuccess: () => {
       router.refresh();
       socket?.emit("accept-friend", {

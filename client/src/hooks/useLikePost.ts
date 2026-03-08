@@ -17,11 +17,11 @@ type UseLikePostProps = {
 export function useLikePost({ likeCount, post, isLiked }: UseLikePostProps) {
   const postId = post.id;
   const { socket } = useSocket();
-  const { accessToken, user } = useAuth();
+  const { user } = useAuth();
   const { value, setFalse, setTrue } = useToggle(isLiked || false);
   const [newLikeCount, setNewLikeCount] = useState(likeCount);
   const { mutate: likePostMutation } = useMutation({
-    mutationFn: async () => likePost(postId, accessToken),
+    mutationFn: async () => likePost(postId),
     onSuccess: () => {
       setTrue();
       setNewLikeCount((count) => count + 1);
@@ -38,7 +38,7 @@ export function useLikePost({ likeCount, post, isLiked }: UseLikePostProps) {
   });
 
   const { mutate: unlikePostMutation } = useMutation({
-    mutationFn: async () => unlikePost(postId, accessToken),
+    mutationFn: async () => unlikePost(postId),
     onSuccess: () => {
       setFalse();
       setNewLikeCount((count) => count - 1);

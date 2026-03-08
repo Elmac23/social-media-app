@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { unzipCountFields } from 'src/utils/unzip-count-fields';
 import { Comment } from 'generated/prisma';
+import getResponse from 'src/utils/getResponse';
 @Injectable()
 export class PostCommentsService {
   constructor(private prismaService: PrismaService) {}
@@ -23,25 +24,31 @@ export class PostCommentsService {
   }
 
   async getCommentsByPost(postId: string, userId?: string) {
-    const comments = await this.prismaService.comment.findMany({
-      where: { postId, parentCommentId: null },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: { likes: true, subComments: true },
+    const where = { postId, parentCommentId: null };
+    const [comments, count] = await Promise.all([
+      this.prismaService.comment.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          _count: {
+            select: { likes: true, subComments: true },
+          },
+          author: {
+            omit: { hashedPassword: true },
+          },
         },
-        author: {
-          omit: { hashedPassword: true },
-        },
-      },
-    });
+      }),
+      this.prismaService.comment.count({ where }),
+    ]);
 
     const mappedComments = comments.map((c) =>
       unzipCountFields(c, ['likes', 'subComments']),
     );
 
-    return Promise.all(
+    const result = await Promise.all(
       mappedComments.map((c) => this.processLikedStatus(c, userId)),
     );
+
+    return getResponse(result, count);
   }
 }

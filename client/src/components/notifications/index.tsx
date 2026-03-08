@@ -11,40 +11,41 @@ import NotificationCounter from "./NotificationCounter";
 import NotificationsList from "./NotificationsList";
 import { Notification } from "@/types/notification";
 import { useSocket } from "../SocketProvider";
-import JSONDebug from "../JSONDebug";
+import { WithCount } from "@/types/withCount";
 
 type NotificationsProps = {
-  initialNotifications: Notification[];
+  initialNotifications: WithCount<Notification>;
 };
 
 function Notifications({ initialNotifications }: NotificationsProps) {
-  const [notifications, setNotifications] =
-    React.useState<Notification[]>(initialNotifications);
+  const [notifications, setNotifications] = React.useState<Notification[]>(
+    initialNotifications.data,
+  );
 
   const addNotification = useCallback(
     (notification: Notification) => {
       const existingNotification = notifications.find(
-        (n) => n.id === notification.id
+        (n) => n.id === notification.id,
       );
       if (!existingNotification)
         return setNotifications((prev) => [notification, ...prev]);
 
       const restNotifications = notifications.filter(
-        (n) => n.id !== notification.id
+        (n) => n.id !== notification.id,
       );
       setNotifications([notification, ...restNotifications]);
     },
-    [setNotifications, notifications]
+    [setNotifications, notifications],
   );
   const { socket } = useSocket();
 
   const deleteNotification = useCallback(
     (notificationId: string) => {
       setNotifications((prev) =>
-        prev.filter((notification) => notification.id !== notificationId)
+        prev.filter((notification) => notification.id !== notificationId),
       );
     },
-    [setNotifications]
+    [setNotifications],
   );
 
   useEffect(() => {

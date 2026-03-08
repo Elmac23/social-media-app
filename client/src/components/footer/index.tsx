@@ -1,11 +1,10 @@
 "use client";
 
-import { useDeviceId } from "@/hooks/useDeviceId";
 import React from "react";
 import Link from "next/link";
+import Debug from "../Debug";
 
 function Footer() {
-  const deviceId = useDeviceId();
   return (
     <footer className="bg-background-lighter py-8">
       <div className="container mx-auto px-4 text-sm text-muted flex flex-col md:flex-row items-center justify-between gap-4">
@@ -14,6 +13,7 @@ function Footer() {
           <Link href="/cookies" className="hover:underline">
             Cookies
           </Link>
+          {/* <Debug /> */}
           <Link href="/terms" className="hover:underline">
             Terms of Use
           </Link>

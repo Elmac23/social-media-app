@@ -14,3 +14,14 @@ export const updateGroupChatSchema = z.object({
 });
 
 export type UpdateGroupChatDto = z.infer<typeof updateGroupChatSchema>;
+
+export const groupChatOrderByKeys = [
+  'id',
+  'createdAt',
+  'name',
+  'description',
+  'members',
+  'type',
+] as const;
+
+export type GroupChatOrderByKeys = (typeof groupChatOrderByKeys)[number];

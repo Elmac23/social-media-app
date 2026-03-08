@@ -9,7 +9,8 @@ export class AdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const userId = request.userId;
-    const paramId = request.params.id;
+
+    if (!userId) return false;
 
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },

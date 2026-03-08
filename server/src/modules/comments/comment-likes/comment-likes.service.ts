@@ -5,17 +5,6 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 export class CommentLikesService {
   constructor(private prismaService: PrismaService) {}
 
-  async getLikes(commentId: string) {
-    return await this.prismaService.commentLike.findMany({
-      where: { commentId },
-      include: {
-        user: {
-          omit: { hashedPassword: true },
-        },
-      },
-    });
-  }
-
   async likeComment(commentId: string, userId: string) {
     return await this.prismaService.commentLike.create({
       data: {

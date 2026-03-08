@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import getResponse from 'src/utils/getResponse';
 
 @Injectable()
 export class UserFollowersService {
@@ -14,15 +15,25 @@ export class UserFollowersService {
   }
 
   async getFollowers(userId: string) {
-    const followers = await this.prismaService.user.findMany({
-      where: { followed: { some: { followedId: userId } } },
-      omit: { hashedPassword: true },
-    });
-    const following = await this.prismaService.user.findMany({
-      where: { followers: { some: { followerId: userId } } },
-      omit: { hashedPassword: true },
-    });
-    return { followers, following };
+    const followedWhere = { followed: { some: { followedId: userId } } };
+    const followingWhere = { followers: { some: { followerId: userId } } };
+    const [followers, followersCount, following, followingCount] =
+      await Promise.all([
+        this.prismaService.user.findMany({
+          where: followedWhere,
+          omit: { hashedPassword: true },
+        }),
+        this.prismaService.user.count({ where: followedWhere }),
+        this.prismaService.user.findMany({
+          where: followingWhere,
+          omit: { hashedPassword: true },
+        }),
+        this.prismaService.user.count({ where: followingWhere }),
+      ]);
+    return {
+      followers: getResponse(followers, followersCount),
+      following: getResponse(following, followingCount),
+    };
   }
 
   async unfollow(followerId: string, followedId: string) {

@@ -5,7 +5,6 @@ import Card from "../Card";
 import { cn } from "@/lib/cn";
 import NavLink from "@/components/navbar/NavLink";
 import { useSearchParams } from "next/navigation";
-import { useTimeout } from "@/hooks/useTimeout";
 
 const tabContext = React.createContext<{
   tab: string | null;
@@ -47,7 +46,7 @@ export function VerticalTabsButton({
       href={`?tab=${tabName}`}
       className={cn(
         "text-left block w-full",
-        tabName === tab && "text-primary-500"
+        tabName === tab && "text-primary-500",
       )}
     >
       {children}

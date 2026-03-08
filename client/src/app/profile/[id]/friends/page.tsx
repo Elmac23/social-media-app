@@ -12,7 +12,6 @@ import { notFound, redirect } from "next/navigation";
 import React from "react";
 import UsersList from "./UsersList";
 import { getFollowers } from "@/api/followers";
-import JSONDebug from "@/components/JSONDebug";
 import UsersListWithSearch from "./UsersListWithSearch";
 
 type Props = {
@@ -25,14 +24,14 @@ async function FriendsPage({ params }: Props) {
 
   const { id } = await params;
 
-  const userFriends = await getUserFriends(id, loggedInUser.accessToken);
+  const userFriends = await getUserFriends(id, {}, loggedInUser.accessToken);
   const invites = await getInvites(loggedInUser.id, loggedInUser.accessToken);
-  const { receivedInvites, sentInvites } = invites.data;
+  const { receivedInvites, sentInvites } = invites;
 
-  const { followers, following } = (
-    await getFollowers(id, loggedInUser.accessToken)
-  ).data;
-
+  const { followers, following } = await getFollowers(
+    id,
+    loggedInUser.accessToken,
+  );
   const user = await getUserProfileById(id, loggedInUser.accessToken);
 
   if (!user) return notFound();
@@ -58,31 +57,31 @@ async function FriendsPage({ params }: Props) {
           <Tab tabName="friends">
             <UsersListWithSearch
               users={userFriends.data}
-              receivedInvites={receivedInvites}
-              sentInvites={sentInvites}
+              receivedInvites={receivedInvites.data}
+              sentInvites={sentInvites.data}
             />
           </Tab>
           {isSelf && (
             <Tab tabName="invites">
               <UsersList
-                users={receivedInvites.map((invite) => invite.sender)}
-                receivedInvites={receivedInvites}
-                sentInvites={sentInvites}
+                users={receivedInvites.data.map((invite) => invite.sender)}
+                receivedInvites={receivedInvites.data}
+                sentInvites={sentInvites.data}
               />
             </Tab>
           )}
           <Tab tabName="followers">
             <UsersList
-              users={followers}
-              receivedInvites={receivedInvites}
-              sentInvites={sentInvites}
+              users={followers.data}
+              receivedInvites={receivedInvites.data}
+              sentInvites={sentInvites.data}
             />
           </Tab>
           <Tab tabName="following">
             <UsersList
-              users={following}
-              receivedInvites={receivedInvites}
-              sentInvites={sentInvites}
+              users={following.data}
+              receivedInvites={receivedInvites.data}
+              sentInvites={sentInvites.data}
             />
           </Tab>
         </VerticalTabsSection>

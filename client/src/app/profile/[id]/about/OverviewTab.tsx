@@ -5,7 +5,6 @@ import AboutFieldWrapper, { UserEdit } from "./AboutFieldWrapper";
 import { UpdateUser, UserPrivacy, UserProfile } from "@/types/user";
 import EditableInput from "./EditableInput";
 import { updateUser } from "@/api/users";
-import { useAuth } from "@/components/AuthProvider";
 import EditableSelect from "./EditableSelect";
 import { Option } from "@/components/ui/formControl/Select";
 
@@ -18,10 +17,8 @@ function AboutTab({
   isSelf: boolean;
   privacySettings: UserPrivacy;
 }) {
-  const { accessToken } = useAuth();
-
   const submit = async (value: UpdateUser) => {
-    return updateUser(profile.id, value, accessToken);
+    return updateUser(profile.id, value);
   };
 
   const displayName = ({ name, lastname }: UserEdit) => {

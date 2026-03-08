@@ -1,5 +1,4 @@
 import { likeComment, unlikeComment } from "@/api/comments";
-import { useAuth } from "@/components/AuthProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useToggle } from "./useToggle";
@@ -18,12 +17,11 @@ export function useLikeComment({
   isLiked,
 }: UseLikePostProps) {
   const commentId = comment.id;
-  const { accessToken } = useAuth();
   const { socket } = useSocket();
   const { value, setFalse, setTrue } = useToggle(isLiked || false);
   const [newLikeCount, setNewLikeCount] = useState(likeCount);
   const { mutate: likeCommentMutation } = useMutation({
-    mutationFn: async () => likeComment(commentId, accessToken),
+    mutationFn: async () => likeComment(commentId),
     onSuccess: () => {
       setTrue();
       setNewLikeCount((count) => count + 1);
@@ -38,7 +36,7 @@ export function useLikeComment({
   });
 
   const { mutate: unlikeCommentMutation } = useMutation({
-    mutationFn: async () => unlikeComment(commentId, accessToken),
+    mutationFn: async () => unlikeComment(commentId),
     onSuccess: () => {
       setFalse();
       setNewLikeCount((count) => count - 1);

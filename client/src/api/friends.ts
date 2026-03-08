@@ -3,68 +3,71 @@ import { api } from ".";
 import { User } from "@/types/user";
 import { Query } from "@/types/query";
 import { withQuery } from "@/lib/withQuery";
+import extractDataFromAxios from "@/lib/extractDataFromAxios";
+import { WithCount } from "@/types/withCount";
+import withToken from "@/lib/withToken";
 
-export const inviteFriend = (token: string, recipentId: string) => {
-  return api.post(
+export const inviteFriend = (recipentId: string, accessToken?: string) => {
+  const fn = api.post(
     "/invites",
     {
       recipentId,
     },
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    },
+    withToken(accessToken),
   );
+  return extractDataFromAxios(fn);
 };
 
-export const getInvites = (userId: string, token: string) => {
-  return api.get<{
-    receivedInvites: ReceivedFriendIvite[];
-    sentInvites: SentFriendInvite[];
-  }>(`users/${userId}/invites`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getInvites = (userId: string, accessToken?: string) => {
+  const fn = api.get<{
+    receivedInvites: WithCount<ReceivedFriendIvite>;
+    sentInvites: WithCount<SentFriendInvite>;
+  }>(`users/${userId}/invites`, withToken(accessToken));
+  return extractDataFromAxios(fn);
 };
 
 export const getUserFriends = (
   userId: string,
-  token: string,
   query?: Query,
+  accessToken?: string,
 ) => {
-  return api.get<User[]>(withQuery(`users/${userId}/friends`, query), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const fn = api.get<WithCount<User>>(
+    withQuery(`users/${userId}/friends`, query),
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };
 
-export const getInvitableUsers = (token: string) => {
-  return api.get<User[]>("/users/invitable", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getInvitableUsers = (accessToken?: string) => {
+  const fn = api.get<WithCount<User>>(
+    "/users/invitable",
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };
 
-export const acceptFriend = (inviteId: string, token: string) => {
-  return api.post(
+export const acceptFriend = (inviteId: string, accessToken?: string) => {
+  const fn = api.post(
     `/invites/${inviteId}/accept`,
     {},
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    },
+    withToken(accessToken),
   );
+  return extractDataFromAxios(fn);
 };
 
-export const declineInvite = (token: string, inviteId: string) => {
-  return api.delete(`/invites/${inviteId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const declineInvite = (inviteId: string, accessToken?: string) => {
+  const fn = api.delete(`/invites/${inviteId}`, withToken(accessToken));
+  return extractDataFromAxios(fn);
 };
 
 export const removeFriend = (
   userId: string,
   friendId: string,
-  token: string,
+  accessToken?: string,
 ) => {
-  return api.delete(`/users/${userId}/friends/${friendId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.delete(
+    `/users/${userId}/friends/${friendId}`,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };

@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { union } from 'zod';
 
 export const querySchema = z.object({
   page: z
@@ -15,3 +15,15 @@ export const querySchema = z.object({
     }),
   search: z.string().optional(),
 });
+
+export function createQuerySchemaWithOrderedBy(keys: readonly string[]) {
+  return querySchema.extend({
+    orderBy: z
+      .union([
+        z.templateLiteral([z.enum(keys), '-', z.enum(['asc', 'desc'])]),
+        z.templateLiteral(['']),
+      ])
+
+      .optional(),
+  });
+}

@@ -17,7 +17,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 function LoginForm() {
-  const { setAccessToken } = useAuth();
+  const { setAccessToken } = useAuth(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const router = useRouter();
   const deviceId = useDeviceId();
@@ -25,8 +25,7 @@ function LoginForm() {
   const { mutate } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      setAccessToken(data.data.accessToken);
-      // window.location.href = "/";
+      setAccessToken(data.accessToken);
       router.refresh();
     },
     onError: (error) => {

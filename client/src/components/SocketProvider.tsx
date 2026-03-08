@@ -18,7 +18,6 @@ function SocketProvider({ children }: React.PropsWithChildren) {
   const { accessToken, setAccessToken } = useAuth();
 
   useEffect(() => {
-    if (!accessToken) return;
     const s = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:81", {
       auth: {
         token: accessToken,
@@ -43,20 +42,21 @@ function SocketProvider({ children }: React.PropsWithChildren) {
     async function onUnauthorized() {
       try {
         const response = await refresh();
-        const { accessToken } = response.data;
+        const { accessToken } = response;
         setAccessToken(accessToken);
+
+        socket?.disconnect();
+
         const newSocket = io(
           process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:81",
           {
             auth: {
               token: accessToken,
             },
-          }
+          },
         );
         setSocket(newSocket);
-      } catch (error) {
-        console.log("Unauthorized, and refresh failed", error);
-      }
+      } catch (error) {}
     }
 
     socket?.on("connect", onConnect);
@@ -68,7 +68,7 @@ function SocketProvider({ children }: React.PropsWithChildren) {
       socket?.off("disconnect", onDisonnect);
       socket?.off("unauthorized", onUnauthorized);
     };
-  }, [socket]);
+  }, [socket, setAccessToken]);
 
   return (
     <socketContext.Provider

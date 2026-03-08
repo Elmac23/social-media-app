@@ -4,11 +4,11 @@ import React from "react";
 import { useAuth } from "./AuthProvider";
 
 function Debug() {
-  const { accessToken, user } = useAuth();
+  const { accessToken, user } = useAuth(false);
   return (
     <div>
-      <p>TOKEN: {accessToken.substring(0, 10)}</p>
-      <p>USER: {JSON.stringify(user)}</p>
+      <p>TOKEN: {accessToken}</p>
+      <p>USER: {JSON.stringify(user?.role)}</p>
     </div>
   );
 }

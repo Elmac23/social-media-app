@@ -25,9 +25,11 @@ function FileInput({ selectedImage, setSelectedImage }: FileInputProps) {
       <input
         className="hidden"
         ref={imageInputRef}
+        value={""}
         type="file"
         onChange={(e) => {
-          const file = e.target.files?.[0];
+          const file = e.currentTarget.files?.[0];
+
           if (file) {
             setSelectedImage(file);
           } else {

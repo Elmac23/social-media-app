@@ -30,17 +30,19 @@ async function UserProfile({ params, searchParams }: Props) {
   const user = await getUserProfileById(id, loggedInUser.accessToken);
   const feedPosts = await getUsersFeed(id, loggedInUser.accessToken);
 
-  const friends = await getUserFriends(user.data.id, loggedInUser.accessToken);
+  const friends = await getUserFriends(user.id, {}, loggedInUser.accessToken);
 
-  const isSelf = loggedInUser.id === user.data.id;
+  const isSelf = loggedInUser.id === user.id;
 
   let featuredPost: PostType | undefined = undefined;
   if (featuredPostId && typeof featuredPostId === "string") {
-    const response = await tryOrUndefined(getPostById(featuredPostId));
-    featuredPost = response?.data;
+    const response = await tryOrUndefined(
+      getPostById(featuredPostId, loggedInUser.accessToken),
+    );
+    featuredPost = response;
   }
 
-  if (featuredPost && featuredPost.author.id !== user.data.id)
+  if (featuredPost && featuredPost.author.id !== user.id)
     featuredPost = undefined;
   return (
     <div className="flex gap-8 flex-col-reverse lg:flex-row">
@@ -62,18 +64,18 @@ async function UserProfile({ params, searchParams }: Props) {
         </Typography>
 
         {isSelf && <CreatePost />}
-        {feedPosts.data.length === 0 && (
+        {feedPosts.count === 0 && (
           <Typography color="muted">No posts yet</Typography>
         )}
 
-        {feedPosts.data.length > 0 && (
+        {feedPosts.count > 0 && (
           <PostsList profileId={id} posts={feedPosts.data} />
         )}
       </div>
 
       <div className="md:sticky md:top-24 md:self-start">
         {isSelf ? (
-          <YourBio userId={user.data.id} value={user.data.bio} />
+          <YourBio userId={user.id} value={user.bio} />
         ) : (
           <Bio
             header={
@@ -82,8 +84,8 @@ async function UserProfile({ params, searchParams }: Props) {
               </Typography>
             }
           >
-            <Typography as="pre" color={user.data.bio ? "primary" : "muted"}>
-              {user.data.bio || "No bio added yet."}
+            <Typography as="pre" color={user.bio ? "primary" : "muted"}>
+              {user.bio || "No bio added yet."}
             </Typography>
           </Bio>
         )}
@@ -92,10 +94,10 @@ async function UserProfile({ params, searchParams }: Props) {
         </Typography>
 
         <div className="grid grid-cols-2 gap-4">
-          {friends.data.length === 0 && (
+          {friends.count === 0 && (
             <Typography color="muted">No friends yet</Typography>
           )}
-          {friends.data.length > 0 &&
+          {friends.count > 0 &&
             friends.data
               .slice(0, 8)
               .map((friend) => (

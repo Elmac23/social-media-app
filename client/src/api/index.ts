@@ -4,3 +4,8 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL_API,
   withCredentials: true,
 });
+
+export const authApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL_API,
+  withCredentials: true,
+});

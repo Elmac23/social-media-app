@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 import AddFriendButton from "../../components/buttons/AddFriendButton";
 import DeclineInviteButton from "../../components/buttons/DeclineInviteButton";
 import AcceptFriendButton from "../../components/buttons/AcceptFriendButton";
-import JSONDebug from "@/components/JSONDebug";
 
 async function FriendsPage() {
   const user = await getUser();
@@ -21,11 +20,9 @@ async function FriendsPage() {
 
   const invites = await getInvites(user.id, user.accessToken);
 
-  const friends = await getUserFriends(user.id, user.accessToken);
+  const friends = await getUserFriends(user.id, {}, user.accessToken);
 
-  const { sentInvites, receivedInvites } = invites.data;
-
-  console.log(receivedInvites);
+  const { sentInvites, receivedInvites } = invites;
 
   return (
     <main className="container mx-auto">
@@ -37,7 +34,7 @@ async function FriendsPage() {
         They added you as a friend:
       </Typography>
       <div className="grid grid-cols-4 gap-8 mb-8">
-        {receivedInvites.map((request) => (
+        {receivedInvites.data.map((request) => (
           <UserMiniProfile key={request.id} user={request.sender} isBody>
             <div className="flex gap-4">
               <AcceptFriendButton invite={request} />
@@ -52,7 +49,7 @@ async function FriendsPage() {
         You added them as a friend:
       </Typography>
       <div className="grid grid-cols-4 gap-8 mb-8">
-        {sentInvites.map((request) => (
+        {sentInvites.data.map((request) => (
           <UserMiniProfile key={request.id} user={request.recipent} isBody>
             <div>
               <DeclineInviteButton inviteId={request.id} variant="ghost">

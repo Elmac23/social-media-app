@@ -76,15 +76,22 @@ model GroupChat {
   messages         Message[]
 }
 
+enum MessageType {
+  DEFAULT
+  SYSTEM_ADD_USER
+  SYSTEM_REMOVE_USER
+}
+
 model Message {
-  id          String    @id @default(uuid())
+  id          String      @id @default(uuid())
   groupChatId String
   senderId    String
   content     String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  sender      User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  groupChat   GroupChat @relation(fields: [groupChatId], references: [id], onDelete: Cascade)
+  type        MessageType @default(DEFAULT)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  sender      User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  groupChat   GroupChat   @relation(fields: [groupChatId], references: [id], onDelete: Cascade)
 }
 
 model UserInGroupChat {

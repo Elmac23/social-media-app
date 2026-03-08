@@ -6,13 +6,20 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AuthenticationGuard } from 'src/guards/authentication';
-import { PostDto, postSchema, updatePostSchema } from './posts.schema';
+import {
+  PostDto,
+  postOrderByKeys,
+  PostOrderByKeys,
+  postSchema,
+  updatePostSchema,
+} from './posts.schema';
 import { ZodValidationPipe } from 'src/pipes/ZodValidationPipe';
 import { UsersPostGuard } from '../../guards/users-post';
 import { UserId } from 'src/decorators/user-id';
@@ -21,6 +28,9 @@ import { multerConfig } from 'src/config/multer.config';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { AdminGuard } from 'src/guards/admin';
+import { QueryPipe } from 'src/pipes/query.pipe';
+import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 
 @Controller('posts')
 export class PostsController {
@@ -30,9 +40,12 @@ export class PostsController {
   ) {}
 
   @Get()
-  @UseGuards(AuthenticationGuard)
-  async getPosts(@UserId() userId: string) {
-    return await this.postsService.getPosts(userId);
+  @UseGuards(AuthenticationGuard, AdminGuard)
+  async getPosts(
+    @Query(new QueryPipe(postOrderByKeys))
+    query: QueryWithOrderedBy<PostOrderByKeys>,
+  ) {
+    return await this.postsService.getPosts(query);
   }
 
   @Get(':id')

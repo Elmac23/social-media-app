@@ -20,3 +20,14 @@ export const updateCommentSchema = z.object({
 });
 
 export type UpdateCommentDto = z.infer<typeof updateCommentSchema>;
+
+export const CommentOrderByKeys = [
+  'id',
+  'createdAt',
+  'author',
+  'likes',
+  'responses',
+  'content',
+] as const;
+
+export type CommentOrderByKeys = (typeof CommentOrderByKeys)[number];

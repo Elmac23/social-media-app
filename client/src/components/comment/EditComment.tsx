@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "../AuthProvider";
 import { useForm } from "react-hook-form";
 import {
   postSchema,
@@ -23,12 +22,11 @@ type EditCommentProps = {
 };
 
 function EditComment({ stopEditing, comment }: EditCommentProps) {
-  const { id, parentCommentId, content, postId } = comment;
+  const { id, content } = comment;
   const { register, handleSubmit, reset } = useForm<EditComment>({
     resolver: zodResolver(postSchema),
     values: { content: content },
   });
-  const { accessToken } = useAuth();
   const router = useRouter();
 
   const submitHandler = (data: EditComment) => {
@@ -48,7 +46,7 @@ function EditComment({ stopEditing, comment }: EditCommentProps) {
     },
 
     mutationFn: async (data: EditComment) => {
-      updateComment(id, data, accessToken);
+      updateComment(id, data);
     },
   });
 

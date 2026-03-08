@@ -1,7 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateGroupChatDto, UpdateGroupChatDto } from './group-chats.schema';
-import { QueryType } from 'src/types/query';
+import {
+  CreateGroupChatDto,
+  GroupChatOrderByKeys,
+  UpdateGroupChatDto,
+} from './group-chats.schema';
+import { QueryType, QueryWithOrderedBy } from 'src/types/query';
+import { unzipCountFields } from 'src/utils/unzip-count-fields';
+import getResponse from 'src/utils/getResponse';
+import { parseOrderBy } from 'src/utils/parseOrderBy';
 
 @Injectable()
 export class GroupChatsService {
@@ -40,6 +47,70 @@ export class GroupChatsService {
         userId,
       },
     });
+  }
+
+  async getGroupChats({
+    limit,
+    page,
+    search,
+    orderBy,
+  }: QueryWithOrderedBy<GroupChatOrderByKeys>) {
+    const where = {
+      OR: [
+        {
+          name: { contains: search, mode: 'insensitive' as const },
+        },
+        {
+          id: { contains: search, mode: 'insensitive' as const },
+        },
+      ],
+    };
+
+    const orderByResult = parseOrderBy(orderBy, {
+      members: (v) => {
+        return {
+          usersInGroupChat: {
+            _count: v,
+          },
+        };
+      },
+    });
+    const [chats, count] = await Promise.all([
+      this.prismaService.groupChat.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: orderByResult,
+        where,
+        include: {
+          _count: {
+            select: {
+              messages: true,
+              usersInGroupChat: true,
+            },
+          },
+          usersInGroupChat: {
+            include: {
+              user: {
+                omit: {
+                  hashedPassword: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prismaService.groupChat.count({ where }),
+    ]);
+
+    const unzippedChats = chats
+      .map((chat) => unzipCountFields(chat, ['messages', 'usersInGroupChat']))
+      .map((chat) => {
+        const { usersInGroupChat, usersInGroupChatCount, ...rest } = chat;
+
+        return { ...rest, membersCount: usersInGroupChatCount };
+      });
+
+    return getResponse(unzippedChats, count);
   }
 
   async getUsersGroupChats(userId: string, query?: QueryType) {
@@ -91,40 +162,45 @@ export class GroupChatsService {
       ...(searchQuery && searchQuery),
     };
 
-    const result = await this.prismaService.groupChat.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy: {
-        lastMessageAt: 'desc',
-      },
-      include: {
-        usersInGroupChat: {
-          include: {
-            user: {
-              omit: {
-                hashedPassword: true,
+    const [result, count] = await Promise.all([
+      this.prismaService.groupChat.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: {
+          lastMessageAt: 'desc',
+        },
+        include: {
+          usersInGroupChat: {
+            include: {
+              user: {
+                omit: {
+                  hashedPassword: true,
+                },
               },
             },
           },
-        },
-        messages: {
-          include: {
-            sender: true,
+          messages: {
+            include: {
+              sender: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+            take: 1,
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 1,
         },
-      },
-      where,
-    });
+        where,
+      }),
+      this.prismaService.groupChat.count({ where }),
+    ]);
 
-    return result.map((groupChat) => {
+    const mapped = result.map((groupChat) => {
       const { usersInGroupChat, ...groupChatData } = groupChat;
       const members = usersInGroupChat.map((entry) => entry.user);
       return { ...groupChatData, members };
     });
+
+    return getResponse(mapped, count);
   }
 
   async getGroupChatById(groupChatId: string) {

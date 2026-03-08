@@ -13,49 +13,67 @@ type MessageProps = {
 
 function Message({ message, isYourMessage }: MessageProps) {
   const senderName = `${message.sender.name} ${message.sender.lastname}`;
-  const timeSpan = formatDistanceToNow(new Date(message.createdAt), {
+  const timeSpan = formatDistanceToNow(new Date(message.createdAt || ""), {
     addSuffix: true,
   });
-  return (
-    <li className={cn("flex", isYourMessage ? "justify-end" : "justify-start")}>
-      <div
-        className={cn(
-          "flex items-center space-x-2 group",
-          isYourMessage ? "flex-row-reverse space-x-reverse" : ""
-        )}
+
+  if (message.type === "DEFAULT")
+    return (
+      <li
+        className={cn("flex", isYourMessage ? "justify-end" : "justify-start")}
       >
-        <Avatar alt={senderName} url={getAvatarUrl(message.sender.avatarUrl)} />
-        <div>
-          <div
-            className={cn(
-              "flex items-center mb-1 space-x-2",
-              isYourMessage ? "flex-row-reverse space-x-reverse" : ""
-            )}
-          >
-            <Typography size="sm" as="span" className="inline-block mr-4">
-              {senderName}
-            </Typography>
-            <Typography
-              size="sm"
-              as="span"
-              className="hidden group-hover:inline"
+        <div
+          className={cn(
+            "flex items-center space-x-2 group",
+            isYourMessage ? "flex-row-reverse space-x-reverse" : "",
+          )}
+        >
+          <Avatar
+            alt={senderName}
+            url={getAvatarUrl(message.sender.avatarUrl)}
+          />
+          <div>
+            <div
+              className={cn(
+                "flex items-center mb-1 space-x-2",
+                isYourMessage ? "flex-row-reverse space-x-reverse" : "",
+              )}
             >
-              {timeSpan}
-            </Typography>
-          </div>
-          <div
-            className={cn(
-              "py-2 px-4 rounded-lg w-max",
-              isYourMessage
-                ? "bg-background ml-auto"
-                : "bg-primary-500 text-primary-foreground"
-            )}
-          >
-            {message.content}
+              <Typography size="sm" as="span" className="inline-block mr-4">
+                {senderName}
+              </Typography>
+              <Typography
+                size="sm"
+                as="span"
+                className="hidden group-hover:inline"
+              >
+                {timeSpan}
+              </Typography>
+            </div>
+            <div
+              className={cn(
+                "py-2 px-4 rounded-lg w-max",
+                isYourMessage
+                  ? "bg-background ml-auto"
+                  : "bg-primary-500 text-primary-foreground",
+              )}
+            >
+              {message.content}
+            </div>
           </div>
         </div>
-      </div>
-    </li>
+      </li>
+    );
+
+  const messageText =
+    message.type === "SYSTEM_ADD_USER"
+      ? ` added ${message.content}`
+      : ` removed ${message.content}`;
+  return (
+    <Typography as="li" center bold color="muted">
+      {message.sender.name} {message.sender.lastname}
+      {messageText}
+    </Typography>
   );
 }
 

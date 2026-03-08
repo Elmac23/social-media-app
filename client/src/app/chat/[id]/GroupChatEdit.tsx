@@ -1,8 +1,6 @@
 "use client";
 
 import { updateGroupChat } from "@/api/groupChats";
-import { useAuth } from "@/components/AuthProvider";
-import { queryClient } from "@/components/QueryProvider";
 import Button from "@/components/ui/Button";
 import FormControl from "@/components/ui/formControl";
 import Input from "@/components/ui/formControl/Input";
@@ -43,13 +41,12 @@ function GroupChatEdit({ groupChat, onSuccess }: GroupChatEditProps) {
     },
   });
 
-  const { accessToken } = useAuth();
   const router = useRouter();
 
   const editGroupMutation = useMutation({
     mutationKey: ["groupChat", groupChat.id],
     mutationFn: (data: UpdateGroupChatDto) =>
-      updateGroupChat(accessToken, groupChat.id, data),
+      updateGroupChat(groupChat.id, data),
     onSuccess: () => {
       onSuccess();
       router.refresh();

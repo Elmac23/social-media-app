@@ -7,7 +7,6 @@ import IconButton from "../ui/IconButton";
 import { MdClose } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { deleteNotification } from "@/api/notifications";
-import { useAuth } from "../AuthProvider";
 import Avatar from "../ui/Avatar";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
 import Typography from "../ui/Typography";
@@ -18,10 +17,9 @@ type NotificationProps = {
 
 function Notification({ notification, onDelete }: NotificationProps) {
   const text = getNotificationText(notification);
-  const { accessToken } = useAuth();
 
   const { mutate } = useMutation({
-    mutationFn: () => deleteNotification(notification.id, accessToken),
+    mutationFn: () => deleteNotification(notification.id),
     onSuccess: () => {
       onDelete(notification.id);
     },

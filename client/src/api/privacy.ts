@@ -1,18 +1,21 @@
 import { UserPrivacy, UserPrivacyPartial } from "@/types/user";
 import { api } from ".";
+import extractDataFromAxios from "@/lib/extractDataFromAxios";
+import withToken from "@/lib/withToken";
 
 export const updatePrivacy = (
   id: string,
   data: UserPrivacyPartial,
-  token: string
+  accessToken?: string,
 ) => {
-  return api.patch(`/users/${id}/privacy`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fn = api.patch(`/users/${id}/privacy`, data, withToken(accessToken));
+  return extractDataFromAxios(fn);
 };
 
-export const getPrivacy = (id: string, token: string) => {
-  return api.get<UserPrivacy>(`/users/${id}/privacy`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getPrivacy = (id: string, accessToken?: string) => {
+  const fn = api.get<UserPrivacy>(
+    `/users/${id}/privacy`,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
 };

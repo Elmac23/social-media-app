@@ -1,16 +1,13 @@
 "use client";
 
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Input from "@/components/ui/formControl/Input";
+
 import Typography from "@/components/ui/Typography";
 import { useToggle } from "@/hooks/useToggle";
 import React from "react";
-import { is } from "zod/locales";
 import Bio from "./Bio";
 import { useMutation } from "@tanstack/react-query";
 import { updateUser } from "@/api/users";
-import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Textarea from "@/components/ui/formControl/Textarea";
 
@@ -22,11 +19,10 @@ type BioProps = {
 function YourBio({ userId, value }: BioProps) {
   const { setFalse, value: isEdited, toggle } = useToggle(false);
   const [editedValue, setEditedValue] = React.useState(value || "");
-  const { accessToken } = useAuth();
   const router = useRouter();
 
   const { mutate } = useMutation({
-    mutationFn: (bio: string) => updateUser(userId, { bio }, accessToken),
+    mutationFn: (bio: string) => updateUser(userId, { bio }),
     onSuccess: () => {
       setFalse();
       router.refresh();

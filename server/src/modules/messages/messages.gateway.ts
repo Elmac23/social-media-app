@@ -73,7 +73,25 @@ export class MessagesGateway {
   async handleAddToGroupchat(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: NotificationDto,
+    @SocketClientId() senderId: string,
   ) {
+    const addedUser = await this.usersService.getUserByIdOrLogin(data.userId);
+
+    const textContent =
+      addedUser.name && addedUser.lastname
+        ? `${addedUser.name} ${addedUser.lastname}`
+        : addedUser.login;
+
+    const message = await this.messagesService.createMessage({
+      senderId,
+      content: textContent,
+      type: 'SYSTEM_ADD_USER',
+      groupChatId: data.entityId,
+    });
+
+    const sender = await this.usersService.getUserByIdOrLogin(senderId);
+
+    client.to(data.entityId).emit('new-message', { ...message, sender });
     client.to(data.userId).emit('added-to-groupchat', data.entityId);
   }
 
@@ -82,7 +100,25 @@ export class MessagesGateway {
   async handleRemoveFromGroupchat(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: NotificationDto,
+    @SocketClientId() senderId,
   ) {
+    const removedUser = await this.usersService.getUserByIdOrLogin(data.userId);
+
+    const textContent =
+      removedUser.name && removedUser.lastname
+        ? `${removedUser.name} ${removedUser.lastname}`
+        : removedUser.login;
+
+    const message = await this.messagesService.createMessage({
+      senderId,
+      content: textContent,
+      type: 'SYSTEM_REMOVE_USER',
+      groupChatId: data.entityId,
+    });
+
+    const sender = await this.usersService.getUserByIdOrLogin(senderId);
+
+    client.to(data.entityId).emit('new-message', { ...message, sender });
     client.to(data.userId).emit('remove-from-groupchat', data.entityId);
   }
 
@@ -109,7 +145,7 @@ export class MessagesGateway {
       return;
     }
     const userChats = await this.groupChatsService.getUsersGroupChats(userId);
-    userChats.forEach((chat) => {
+    userChats.data.forEach((chat) => {
       client.join(chat.id);
     });
   }
@@ -124,7 +160,7 @@ export class MessagesGateway {
       return;
     }
     const userChats = await this.groupChatsService.getUsersGroupChats(userId);
-    userChats.forEach((chat) => {
+    userChats.data.forEach((chat) => {
       client.leave(chat.id);
     });
   }
@@ -137,10 +173,18 @@ export class MessagesGateway {
     @MessageBody(new ZodValidationPipe(createMessageSchema))
     data: CreateMessageDto,
   ) {
-    await this.messagesService.createMessage({ ...data, senderId: userId });
+    const message = await this.messagesService.createMessage({
+      ...data,
+      senderId: userId,
+    });
     const sender = await this.usersService.getUserByIdOrLogin(userId);
 
-    client.to(data.groupChatId).emit('new-message', { ...data, sender });
+    client.to(data.groupChatId).emit('new-message', {
+      ...data,
+      sender,
+      createdAt: message.createdAt,
+      type: 'DEFAULT',
+    });
     client.emit('self-chat-top', { ...data });
   }
 }

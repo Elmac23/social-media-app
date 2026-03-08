@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { QueryType } from 'src/types/query';
+import getResponse from 'src/utils/getResponse';
 
 @Injectable()
 export class FriendsService {
@@ -22,41 +23,45 @@ export class FriendsService {
     userId: string,
     query: QueryType = { page: 1, limit: 10, search: '' },
   ) {
-    const friends = await this.prismaService.user.findMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              {
-                name: {
-                  contains: query.search,
-                  mode: 'insensitive',
-                },
+    const where = {
+      AND: [
+        {
+          OR: [
+            {
+              name: {
+                contains: query.search,
+                mode: 'insensitive' as const,
               },
-            ],
-          },
-          { id: { not: userId } },
-          {
-            OR: [
-              {
-                friendRelations1: {
-                  some: { OR: [{ userId1: userId }, { userId2: userId }] },
-                },
+            },
+          ],
+        },
+        { id: { not: userId } },
+        {
+          OR: [
+            {
+              friendRelations1: {
+                some: { OR: [{ userId1: userId }, { userId2: userId }] },
               },
-              {
-                friendRelations2: {
-                  some: { OR: [{ userId1: userId }, { userId2: userId }] },
-                },
+            },
+            {
+              friendRelations2: {
+                some: { OR: [{ userId1: userId }, { userId2: userId }] },
               },
-            ],
-          },
-        ],
-      },
-      omit: { hashedPassword: true },
-      skip: (query.page - 1) * query.limit,
-      take: query.limit,
-    });
+            },
+          ],
+        },
+      ],
+    };
+    const [friends, count] = await Promise.all([
+      this.prismaService.user.findMany({
+        where,
+        omit: { hashedPassword: true },
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+      }),
+      this.prismaService.user.count({ where }),
+    ]);
 
-    return friends;
+    return getResponse(friends, count);
   }
 }

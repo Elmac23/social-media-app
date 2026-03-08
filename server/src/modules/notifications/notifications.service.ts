@@ -2,17 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationCreate } from './notification.schema';
-
+import getResponse from 'src/utils/getResponse';
 @Injectable()
 export class NotificationsService {
   constructor(private prismaService: PrismaService) {}
 
   async getUserNotifications(userId: string) {
-    return this.prismaService.notification.findMany({
+    const notifications = await this.prismaService.notification.findMany({
       where: { userId },
       include: { sender: { omit: { hashedPassword: true } } },
       orderBy: { createdAt: 'desc' },
     });
+
+    const count = await this.prismaService.notification.count({
+      where: { userId },
+    });
+
+    return getResponse(notifications, count);
   }
 
   async deleteNotification(userId: string, id: string) {

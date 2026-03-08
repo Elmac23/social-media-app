@@ -12,18 +12,16 @@ import { useAuth } from "@/components/AuthProvider";
 function PrivacySelect() {
   const { privacyName, privacySettings } = useAboutField();
   const [privacy, setPrivacy] = React.useState<PrivacyOptions>(
-    privacySettings[privacyName as keyof typeof privacySettings] || "PUBLIC"
+    privacySettings[privacyName as keyof typeof privacySettings] || "PUBLIC",
   );
 
-  const { accessToken, user } = useAuth();
+  const { user } = useAuth();
 
   const { mutate } = useMutation({
     mutationFn: (newPrivacy: PrivacyOptions) =>
-      updatePrivacy(
-        user!.id,
-        { [privacyName]: newPrivacy } as UserPrivacyPartial,
-        accessToken!
-      ),
+      updatePrivacy(user!.id, {
+        [privacyName]: newPrivacy,
+      } as UserPrivacyPartial),
     onSuccess: (data, variables) => {
       setPrivacy(variables);
     },

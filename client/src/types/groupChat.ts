@@ -14,7 +14,9 @@ export type GroupChat = {
   avatarUrl: string;
   name: string;
   description: string;
-  members: User[];
+  createdAt: string;
+  members?: User[];
+  membersCount?: number;
   messages: Message[];
 };
 

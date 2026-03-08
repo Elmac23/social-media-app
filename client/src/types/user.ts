@@ -1,9 +1,12 @@
+export type Role = "USER" | "ADMIN";
+
 export type User = {
   id: string;
   login: string;
   email: string;
   avatarUrl?: string;
   name: string;
+  role: Role;
   lastname?: string;
   dateOfBirth?: string;
   bio?: string;

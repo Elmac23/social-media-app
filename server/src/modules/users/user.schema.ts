@@ -34,4 +34,16 @@ export const userUpdateSchema = z.object({
   userData: userDataSchema.optional(),
 });
 
+export const userOrderByKeys = [
+  'id',
+  'login',
+  'name',
+  'lastName',
+  'email',
+  'dateOfBirth',
+  'role',
+] as const;
+
+export type UserOrderByKeys = (typeof userOrderByKeys)[number];
+
 export type UserUpdateDto = z.infer<typeof userUpdateSchema>;

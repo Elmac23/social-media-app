@@ -3,7 +3,6 @@
 import { useAuth } from "@/components/AuthProvider";
 import Input from "@/components/ui/formControl/Input";
 import IconButton from "@/components/ui/IconButton";
-import type { Message } from "@/types/message";
 import React, {
   useState,
   useEffect,
@@ -13,60 +12,33 @@ import React, {
 } from "react";
 import { MdSend } from "react-icons/md";
 import MessageComponent from "./Message";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getGroupChatsMessages } from "@/api/messages";
 import { motion, useInView } from "motion/react";
 import { useSocket } from "@/components/SocketProvider";
-import { queryClient } from "@/components/QueryProvider";
 import Typography from "@/components/ui/Typography";
-import { User } from "@/types/user";
-import { useRouter } from "next/navigation";
+import { useMessagesContext } from "./MessagesContextProvider";
 
 type MessagesListProps = {
-  initialMessages: Message[];
-  groupChatId: string;
   children?: React.ReactNode;
 };
 
-function MessagesList({
-  initialMessages,
-  groupChatId,
-  children,
-}: MessagesListProps) {
+function MessagesList({ children }: MessagesListProps) {
+  const {
+    currentMessages,
+    data,
+    fetchNextPage,
+    handleSendMessage,
+    writtingList,
+    groupChatId,
+  } = useMessagesContext();
   const { user } = useAuth();
   const { socket } = useSocket();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef<number>(0);
   const previousHeightRef = useRef<number>(0);
   const loaderRef = useRef<HTMLDivElement>(null);
-
-  const [writtingList, setWrittingList] = useState<User[]>([]);
-
   const isInView = useInView(loaderRef);
   const formInputRef = useRef<HTMLInputElement>(null);
 
-  const { data, fetchNextPage } = useInfiniteQuery<Message[], Error>({
-    queryKey: ["messages", groupChatId],
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.length === 10 ? allPages.length + 1 : undefined,
-    queryFn: async ({ pageParam }) => {
-      const res = await getGroupChatsMessages(
-        user?.accessToken || "",
-        groupChatId,
-        {
-          limit: 10,
-          page: pageParam as number,
-        },
-      );
-      return res.data;
-    },
-    initialData: {
-      pageParams: [1],
-      pages: [initialMessages],
-    },
-  });
-  const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
 
   const handleLoadMore = useCallback(() => {
@@ -88,7 +60,6 @@ function MessagesList({
 
   useEffect(() => {
     if (!scrollAreaRef.current) return;
-
     const currentScroll = scrollAreaRef.current.scrollTop;
     const newHeight = scrollAreaRef.current.scrollHeight;
     const previousHeight = previousHeightRef.current;
@@ -106,95 +77,6 @@ function MessagesList({
     });
     return () => cancelAnimationFrame(id);
   }, [currentMessages]);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!socket) return;
-
-    function handleNewMessage(message: Message) {
-      queryClient.refetchQueries({
-        queryKey: ["group-chats"],
-      });
-      if (message.groupChatId !== groupChatId) return;
-      setCurrentMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          ...message,
-          id: message.id || Math.random().toString(36).substring(2, 15),
-        },
-      ]);
-    }
-
-    function handleStartWritting({
-      user,
-      groupChatId: socketGroupChatId,
-    }: {
-      user: User;
-      groupChatId: string;
-    }) {
-      setWrittingList((prev) => {
-        if (groupChatId !== socketGroupChatId) return prev;
-        if (prev.find((u) => u.id === user.id)) return prev;
-        return [...prev, user];
-      });
-    }
-
-    function handleStopWritting({ user }: { user: User; groupChatId: string }) {
-      setWrittingList((prev) => prev.filter((u) => u.id !== user.id));
-    }
-
-    function handleRemovedFromChat(chatId: string) {
-      if (chatId === groupChatId) router.push("/chat");
-    }
-    socket.on("user-writting", handleStartWritting);
-    socket.on("user-stopped-writting", handleStopWritting);
-    socket.on("remove-from-groupchat", handleRemovedFromChat);
-    socket.emit("user-stopped-writting", {
-      groupChatId,
-      userId: user?.id,
-    });
-    socket.on("new-message", handleNewMessage);
-    socket.emit("join-all-rooms");
-    return () => {
-      socket.off("new-message", handleNewMessage);
-      socket.off("user-writting", handleStartWritting);
-      socket.off("user-stopped-writting", handleStopWritting);
-      socket.off("remove-from-groupchat", handleRemovedFromChat);
-      socket.emit("exit-all-rooms");
-      socket.emit("user-stopped-writting", {
-        groupChatId,
-        userId: user?.id,
-      });
-    };
-  }, [socket, groupChatId]);
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!socket) return;
-    if (newMessage.trim() === "") return;
-
-    socket?.emit("send-message", {
-      content: newMessage,
-      senderId: user?.id,
-      createdAt: new Date().toISOString(),
-      groupChatId,
-    });
-    setCurrentMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        id: Math.random().toString(36).substring(2, 15),
-        content: newMessage,
-        senderId: user!.id,
-        sender: user!,
-        groupChatId,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-
-    formInputRef.current?.blur();
-    setNewMessage("");
-  };
 
   return (
     <div className="flex flex-col h-full">
@@ -235,10 +117,20 @@ function MessagesList({
         <Typography className="mt-2 px-4 py-1 rounded-lg bg-background">{`${writtingList[0].name} ${writtingList[0].lastname} is writting...`}</Typography>
       )}
 
-      <form className="flex h-min mt-2" onSubmit={handleSendMessage}>
+      <form
+        className="flex h-min mt-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSendMessage(newMessage, () => {
+            formInputRef.current?.blur();
+            setNewMessage("");
+          });
+        }}
+      >
         <Input
           ref={formInputRef}
           type="text"
+          size="small"
           placeholder="Type your message..."
           fullWidth
           value={newMessage}

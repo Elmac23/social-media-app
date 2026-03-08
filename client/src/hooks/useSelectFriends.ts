@@ -6,14 +6,14 @@ import { useState } from "react";
 import { useDebouncedState } from "./useDebouncedState";
 
 export function useSelectFriends() {
-  const { accessToken, user } = useAuth();
+  const { user } = useAuth();
   const [_, setFriendSearch, debouncedFriendSearch] = useDebouncedState("");
 
   const [selectedFriends, setSelectedFriends] = useState<User[]>([]);
 
   const friends = useQuery({
     queryFn: () =>
-      getUserFriends(user?.id ?? "", accessToken, {
+      getUserFriends(user.id, {
         search: debouncedFriendSearch,
       }),
     queryKey: ["friends", debouncedFriendSearch],
@@ -29,8 +29,8 @@ export function useSelectFriends() {
     );
   };
 
-  const notSelectedFriends = friends.data?.data
-    ? friends.data?.data.filter((friend) =>
+  const notSelectedFriends = friends.data
+    ? friends.data.data.filter((friend) =>
         selectedFriends.every(
           (selectedFriend) => selectedFriend.id != friend.id,
         ),

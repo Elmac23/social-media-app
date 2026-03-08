@@ -22,7 +22,7 @@ export default function AvatarEditor({ onSave }: AvatarEditorProps) {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-  const { accessToken, user } = useAuth();
+  const { user } = useAuth();
   const userId = user?.id;
 
   const router = useRouter();
@@ -30,7 +30,6 @@ export default function AvatarEditor({ onSave }: AvatarEditorProps) {
   const { mutate } = useMutation({
     mutationFn: async (avatar: string) => {
       if (!avatar) return;
-      if (!userId || !accessToken) return;
 
       const res = await fetch(avatar);
       const blob = await res.blob();
@@ -39,12 +38,12 @@ export default function AvatarEditor({ onSave }: AvatarEditorProps) {
         `avatar.${blob.type.split("/")?.[1] ?? "jpg"}`,
         {
           type: blob.type,
-        }
+        },
       );
 
       const formData = new FormData();
       formData.append("avatar", file);
-      return updateUser(userId, formData, accessToken);
+      return updateUser(userId, formData);
     },
     onSuccess: () => {
       router.refresh();

@@ -10,7 +10,6 @@ import { useAuth } from "../AuthProvider";
 import { useToggle } from "@/hooks/useToggle";
 import EditPost from "./EditPost";
 import PostHeader from "./PostHeader";
-import { profile } from "console";
 import { TextToLinksParser } from "@/lib/TextToLinksParser";
 import { cn } from "@/lib/cn";
 

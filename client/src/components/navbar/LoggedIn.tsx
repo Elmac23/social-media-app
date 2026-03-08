@@ -10,6 +10,7 @@ import Button from "../ui/Button";
 import {
   MdAccountCircle,
   MdChat,
+  MdDashboard,
   MdGroup,
   MdHome,
   MdSettings,
@@ -25,7 +26,9 @@ export type LoggedInProps = {
 async function LoggedIn({ user }: LoggedInProps) {
   const avatarUrl = getAvatarUrl(user.avatarUrl);
   const displayedName = `${user.name} ${user.lastname}`;
+
   const userNotifications = await getUserNotifications(user.accessToken);
+  const isAdmin = user.role === "ADMIN";
   return (
     <>
       <li>
@@ -38,7 +41,7 @@ async function LoggedIn({ user }: LoggedInProps) {
           Chat
         </NavLink>
       </li>
-      <Notifications initialNotifications={userNotifications.data} />
+      <Notifications initialNotifications={userNotifications} />
       <Dropdown>
         <DropdownTrigger>
           <Button variant="ghost" className="flex items-center gap-2">
@@ -47,6 +50,11 @@ async function LoggedIn({ user }: LoggedInProps) {
           </Button>
         </DropdownTrigger>
         <DropdownBody className="space-y-2 divide-y-2 divide-background/30 right-0 mt-8">
+          {isAdmin && (
+            <NavLink href={`/admin`} icon={<MdDashboard />}>
+              Dashboard
+            </NavLink>
+          )}
           <NavLink href={`/profile/${user.id}`} icon={<MdAccountCircle />}>
             Profile
           </NavLink>

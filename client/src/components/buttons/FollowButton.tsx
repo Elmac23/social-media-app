@@ -1,7 +1,7 @@
 "use client";
 
 import { follow, unfollow } from "@/api/followers";
-import { useAuth } from "@/components/AuthProvider";
+
 import Button from "@/components/ui/Button";
 import { useToggle } from "@/hooks/useToggle";
 import { useMutation } from "@tanstack/react-query";
@@ -23,11 +23,10 @@ function FollowButton({ userId, initialIsFollowing }: FollowButtonProps) {
 
   const router = useRouter();
 
-  const { accessToken } = useAuth();
   const { socket } = useSocket();
 
   const { mutate: followMutation } = useMutation({
-    mutationFn: () => follow(userId, accessToken),
+    mutationFn: () => follow(userId),
     onSuccess: () => {
       router.refresh();
       setFollow();
@@ -36,7 +35,7 @@ function FollowButton({ userId, initialIsFollowing }: FollowButtonProps) {
   });
 
   const { mutate: unfollowMutation } = useMutation({
-    mutationFn: () => unfollow(userId, accessToken),
+    mutationFn: () => unfollow(userId),
     onSuccess: () => {
       router.refresh();
       setNotFollow();

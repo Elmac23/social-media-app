@@ -43,15 +43,11 @@ function GroupChatList({ groupChats }: GroupChatListProps) {
     },
     queryKey: ["group-chats", search],
     queryFn: async ({ pageParam }) => {
-      const res = await getUsersGroupChats(
-        user?.accessToken || "",
-        user?.id || "",
-        {
-          limit: 10,
-          page: pageParam as number,
-          search,
-        },
-      );
+      const res = await getUsersGroupChats(user?.id || "", {
+        limit: 10,
+        page: pageParam as number,
+        search,
+      });
       return res.data;
     },
     getNextPageParam: (lastPage, allPages) =>

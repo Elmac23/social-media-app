@@ -35,31 +35,31 @@ function SearchUsers() {
       setQuery(input);
     },
     300,
-    [input]
+    [input],
   );
   const isFocus = useFocus(inputRef.current);
 
   const handleSubmit = (isLink: boolean) => (e?: React.FormEvent) => {
     e?.preventDefault();
     if (input.trim() === "") return;
-    if (data && (data.data.length === 1 || isLink)) {
+    if (data && (data.count === 1 || isLink)) {
       dispatch(
         addSearch({
           content: data.data[0].name + " " + data.data[0].lastname,
           avatarUrl: data.data[0].avatarUrl,
           href: `/profile/${data.data[0].id}`,
           type: "USER",
-        })
+        }),
       );
       setInput("");
-      return router.push(`/profile/${data?.data[0].id}`);
+      return router.push(`/profile/${data.data[0]?.id}`);
     }
     dispatch(
       addSearch({
         content: input,
         href: `/search?query=${input}`,
         type: "SEARCH",
-      })
+      }),
     );
     router.push(`/search?query=${input}`);
   };
@@ -78,7 +78,7 @@ function SearchUsers() {
           />
         </DropdownTrigger>
         <DropdownBody className="flex flex-col gap-2 items-stretch w-70 mt-8">
-          {data?.data.length === 0 && input !== "" && (
+          {data?.count === 0 && input !== "" && (
             <Typography className="p-2">No users found...</Typography>
           )}
           {!isEmptyInput &&

@@ -7,7 +7,6 @@ import Button from "../ui/Button";
 import FormError from "../ui/formControl/FormError";
 import { useMutation } from "@tanstack/react-query";
 import { updatePost } from "@/api/posts";
-import { useAuth } from "../AuthProvider";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { postSchema, type CreatePost as EditPost } from "@/schema/postSchema";
@@ -29,7 +28,6 @@ function EditPost({ postId, stopEditing, value }: EditPostProps) {
     resolver: zodResolver(postSchema),
     values: { content: value },
   });
-  const { accessToken } = useAuth();
 
   const router = useRouter();
 
@@ -45,7 +43,7 @@ function EditPost({ postId, stopEditing, value }: EditPostProps) {
     },
 
     mutationFn: async (data: EditPost) => {
-      updatePost(postId, data, accessToken);
+      updatePost(postId, data);
     },
   });
 

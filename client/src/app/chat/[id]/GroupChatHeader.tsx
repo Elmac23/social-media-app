@@ -29,10 +29,12 @@ function GroupChatHeader({ groupChat }: GroupChatHeaderProps) {
       : "Direct Chat";
   } else {
     nameRef.current = groupChat.members
-      .map((member) => {
-        return `${member.name} ${member.lastname}`;
-      })
-      .join(", ");
+      ? groupChat.members
+          ?.map((member) => {
+            return `${member.name} ${member.lastname}`;
+          })
+          .join(", ")
+      : "";
   }
 
   if (isDirect) {

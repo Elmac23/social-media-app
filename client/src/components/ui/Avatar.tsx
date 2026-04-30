@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 export type AvatarProps = {
   url?: string;
   alt: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 };
 
@@ -31,6 +31,7 @@ function getSize(size: AvatarProps["size"]) {
     sm: 16,
     md: 24,
     lg: 32,
+    xl: 40,
   };
   if (!size) return sizes.md;
   return sizes[size];

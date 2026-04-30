@@ -9,6 +9,8 @@ import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import { unzipCountFields } from 'src/utils/unzip-count-fields';
 import getResponse from 'src/utils/getResponse';
 import { parseOrderBy } from 'src/utils/parseOrderBy';
+import { UserOrderByKeys } from '../users/user.schema';
+import { parseUserWhere } from 'src/utils/parseUserWhere';
 
 @Injectable()
 export class GroupChatsService {
@@ -49,6 +51,49 @@ export class GroupChatsService {
     });
   }
 
+  async getMembers(
+    groupChatId: string,
+    query: QueryWithOrderedBy<UserOrderByKeys> = {
+      limit: 20,
+      page: 1,
+      search: '',
+      orderBy: 'id-asc',
+    },
+  ) {
+    const orderBy = parseOrderBy(query.orderBy, {
+      lastName: (v) => {
+        return {
+          lastname: v,
+        };
+      },
+    });
+
+    const where = {
+      AND: [
+        {
+          userInGroupChat: {
+            some: {
+              groupChatId,
+            },
+          },
+        },
+        parseUserWhere(query.search),
+      ],
+    };
+    const data = await this.prismaService.user.findMany({
+      orderBy,
+      take: query.limit,
+      skip: (query.page - 1) * query.limit,
+      where,
+    });
+
+    const count = await this.prismaService.user.count({
+      where,
+    });
+
+    return getResponse(data, count);
+  }
+
   async getGroupChats({
     limit,
     page,
@@ -70,6 +115,13 @@ export class GroupChatsService {
       members: (v) => {
         return {
           usersInGroupChat: {
+            _count: v,
+          },
+        };
+      },
+      messages: (v) => {
+        return {
+          messages: {
             _count: v,
           },
         };
@@ -102,74 +154,79 @@ export class GroupChatsService {
       this.prismaService.groupChat.count({ where }),
     ]);
 
-    const unzippedChats = chats
-      .map((chat) => unzipCountFields(chat, ['messages', 'usersInGroupChat']))
-      .map((chat) => {
-        const { usersInGroupChat, usersInGroupChatCount, ...rest } = chat;
-
-        return { ...rest, membersCount: usersInGroupChatCount };
-      });
+    const unzippedChats = chats.map((chat) =>
+      unzipCountFields(chat, ['messages', 'usersInGroupChat']),
+    );
 
     return getResponse(unzippedChats, count);
   }
 
-  async getUsersGroupChats(userId: string, query?: QueryType) {
-    const { limit, page, search } = query || { limit: 10, page: 1, search: '' };
-
-    const searchQuery = search
-      ? {
+  async getUsersGroupChats(
+    userId: string,
+    query: QueryWithOrderedBy<GroupChatOrderByKeys> = {
+      limit: 20,
+      page: 1,
+      orderBy: 'lastMessageAt-desc',
+    },
+  ) {
+    const { orderBy, limit, page, search } = query;
+    const where = {
+      AND: [
+        {
           OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } },
             {
-              usersInGroupChat: {
-                some: {
-                  user: {
-                    OR: [
-                      {
-                        login: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
-                      },
-                      {
-                        name: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
-                      },
-                      {
-                        lastname: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
+              name: { contains: search, mode: 'insensitive' as const },
+            },
+            {
+              id: { contains: search, mode: 'insensitive' as const },
             },
           ],
-        }
-      : undefined;
-
-    const where = {
-      usersInGroupChat: {
-        some: {
-          userId,
         },
-      },
-      ...(searchQuery && searchQuery),
+        {
+          usersInGroupChat: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
+      ],
     };
 
-    const [result, count] = await Promise.all([
+    const orderByResult = parseOrderBy(orderBy, {
+      members: (v) => {
+        return {
+          usersInGroupChat: {
+            _count: v,
+          },
+        };
+      },
+      messages: (v) => {
+        return {
+          messages: {
+            _count: v,
+          },
+        };
+      },
+    });
+
+    const [chats, count] = await Promise.all([
       this.prismaService.groupChat.findMany({
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: {
-          lastMessageAt: 'desc',
-        },
+        orderBy: orderByResult,
+        where,
         include: {
+          _count: {
+            select: {
+              messages: true,
+              usersInGroupChat: true,
+            },
+          },
+          messages: {
+            include: {
+              sender: true,
+            },
+          },
           usersInGroupChat: {
             include: {
               user: {
@@ -179,28 +236,24 @@ export class GroupChatsService {
               },
             },
           },
-          messages: {
-            include: {
-              sender: true,
-            },
-            orderBy: {
-              createdAt: 'desc',
-            },
-            take: 1,
-          },
         },
-        where,
       }),
       this.prismaService.groupChat.count({ where }),
     ]);
 
-    const mapped = result.map((groupChat) => {
-      const { usersInGroupChat, ...groupChatData } = groupChat;
-      const members = usersInGroupChat.map((entry) => entry.user);
-      return { ...groupChatData, members };
-    });
+    const unzippedChats = chats
+      .map((chat) => unzipCountFields(chat, ['messages', 'usersInGroupChat']))
+      .map((chat) => {
+        const { usersInGroupChat, usersInGroupChatCount, ...rest } = chat;
 
-    return getResponse(mapped, count);
+        return {
+          ...rest,
+          membersCount: usersInGroupChatCount,
+          members: usersInGroupChat.map((member) => member.user),
+        };
+      });
+
+    return getResponse(unzippedChats, count);
   }
 
   async getGroupChatById(groupChatId: string) {
@@ -208,6 +261,12 @@ export class GroupChatsService {
       await this.prismaService.groupChat.findUnique({
         where: { id: groupChatId },
         include: {
+          _count: {
+            select: {
+              messages: true,
+              usersInGroupChat: true,
+            },
+          },
           usersInGroupChat: {
             include: {
               user: {
@@ -220,7 +279,15 @@ export class GroupChatsService {
         },
       });
 
-    return { ...groupData, members: usersInGroupChat.map((u) => u.user) };
+    const unzippedGroupChatData = unzipCountFields(groupData, [
+      'messages',
+      'usersInGroupChat',
+    ]);
+
+    return {
+      ...unzippedGroupChatData,
+      members: usersInGroupChat.map((u) => u.user),
+    };
   }
 
   async removeMember(groupChatId: string, userId: string) {

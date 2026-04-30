@@ -2,8 +2,9 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { GroupChatMemberGuard } from 'src/guards/group-chat-member.guard';
 import { QueryPipe } from 'src/pipes/query.pipe';
-import { QueryType } from 'src/types/query';
+import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import { AuthenticationGuard } from 'src/guards/authentication';
+import { MessageOrderByKeys, messageOrderByKeys } from './messages.schema';
 
 @Controller('group-chats/:groupChatId/messages')
 export class GroupChatMessagesController {
@@ -13,7 +14,8 @@ export class GroupChatMessagesController {
   @Get()
   async getGroupChatMessages(
     @Param('groupChatId') groupChatId: string,
-    @Query(new QueryPipe()) query: QueryType,
+    @Query(new QueryPipe(messageOrderByKeys))
+    query: QueryWithOrderedBy<MessageOrderByKeys>,
   ) {
     return this.messagesService.getMessagesByGroupChatId(groupChatId, query);
   }

@@ -13,7 +13,10 @@ export const querySchema = z.object({
     .refine((val) => val > 0 && val <= 100, {
       message: 'Limit must be between 1 and 100',
     }),
-  search: z.string().optional(),
+  search: z
+    .string()
+    .optional()
+    .transform((val) => (typeof val === 'string' ? val.trim() : val)),
 });
 
 export function createQuerySchemaWithOrderedBy(keys: readonly string[]) {

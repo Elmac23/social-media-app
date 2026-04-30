@@ -8,6 +8,7 @@ import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import { count } from 'console';
 import getResponse from 'src/utils/getResponse';
 import { parseOrderBy } from 'src/utils/parseOrderBy';
+import { parseUserWhere } from 'src/utils/parseUserWhere';
 
 @Injectable()
 export class PostsService {
@@ -79,14 +80,18 @@ export class PostsService {
           omit: { hashedPassword: true },
         },
         _count: {
-          select: { likes: true, comments: true },
+          select: { likes: true, comments: true, sharedPosts: true },
         },
       },
     });
 
     if (!post) throw new NotFoundException('Post not found');
 
-    const unzippedData = unzipCountFields(post, ['likes', 'comments']);
+    const unzippedData = unzipCountFields(post, [
+      'likes',
+      'comments',
+      'sharedPosts',
+    ]);
 
     return await this.processLikedAndSharedStatus(unzippedData, userId);
   }
@@ -130,61 +135,14 @@ export class PostsService {
     search,
     orderBy,
   }: QueryWithOrderedBy<PostOrderByKeys>) {
-    let where = {};
-
-    if (search.split(' ').length === 1) {
-      where = {
-        OR: [
-          {
-            author: {
-              OR: [
-                { login: { contains: search, mode: 'insensitive' } },
-                { id: { contains: search, mode: 'insensitive' } },
-                { name: { contains: search, mode: 'insensitive' } },
-                { lastname: { contains: search, mode: 'insensitive' } },
-              ],
-            },
-          },
-          {
-            content: { contains: search, mode: 'insensitive' },
-          },
-        ],
-      };
-    } else if (search.split(' ').length === 2) {
-      const names = search.split(' ');
-      const firstName = names[0];
-      const lastName = names[1];
-
-      where = {
-        OR: [
-          { content: { contains: search, mode: 'insensitive' } },
-          {
-            author: {
-              OR: [
-                {
-                  AND: [
-                    { name: { contains: firstName, mode: 'insensitive' } },
-                    { lastname: { contains: lastName, mode: 'insensitive' } },
-                  ],
-                },
-                {
-                  AND: [
-                    { name: { contains: lastName, mode: 'insensitive' } },
-                    {
-                      lastname: { contains: firstName, mode: 'insensitive' },
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-      };
-    } else {
-      where = {
-        content: { contains: search, mode: 'insensitive' },
-      };
-    }
+    const where = {
+      OR: [
+        {
+          content: { contains: search, mode: 'insensitive' as const },
+        },
+        { author: parseUserWhere(search) },
+      ],
+    };
 
     const orderByResult = parseOrderBy(orderBy, {
       likes: (v) => {
@@ -209,9 +167,12 @@ export class PostsService {
           },
         };
       },
+      author: (v) => {
+        return {
+          authorId: v,
+        };
+      },
     });
-
-    console.log(orderByResult);
 
     const [posts, count] = await Promise.all([
       this.prismaService.post.findMany({

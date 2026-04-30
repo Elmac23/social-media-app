@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { QueryType } from 'src/types/query';
+import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import getResponse from 'src/utils/getResponse';
+import { UserOrderByKeys } from '../user.schema';
+import { parseOrderBy } from 'src/utils/parseOrderBy';
 
 @Injectable()
 export class FriendsService {
@@ -19,10 +21,7 @@ export class FriendsService {
     return {};
   }
 
-  async getFriends(
-    userId: string,
-    query: QueryType = { page: 1, limit: 10, search: '' },
-  ) {
+  async getFriends(userId: string, query: QueryWithOrderedBy<UserOrderByKeys>) {
     const where = {
       AND: [
         {
@@ -52,9 +51,19 @@ export class FriendsService {
         },
       ],
     };
+
+    let orderByResult = parseOrderBy<UserOrderByKeys>(query.orderBy, {
+      lastName: (v) => {
+        return {
+          lastname: v,
+        };
+      },
+    });
+
     const [friends, count] = await Promise.all([
       this.prismaService.user.findMany({
         where,
+        orderBy: orderByResult,
         omit: { hashedPassword: true },
         skip: (query.page - 1) * query.limit,
         take: query.limit,

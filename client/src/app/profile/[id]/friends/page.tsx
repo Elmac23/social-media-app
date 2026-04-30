@@ -30,6 +30,7 @@ async function FriendsPage({ params }: Props) {
 
   const { followers, following } = await getFollowers(
     id,
+    {},
     loggedInUser.accessToken,
   );
   const user = await getUserProfileById(id, loggedInUser.accessToken);

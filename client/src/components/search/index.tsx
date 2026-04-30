@@ -73,11 +73,12 @@ function SearchUsers() {
           <Input
             placeholder="Search users..."
             value={input}
+            fullWidth
             onInput={(e) => setInput(e.currentTarget.value)}
             ref={inputRef}
           />
         </DropdownTrigger>
-        <DropdownBody className="flex flex-col gap-2 items-stretch w-70 mt-8">
+        <DropdownBody className="flex flex-col gap-2 items-stretch lg:w-70 lg:mt-8 top-90 lg:top-auto">
           {data?.count === 0 && input !== "" && (
             <Typography className="p-2">No users found...</Typography>
           )}

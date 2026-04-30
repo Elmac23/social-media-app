@@ -4,7 +4,7 @@ import React from "react";
 
 function ProfileNavigation({ userId }: { userId: string }) {
   return (
-    <Card className="flex space-x-4 mb-8">
+    <Card className="flex gap-4 mb-8 flex-col md:flex-row">
       <NavLink href={getRoute("", userId)}>Posts</NavLink>
       <NavLink href={getRoute("about", userId)}>About</NavLink>
       <NavLink href={getRoute("friends", userId)}>Friends</NavLink>

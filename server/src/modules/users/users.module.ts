@@ -7,11 +7,14 @@ import { PostsModule } from 'src/modules/posts/posts.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
+import { CommentsModule } from '../comments/comments.module';
+import { UserCommentsController } from './user-comments/user-comments.controller';
 
 @Module({
   imports: [
     PrismaModule,
     PostsModule,
+    CommentsModule,
     MulterModule.register({
       storage: diskStorage({
         destination: join(__dirname, '../../../public/avatars'),
@@ -24,7 +27,7 @@ import { join } from 'path';
       }),
     }),
   ],
-  controllers: [UsersController],
+  controllers: [UsersController, UserCommentsController],
   providers: [UsersService],
   exports: [UsersService],
 })

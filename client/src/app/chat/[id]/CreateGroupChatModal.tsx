@@ -33,7 +33,7 @@ function CreateGroupChatModal() {
     resolver: zodResolver(groupChatSchema),
   });
 
-  const { user } = useAuth();
+  const { user } = useAuth(true);
 
   const navigate = useRouter();
 
@@ -48,7 +48,7 @@ function CreateGroupChatModal() {
   const mutation = useMutation({
     mutationFn: (data: CreateGroupChatDto) => {
       const memberIds = selectedFriends.map((u) => u.id);
-      memberIds.push(user.id);
+      memberIds.push(user!.id);
       return createGroupChat({
         ...data,
         memberIds,

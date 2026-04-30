@@ -28,6 +28,10 @@ export class UserPrivacyInterceptor implements NestInterceptor {
     const viewerId = request.userId;
     const userId = request.params.id;
 
+    const viewer = await this.prismaService.user.findUnique({
+      where: { id: viewerId },
+    });
+
     const userPrivacyLevel = await this.getVisibilityLevel(viewerId, userId);
 
     const userPrivacy = await this.prismaService.userPrivacy.findUnique({
@@ -56,7 +60,11 @@ export class UserPrivacyInterceptor implements NestInterceptor {
 
           if (
             key === 'location' &&
-            !this.isVisibleField(userPrivacy[key], userPrivacyLevel)
+            !this.isVisibleField(
+              userPrivacy[key],
+              userPrivacyLevel,
+              viewer.role === 'ADMIN',
+            )
           ) {
             delete data['userData']?.city;
             delete data['userData']?.country;
@@ -64,13 +72,23 @@ export class UserPrivacyInterceptor implements NestInterceptor {
 
           if (userDataKeys.includes(key)) {
             if (
-              !this.isVisibleField(userPrivacy[key], userPrivacyLevel) &&
+              !this.isVisibleField(
+                userPrivacy[key],
+                userPrivacyLevel,
+                viewer.role === 'ADMIN',
+              ) &&
               data.userData
             ) {
               data.userData[key] = undefined;
             }
           } else if (userKeys.includes(key)) {
-            if (!this.isVisibleField(userPrivacy[key], userPrivacyLevel)) {
+            if (
+              !this.isVisibleField(
+                userPrivacy[key],
+                userPrivacyLevel,
+                viewer.role === 'ADMIN',
+              )
+            ) {
               data[key] = undefined;
             }
           }
@@ -81,7 +99,12 @@ export class UserPrivacyInterceptor implements NestInterceptor {
     );
   }
 
-  isVisibleField(fieldPrivacy: PrivacyLevel, userPrivacyLevel: PrivacyLevel) {
+  isVisibleField(
+    fieldPrivacy: PrivacyLevel,
+    userPrivacyLevel: PrivacyLevel,
+    isAdmin: boolean,
+  ) {
+    if (isAdmin) return true;
     const PRIVACY_HIERARCHY: PrivacyLevel[] = ['PUBLIC', 'FRIENDS', 'PRIVATE'];
     return (
       PRIVACY_HIERARCHY.indexOf(userPrivacyLevel) >=

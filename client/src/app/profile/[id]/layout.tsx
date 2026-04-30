@@ -16,11 +16,10 @@ async function ProfileLayout({ children, params }: Props) {
   const loggedInUser = await getUser();
   if (!loggedInUser) redirect("/auth/login");
   const user = await getUserProfileById(id, loggedInUser.accessToken);
-  const userFriends = await getUserFriends(id, {}, loggedInUser.accessToken);
 
   return (
     <main className="max-w-7xl mx-auto p-8">
-      <ProfileHeader user={user} friendsCount={userFriends.data.length} />
+      <ProfileHeader user={user} />
       <ProfileNavigation userId={user.id} />
       {children}
     </main>

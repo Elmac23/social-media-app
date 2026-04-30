@@ -31,7 +31,7 @@ function Post({ post, profileId, className }: PostProps) {
 
   const isYourPost = user?.id === author.id;
   return (
-    <Card className={cn("pb-4", className)}>
+    <Card className={cn("md:pb-4", className)}>
       <PostHeader
         isYourPost={isYourPost}
         post={post}

@@ -56,8 +56,8 @@ export class CommentsController {
   }
 
   @Get(':id')
-  async getComment(@Param('id') id: string, @UserId() userId: string) {
-    return await this.commentsService.getCommentAsUser(id, userId);
+  async getComment(@Param('id') id: string) {
+    return await this.commentsService.getCommentAsUser(id);
   }
 
   @Get(':id/children')

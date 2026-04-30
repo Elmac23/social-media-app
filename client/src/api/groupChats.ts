@@ -6,6 +6,8 @@ import { UpdateGroupChatDto } from "@/app/chat/[id]/GroupChatEdit";
 import extractDataFromAxios from "@/lib/extractDataFromAxios";
 import { WithCount } from "@/types/withCount";
 import withToken from "@/lib/withToken";
+import { User } from "@/types/user";
+import { Chat } from "@/types/groupChat";
 
 export const getGroupChats = (query: Query, accessToken?: string) => {
   const url = withQuery(`/group-chats`, query);
@@ -49,8 +51,21 @@ export const createGroupChat = (
 };
 
 export const getGroupChatById = (groupChatId: string, accessToken?: string) => {
-  const fn = api.get<GroupChat>(
+  const fn = api.get<Chat>(
     `/group-chats/${groupChatId}`,
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
+};
+
+export const getGroupChatMembers = (
+  groupChatId: string,
+  query?: Query,
+  accessToken?: string,
+) => {
+  console.log(withQuery(`/group-chats/${groupChatId}/users`, query));
+  const fn = api.get<WithCount<User>>(
+    withQuery(`/group-chats/${groupChatId}/users`, query),
     withToken(accessToken),
   );
   return extractDataFromAxios(fn);

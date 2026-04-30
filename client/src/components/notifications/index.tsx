@@ -12,15 +12,19 @@ import NotificationsList from "./NotificationsList";
 import { Notification } from "@/types/notification";
 import { useSocket } from "../SocketProvider";
 import { WithCount } from "@/types/withCount";
+import { useQuery } from "@tanstack/react-query";
+import { getUserNotifications } from "@/api/notifications";
 
-type NotificationsProps = {
-  initialNotifications: WithCount<Notification>;
-};
+function Notifications() {
+  const { data } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => getUserNotifications(),
+  });
 
-function Notifications({ initialNotifications }: NotificationsProps) {
-  const [notifications, setNotifications] = React.useState<Notification[]>(
-    initialNotifications.data,
-  );
+  const initialNotifications = data?.data || [];
+
+  const [notifications, setNotifications] =
+    React.useState<Notification[]>(initialNotifications);
 
   const addNotification = useCallback(
     (notification: Notification) => {
@@ -59,14 +63,20 @@ function Notifications({ initialNotifications }: NotificationsProps) {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant="ghost" icon={<MdNotifications />}>
+        <Button
+          className="flex justify-center"
+          variant="ghost"
+          fullWidth
+          hideTextOnSm={false}
+          icon={<MdNotifications />}
+        >
           <Typography as="span" className="text-primary-500 inline-block mr-2">
             <NotificationCounter count={notifications.length} />
           </Typography>
           Notifications
         </Button>
       </DropdownTrigger>
-      <DropdownBody className="space-y-2 divide-y-2 divide-background/30 right-0 mt-8 w-90">
+      <DropdownBody className="space-y-2 divide-y-2 divide-background/30 lg:top-unset top-90 lg:right-0 lg:mt-8 lg:w-90">
         <Typography className="p-2" bold>
           Notifications
         </Typography>

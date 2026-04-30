@@ -3,7 +3,7 @@ import Image from "next/image";
 import { cn } from "@/lib/cn";
 import FullScreenImage from "../fullScreenImage";
 
-function PostImage({
+const PostImage = React.memo(function PostImage({
   imageUrl,
   className,
 }: {
@@ -13,17 +13,17 @@ function PostImage({
   return (
     <FullScreenImage imageUrl={imageUrl} alt="post">
       <Image
-        width="1000"
-        height="500"
+        width={1000}
+        height={500}
         src={imageUrl}
         alt="post"
         className={cn(
           "object-cover block rounded-lg mb-4 max-w-[100%] max-h-[500px]",
-          className
+          className,
         )}
       />
     </FullScreenImage>
   );
-}
+});
 
 export default PostImage;

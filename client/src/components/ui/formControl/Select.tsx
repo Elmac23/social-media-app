@@ -53,7 +53,7 @@ function Select<T extends number | string>({
           <SelectArrow />
         </Input>
       </DropdownTrigger>
-      <DropdownBody className="w-full flex flex-col gap-2">
+      <DropdownBody className="lg:min-w-[100%] lg:w-max flex flex-col gap-2 lg:max-h-96 overflow-y-scroll">
         <selectContext.Provider
           value={{
             value: props.value,
@@ -71,7 +71,7 @@ function SelectArrow() {
   const { isOpen } = useDropdown();
   return (
     <MotionArrow
-      className="absolute right-1 top-1/2 bottom-0 text-primary-foreground text-2xl -translate-y-1/2"
+      className="absolute right-1 top-1/2 bottom-0 text-foreground text-2xl -translate-y-1/2"
       animate={{
         rotateZ: isOpen ? 180 : 0,
       }}
@@ -83,7 +83,7 @@ function SelectArrow() {
 const MotionArrow = motion.create(MdKeyboardArrowDown);
 
 type OptionProps<T extends string | number = string | number> = {
-  children: string;
+  children: React.ReactNode;
   value: T;
 };
 

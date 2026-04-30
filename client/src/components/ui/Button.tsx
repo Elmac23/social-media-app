@@ -30,12 +30,13 @@ export const buttonVariants = cva(
       variant: "primary",
       size: "medium",
     },
-  }
+  },
 );
 
 export type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     icon?: React.ReactNode;
+    hideTextOnSm?: boolean;
   };
 
 function Button({
@@ -44,6 +45,7 @@ function Button({
   size,
   fullWidth,
   center,
+  hideTextOnSm = true,
   className,
   ...props
 }: ButtonProps) {
@@ -53,13 +55,14 @@ function Button({
         className={cn(
           buttonVariants({ variant, size, fullWidth, center }),
           className,
-          "-pl-4"
+          "-pl-4",
         )}
         {...props}
       >
-        {" "}
         {icon}
-        <span className="hidden sm:inline">{props.children}</span>
+        <span className={cn(hideTextOnSm && "hidden sm:inline")}>
+          {props.children}
+        </span>
       </button>
     );
   }
@@ -67,7 +70,7 @@ function Button({
     <button
       className={cn(
         buttonVariants({ variant, size, fullWidth, center }),
-        className
+        className,
       )}
       {...props}
     />

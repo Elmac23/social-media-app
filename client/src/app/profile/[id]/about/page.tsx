@@ -23,10 +23,10 @@ async function AboutPage({ params }: AboutPageProps) {
 
   const { id } = await params;
 
-  const userProfile = await getUserProfileById(id);
+  const userProfile = await getUserProfileById(id, loggedUser.accessToken);
   const profile = userProfile;
 
-  const privacySettings = await getPrivacy(id);
+  const privacySettings = await getPrivacy(id, loggedUser.accessToken);
 
   const isSelf = loggedUser.id === profile.id;
 

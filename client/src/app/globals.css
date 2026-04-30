@@ -1,15 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #1a1b1e;
+  --color-background: #0f172a;
+  --color-background-lighter: #1e293b;
+  --color-foreground: #f0f0f0;
+  --color-primary-400: #5edcae;
+  --color-primary-500: #34d399;
+  --color-primary-900: #26ae7c;
+  --color-primary-foreground: #010705;
+  /* --color-background: #1a1b1e;
   --color-background-lighter: #2a2b2e;
   --color-foreground: #f0f0f0;
   --color-primary-400: #a385ff;
   --color-primary-500: #8c5cff;
-  --color-primary-900: #49169c;
-  --color-muted: #888888;
-  --color-primary-foreground: #ffffff;
-  --color-border-color: rgb(255, 255, 255, 0.3);
+  --color-primary-900: #49169c; */
+  /* --color-primary-foreground: #ffffff; */
+  /* --color-muted: #888888; */
+  --color-muted: #6b7280;
+  --color-border: #4b5563;
 
   /* Scrollbar variables (dark theme defaults) */
   --scroll-track: rgba(255, 255, 255, 0.02);
@@ -17,6 +25,30 @@
   --scroll-thumb-hover: rgba(255, 255, 255, 0.18);
   --scroll-thumb-border: rgba(0, 0, 0, 0.12);
   --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.green {
+  --color-background: hsl(160, 50%, 4%);
+  --color-background-lighter: hsl(160, 45%, 7%);
+  --color-border: hsl(160, 30%, 18%);
+  --color-foreground: hsl(150, 40%, 98%);
+  --color-primary-400: hsl(330, 90%, 75%);
+  --color-primary-500: hsl(330, 90%, 65%);
+  --color-primary-900: hsl(330, 90%, 55%);
+  --color-muted: hsl(150, 20%, 65%);
+  --color-primary-foreground: #000;
+}
+
+.purple {
+  --color-background: hsl(270, 45%, 4%);
+  --color-background-lighter: hsl(270, 40%, 7%);
+  --color-border: hsl(270, 25%, 18%);
+  --color-foreground: hsl(270, 20%, 98%);
+  --color-primary-400: hsl(270, 70%, 80%);
+  --color-primary-500: hsl(270, 70%, 70%);
+  --color-primary-900: hsl(270, 70%, 60%);
+  --color-muted: hsl(270, 10%, 65%);
+  --color-primary-foreground: hsl(270, 45%, 4%);
 }
 
 .light {
@@ -74,13 +106,15 @@ body {
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: padding-box;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
     var(--scroll-thumb-boxshadow);
 }
 
 *::-webkit-scrollbar-thumb:hover {
   background: var(--scroll-thumb-hover);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
     var(--scroll-thumb-boxshadow);
 }
 

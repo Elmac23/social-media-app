@@ -25,6 +25,7 @@ import { GroupChatMemberGuard } from 'src/guards/group-chat-member.guard';
 import { AdminGuard } from 'src/guards/admin';
 import { QueryPipe } from 'src/pipes/query.pipe';
 import { QueryType, QueryWithOrderedBy } from 'src/types/query';
+import { UserOrderByKeys, userOrderByKeys } from '../users/user.schema';
 
 @Controller('group-chats')
 export class GroupChatsController {
@@ -70,6 +71,16 @@ export class GroupChatsController {
     @Param('userId') userId: string,
   ) {
     return await this.groupChatsService.addMember(chatId, userId);
+  }
+
+  @Get(':groupChatId/users')
+  @UseGuards(AuthenticationGuard, GroupChatMemberGuard)
+  async getMembers(
+    @Param('groupChatId') chatId: string,
+    @Query(new QueryPipe(userOrderByKeys))
+    query: QueryWithOrderedBy<UserOrderByKeys>,
+  ) {
+    return await this.groupChatsService.getMembers(chatId, query);
   }
 
   @Patch(':groupChatId')

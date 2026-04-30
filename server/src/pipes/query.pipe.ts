@@ -19,8 +19,6 @@ export class QueryPipe implements PipeTransform {
   async transform(value: unknown, metadata: ArgumentMetadata) {
     const result = await this._schema.safeParseAsync(value);
 
-    console.log(value);
-
     if (!result.success) throw new BadRequestException(result.error);
 
     return result.data;

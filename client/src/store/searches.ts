@@ -18,7 +18,7 @@ export const searchesSlice = createSlice({
     },
     removeSearch: (state, action: PayloadAction<string>) => {
       state.searches = state.searches.filter(
-        (search) => search.id !== action.payload
+        (search) => search.id !== action.payload,
       );
     },
   },

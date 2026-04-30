@@ -1,78 +1,91 @@
 "use client";
 
-import React from "react";
+import { memo, useId } from "react";
 import Card from "../Card";
 import { cn } from "@/lib/cn";
 import NavLink from "@/components/navbar/NavLink";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import React from "react";
 
 const tabContext = React.createContext<{
   tab: string | null;
-}>({ tab: null });
+  id: string;
+}>({ tab: null, id: "" });
 
 function useTabContext() {
   return React.useContext(tabContext);
 }
 
-export function VerticalTabsSection({
+export const VerticalTabsSection = memo(function VerticalTabsSection({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="grow p-2">{children}</div>;
-}
+  return <div className="grow p-4">{children}</div>;
+});
 
-export function VerticalTabsButtons({
+export const VerticalTabsButtons = memo(function VerticalTabsButtons({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2 pr-4 border-r-2 border-background/30 sticky top-20 self-start">
-      {children}
+    <div className="p-4 border-b-[1px] lg:border-b-0 lg:border-r-[1px] border-border rounded-t-lg lg:rounded-tr-none lg:rounded-l-lg bg-background-lighter">
+      <div className="lg:self-start lg:sticky lg:top-20 space-y-2">
+        {children}
+      </div>
     </div>
   );
-}
-export function VerticalTabsButton({
+});
+
+type VerticalTabsButtonProps = React.PropsWithChildren<{
+  tabName?: string;
+  href?: string;
+}>;
+
+export const VerticalTabsButton = memo(function VerticalTabsButton({
   children,
   tabName,
-}: {
-  children: React.ReactNode;
-  tabName: string;
-}) {
-  const { tab } = useTabContext();
+  href,
+}: VerticalTabsButtonProps) {
+  const { tab, id } = useTabContext();
+  if (tabName && href)
+    throw new Error("Vertical tabs button cant have both tabName and href");
+  const url = (href ?? `?tab=${tabName}`) + `#${id}`;
+  const pathname = usePathname();
+  const isActive = tabName === tab || href === pathname;
+
   return (
     <NavLink
-      href={`?tab=${tabName}`}
-      className={cn(
-        "text-left block w-full",
-        tabName === tab && "text-primary-500",
-      )}
+      href={url}
+      className={cn("text-left block w-max", isActive && "text-primary-500")}
     >
       {children}
     </NavLink>
   );
-}
+});
 
-function VerticalTabs({
+const VerticalTabs = memo(function VerticalTabs({
   children,
   initial,
 }: {
   children: React.ReactNode;
   initial?: string;
 }) {
+  console.log("render");
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
+  const id = useId();
   return (
-    <Card className="flex gap-4">
-      <tabContext.Provider value={{ tab: tab || initial || null }}>
+    <Card className="flex relative flex-col lg:flex-row p-0 bg-background">
+      <tabContext.Provider value={{ tab: tab || initial || null, id }}>
         {children}
       </tabContext.Provider>
     </Card>
   );
-}
+});
 
-export function Tab({
+export const Tab = memo(function Tab({
   children,
   tabName,
 }: {
@@ -85,6 +98,6 @@ export function Tab({
   if (!isActive) return null;
 
   return <>{children}</>;
-}
+});
 
 export default VerticalTabs;

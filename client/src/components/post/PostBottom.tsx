@@ -39,8 +39,10 @@ function PostBottom({ post }: PostBottomProps) {
 
   const { data: comments } = useQuery({
     queryKey: ["comments", post.id],
-    queryFn: () => getPostComments(post.id),
+    queryFn: () => getPostComments(post.id, { limit: 50 }),
   });
+
+  console.log(comments);
 
   const { user } = useAuth();
 

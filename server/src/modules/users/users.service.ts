@@ -9,6 +9,7 @@ import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import getResponse from 'src/utils/getResponse';
 import { UserOrderByKeys } from './user.schema';
 import { parseOrderBy } from 'src/utils/parseOrderBy';
+import { parseUserWhere } from 'src/utils/parseUserWhere';
 
 @Injectable()
 export class UsersService {
@@ -19,43 +20,7 @@ export class UsersService {
     search,
     orderBy,
   }: QueryWithOrderedBy<UserOrderByKeys>) {
-    let where = {};
-
-    if (search.split(' ').length === 1)
-      where = {
-        OR: [
-          { login: { contains: search, mode: 'insensitive' } },
-          { id: { contains: search, mode: 'insensitive' } },
-          { name: { contains: search, mode: 'insensitive' } },
-          { lastname: { contains: search, mode: 'insensitive' } },
-        ],
-      };
-    else {
-      const names = search.split(' ');
-      const firstName = names[0];
-      const lastName = names[1];
-
-      where = {
-        OR: [
-          {
-            AND: [
-              { name: { contains: firstName, mode: 'insensitive' as const } },
-              {
-                lastname: { contains: lastName, mode: 'insensitive' as const },
-              },
-            ],
-          },
-          {
-            AND: [
-              { name: { contains: lastName, mode: 'insensitive' as const } },
-              {
-                lastname: { contains: firstName, mode: 'insensitive' as const },
-              },
-            ],
-          },
-        ],
-      };
-    }
+    const where = parseUserWhere(search);
 
     let orderByResult = parseOrderBy<UserOrderByKeys>(orderBy, {
       lastName: (v) => {
@@ -65,18 +30,9 @@ export class UsersService {
       },
     });
 
-    console.log(orderByResult);
-
     const [users, count] = await Promise.all([
       this.prismaService.user.findMany({
-        where: {
-          OR: [
-            { login: { contains: search, mode: 'insensitive' } },
-            { id: { contains: search, mode: 'insensitive' } },
-            { name: { contains: search, mode: 'insensitive' } },
-            { lastname: { contains: search, mode: 'insensitive' } },
-          ],
-        },
+        where,
         orderBy: orderByResult,
         skip: (page - 1) * limit,
         take: limit,
@@ -178,6 +134,16 @@ export class UsersService {
       },
       omit: { hashedPassword: true },
       include: {
+        _count: {
+          select: {
+            posts: true,
+            comments: true,
+            friendRelations1: true,
+            friendRelations2: true,
+            followed: true,
+            followers: true,
+          },
+        },
         userData: {
           omit: {
             userId: true,
@@ -208,8 +174,15 @@ export class UsersService {
       },
     });
 
+    const { _count, ...rest } = user;
+
     const result = {
-      ...user,
+      ...rest,
+      followersCount: _count.followers,
+      followingCount: _count.followed,
+      friendsCount: _count.friendRelations1 + _count.friendRelations2,
+      postsCount: _count.posts,
+      commentsCount: _count.comments,
       chatId: chat ? chat.id : null,
     };
 

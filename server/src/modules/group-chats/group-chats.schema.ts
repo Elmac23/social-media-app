@@ -21,7 +21,9 @@ export const groupChatOrderByKeys = [
   'name',
   'description',
   'members',
+  'messages',
   'type',
+  'lastMessageAt',
 ] as const;
 
 export type GroupChatOrderByKeys = (typeof groupChatOrderByKeys)[number];

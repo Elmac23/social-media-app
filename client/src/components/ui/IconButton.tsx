@@ -34,9 +34,7 @@ const buttonVariants = cva(
 );
 
 export type ButtonProps = React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    icon?: React.ReactNode;
-  };
+  VariantProps<typeof buttonVariants>;
 
 function IconButton({
   variant,

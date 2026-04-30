@@ -35,26 +35,6 @@ export class MessagesGateway {
     private usersService: UsersService,
   ) {}
 
-  // @SubscribeMessage('join-room')
-  // @UseGuards(WebSocketAuthenticationGuard)
-  // async handleJoinRoom(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: { groupChatId: string },
-  // ) {
-  //   console.log(`Client joining room: ${data.groupChatId}`);
-  //   client.join(data.groupChatId);
-  // }
-
-  // @SubscribeMessage('exit-room')
-  // @UseGuards(WebSocketAuthenticationGuard)
-  // async handleExitRoom(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() data: { groupChatId: string },
-  // ) {
-  //   console.log(`Client leaving room: ${data.groupChatId}`);
-  //   client.leave(data.groupChatId);
-  // }
-
   @SubscribeMessage('user-writting')
   @UseGuards(WebSocketAuthenticationGuard)
   async handleWrittingStart(

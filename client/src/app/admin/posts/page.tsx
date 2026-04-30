@@ -1,15 +1,18 @@
 "use client";
 
-import ButtonLink from "@/components/ui/ButtonLink";
-
-import { Td, Tr } from "@/components/ui/table";
-import { MdBlock, MdInfo } from "react-icons/md";
 import { getPosts } from "@/api/posts";
-import { formatDate } from "date-fns";
+import ButtonLink from "@/components/ui/ButtonLink";
+import { Td, Tr } from "@/components/ui/table";
 import { parseMaxLength } from "@/lib/parseMaxLength";
-import AdminTab from "./AdminTab";
+import { formatDate } from "date-fns";
+import { MdInfo, MdBlock } from "react-icons/md";
 
-function PostsTab() {
+import AdminTab from "../AdminTab";
+import comment from "@/components/comment";
+import Avatar from "@/components/ui/Avatar";
+import { getAvatarUrl } from "@/lib/getAvatarUrl";
+
+function PostsPage() {
   return (
     <AdminTab
       queryFn={getPosts}
@@ -18,16 +21,25 @@ function PostsTab() {
       renderDescription={(data) => `Total Posts: ${data.count}`}
       renderRow={(post) => (
         <Tr key={post.id}>
-          <Td>{parseMaxLength(post.id, 10)}</Td>
-          <Td>{formatDate(post.createdAt, "dd/MM/yyyy hh:mm:ss")}</Td>
-          <Td>{`@${post.author.login} ${post.author.name} ${post.author.lastname}`}</Td>
-          <Td>{parseMaxLength(post.content)}</Td>
-          <Td>{post.likesCount}</Td>
-          <Td>{post.commentsCount}</Td>
-          <Td>{post.sharedPostsCount}</Td>
+          <Td rowName="Id">{parseMaxLength(post.id, 10)}</Td>
+          <Td rowName="Created At">
+            {formatDate(post.createdAt, "dd/MM/yyyy hh:mm:ss")}
+          </Td>
+          <Td rowName="Avatar">
+            <Avatar
+              alt={post.author.name}
+              url={getAvatarUrl(post.author.avatarUrl)}
+              className="inline-block"
+            />
+          </Td>
+          <Td rowName="Author">{`@${post.author.login} ${post.author.name} ${post.author.lastname}`}</Td>
+          <Td rowName="Content">{parseMaxLength(post.content)}</Td>
+          <Td rowName="Likes">{post.likesCount}</Td>
+          <Td rowName="Responses">{post.commentsCount}</Td>
+          <Td rowName="Reposts">{post.sharedPostsCount}</Td>
           <Td>
             <div className="flex gap-4 justify-end">
-              <ButtonLink href="#" icon={<MdInfo />}>
+              <ButtonLink href={`/admin/posts/${post.id}`} icon={<MdInfo />}>
                 Details
               </ButtonLink>
               <ButtonLink variant="ghost" href="#" icon={<MdBlock />}>
@@ -47,6 +59,7 @@ function PostsTab() {
           display: "Created At",
           key: "createdAt",
         },
+        "",
         {
           display: "Author",
           key: "author",
@@ -73,4 +86,4 @@ function PostsTab() {
   );
 }
 
-export default PostsTab;
+export default PostsPage;

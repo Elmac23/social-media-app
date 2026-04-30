@@ -3,17 +3,26 @@ import { User } from "@/types/user";
 import extractDataFromAxios from "@/lib/extractDataFromAxios";
 import { WithCount } from "@/types/withCount";
 import withToken from "@/lib/withToken";
+import { withQuery } from "@/lib/withQuery";
+import { Query } from "@/types/query";
 
 type FollowData = {
   followers: WithCount<User>;
   following: WithCount<User>;
 };
 
-export const getFollowers = (id: string, accessToken?: string) => {
+export const getFollowers = (
+  id: string,
+  query: Query,
+  accessToken?: string,
+) => {
   const fn = api.get<FollowData>(
-    `/users/${id}/followers`,
+    withQuery(`/users/${id}/followers`, query),
+
     withToken(accessToken),
   );
+
+  console.log(withQuery("", query));
   return extractDataFromAxios(fn);
 };
 

@@ -1,7 +1,7 @@
 import Card from "@/components/ui/Card";
 import Typography from "@/components/ui/Typography";
 import React from "react";
-import { User } from "@/types/user";
+import { User, UserProfile } from "@/types/user";
 import { getUser } from "@/lib/getUser";
 import ProfileAvatar from "./ProfileAvatar";
 import FollowButton from "../../components/buttons/FollowButton";
@@ -14,11 +14,10 @@ import MessageButton from "@/components/buttons/MessageButton";
 import JSONDebug from "@/components/JSONDebug";
 
 type ProfileHeaderProps = {
-  user: User;
-  friendsCount?: number;
+  user: UserProfile;
 };
 
-async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
+async function ProfileHeader({ user }: ProfileHeaderProps) {
   const loggedInUser = await getUser();
   if (!loggedInUser) return null;
   const isSelf = loggedInUser.id === user.id;
@@ -47,7 +46,7 @@ async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
 
   return (
     <header className="flex mb-8 gap-4">
-      <Card className="p-8 flex min-w-md">
+      <Card className="p-8 flex w-full md:w-md">
         <div className="flex space-x-4">
           <ProfileAvatar isSelf={isSelf} user={user} />
 
@@ -58,9 +57,9 @@ async function ProfileHeader({ user, friendsCount }: ProfileHeaderProps) {
             <Typography size="md" className="mb-2" as="h2" color="muted">
               @{user.login}
             </Typography>
-            {!!friendsCount && (
+            {!!user.friendsCount && (
               <Typography size="md" color="muted">
-                {friendsCount} friend{friendsCount !== 1 && "s"}
+                {user.friendsCount} friend{user.friendsCount !== 1 && "s"}
               </Typography>
             )}
           </div>

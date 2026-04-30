@@ -5,7 +5,10 @@ export type DirectChat = {
   id: string;
   type: "DIRECT";
   members: [User, User];
+  createdAt: string;
+  updatedAt: string;
   messages: Message[];
+  messagesCount?: number;
 };
 
 export type GroupChat = {
@@ -15,9 +18,11 @@ export type GroupChat = {
   name: string;
   description: string;
   createdAt: string;
+  updatedAt: string;
   members?: User[];
-  membersCount?: number;
+  usersInGroupChatCount?: number;
   messages: Message[];
+  messagesCount?: number;
 };
 
 export type Chat = DirectChat | GroupChat;

@@ -10,10 +10,72 @@ import {
   CommentOrderByKeys,
   UpdateCommentDto,
 } from './comments.schema';
+import { parseUserWhere } from 'src/utils/parseUserWhere';
 
 @Injectable()
 export class CommentsService {
   constructor(private prismaService: PrismaService) {}
+
+  async getUserComments(
+    userId: string,
+    { limit, page, search, orderBy }: QueryWithOrderedBy<CommentOrderByKeys>,
+  ) {
+    const whereQuery = {
+      AND: [
+        { content: { contains: search, mode: 'insensitive' as const } },
+        { authorId: userId },
+      ],
+    };
+    const orderByResult = parseOrderBy(orderBy, {
+      author: (v) => {
+        return {
+          author: {
+            login: v,
+          },
+        };
+      },
+      likes: (v) => {
+        return {
+          likes: {
+            _count: v,
+          },
+        };
+      },
+
+      responses: (v) => {
+        return {
+          subComments: {
+            _count: v,
+          },
+        };
+      },
+    });
+
+    const [comments, count] = await Promise.all([
+      this.prismaService.comment.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: whereQuery,
+        orderBy: orderByResult,
+
+        include: {
+          _count: {
+            select: { likes: true, subComments: true },
+          },
+          author: {
+            omit: { hashedPassword: true },
+          },
+        },
+      }),
+      this.prismaService.comment.count({ where: whereQuery }),
+    ]);
+
+    const unzippedComments = comments.map((c) =>
+      unzipCountFields(c, ['likes', 'subComments']),
+    );
+
+    return getResponse(unzippedComments, count);
+  }
 
   async updateComment(commentId: string, data: UpdateCommentDto) {
     return this.prismaService.comment.update({
@@ -46,61 +108,14 @@ export class CommentsService {
     search,
     orderBy,
   }: QueryWithOrderedBy<CommentOrderByKeys>) {
-    let whereQuery = {};
-
-    if (search.split(' ').length === 1) {
-      whereQuery = {
-        OR: [
-          {
-            author: {
-              OR: [
-                { login: { contains: search, mode: 'insensitive' } },
-                { id: { contains: search, mode: 'insensitive' } },
-                { name: { contains: search, mode: 'insensitive' } },
-                { lastname: { contains: search, mode: 'insensitive' } },
-              ],
-            },
-          },
-          {
-            content: { contains: search, mode: 'insensitive' },
-          },
-        ],
-      };
-    } else if (search.split(' ').length === 2) {
-      const names = search.split(' ');
-      const firstName = names[0];
-      const lastName = names[1];
-
-      whereQuery = {
-        OR: [
-          { content: { contains: search, mode: 'insensitive' } },
-          {
-            author: {
-              OR: [
-                {
-                  AND: [
-                    { name: { contains: firstName, mode: 'insensitive' } },
-                    { lastname: { contains: lastName, mode: 'insensitive' } },
-                  ],
-                },
-                {
-                  AND: [
-                    { name: { contains: lastName, mode: 'insensitive' } },
-                    {
-                      lastname: { contains: firstName, mode: 'insensitive' },
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-      };
-    } else {
-      whereQuery = {
-        content: { contains: search, mode: 'insensitive' },
-      };
-    }
+    const whereQuery = {
+      OR: [
+        {
+          content: { contains: search, mode: 'insensitive' as const },
+        },
+        { author: parseUserWhere(search) },
+      ],
+    };
 
     const orderByResult = parseOrderBy(orderBy, {
       author: (v) => {
@@ -153,7 +168,7 @@ export class CommentsService {
     return getResponse(unzippedComments, count);
   }
 
-  async getCommentAsUser(id: string, userId?: string) {
+  async getCommentAsUser(id: string) {
     const comment = await this.prismaService.comment.findUnique({
       where: { id },
       include: {
@@ -170,9 +185,7 @@ export class CommentsService {
 
     const unzippedComment = unzipCountFields(comment, ['likes', 'subComments']);
 
-    if (!userId) return unzippedComment;
-
-    return this.processLikedStatus(unzippedComment, userId);
+    return unzippedComment;
   }
 
   async createComment(data: CommentDto) {

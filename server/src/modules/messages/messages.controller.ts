@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import {
   CreateMessageDto,
@@ -23,6 +31,12 @@ export class MessagesController {
     query: QueryWithOrderedBy<MessageOrderByKeys>,
   ) {
     return this.messagesService.getMessages(query);
+  }
+
+  @Get(':id')
+  @UseGuards(AuthenticationGuard, AdminGuard)
+  async getMessageById(@Param('id') id: string) {
+    return this.messagesService.getMessageById(id);
   }
 
   @Post()

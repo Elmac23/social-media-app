@@ -17,9 +17,9 @@ async function PhotosPage({ params }: Props) {
   const { id } = await params;
   const isSelf = loggedInUser.id === id;
 
-  const user = await getUserProfileById(id);
+  const user = await getUserProfileById(id, loggedInUser.accessToken);
 
-  const userPosts = await getUsersPosts(id);
+  const userPosts = await getUsersPosts(id, loggedInUser.accessToken);
 
   return (
     <div>

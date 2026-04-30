@@ -128,9 +128,9 @@ function MessagesList({ children }: MessagesListProps) {
         }}
       >
         <Input
+          color="primary"
           ref={formInputRef}
           type="text"
-          size="small"
           placeholder="Type your message..."
           fullWidth
           value={newMessage}
@@ -150,7 +150,7 @@ function MessagesList({ children }: MessagesListProps) {
         />
         <IconButton
           type="submit"
-          className="rounded-none ring-2 ring-primary-500 rounded-r-sm"
+          className="rounded-none ring-2 ring-primary-500 rounded-r-sm h-full"
         >
           <MdSend />
         </IconButton>

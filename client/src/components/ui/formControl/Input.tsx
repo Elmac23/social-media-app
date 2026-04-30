@@ -21,11 +21,38 @@ const inputVariants = cva("p-2 w-full outline-none", {
   },
 });
 
+const inputOutlineVariants = cva(
+  "ring-2 inline-block relative rounded-sm transition-all",
+  {
+    variants: {
+      color: {
+        primary:
+          "ring-primary-900 bg-background-lighter focus-within:ring-primary-400 hover:ring-primary-400",
+        default:
+          "ring-border bg-background-lighter focus-within:ring-primary-400 hover:ring-primary-400",
+      },
+    },
+    defaultVariants: {
+      color: "default",
+    },
+  },
+);
+
 type InputProps = Omit<React.ComponentProps<"input">, "size"> & {
   fullWidth?: boolean;
-} & VariantProps<typeof inputVariants>;
+  borderClassName?: string;
+} & VariantProps<typeof inputVariants> &
+  VariantProps<typeof inputOutlineVariants>;
 
-function Input({ size, fullWidth, className, children, ...props }: InputProps) {
+function Input({
+  size,
+  fullWidth,
+  className,
+  children,
+  borderClassName,
+  color,
+  ...props
+}: InputProps) {
   const { id } = useFormControl();
   const defaultId = useId();
   const isPassword = props.type === "password";
@@ -33,8 +60,9 @@ function Input({ size, fullWidth, className, children, ...props }: InputProps) {
   return (
     <div
       className={cn(
-        "ring-2 inline-block relative ring-primary-500 rounded-sm focus-within:ring-primary-400 hover:ring-primary-400 transition-all",
-        fullWidth && "w-full"
+        inputOutlineVariants({ color }),
+        borderClassName,
+        fullWidth && "w-full",
       )}
     >
       <input
@@ -47,7 +75,8 @@ function Input({ size, fullWidth, className, children, ...props }: InputProps) {
       {isPassword && (
         <IconButton
           onClick={toggle}
-          className="absolute top-0 bottom-0 right-0 p-4 rounded-none"
+          variant="ghost"
+          className="absolute top-0 bottom-0 right-0 w-12 rounded-none h-full grid place-items-center"
           type="button"
         >
           {isPasswordVisible ? <MdVisibilityOff /> : <MdVisibility />}

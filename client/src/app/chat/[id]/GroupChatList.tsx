@@ -120,7 +120,7 @@ function GroupChatList({ groupChats }: GroupChatListProps) {
           />
         </FormControl>
       </div>
-      <ul className="overflow-y-auto">
+      <ul className="overflow-y-auto overflow-x-hidden">
         {newGroupChats.length === 0 && (
           <Typography color="muted">No chats found.</Typography>
         )}

@@ -17,7 +17,8 @@ import { ZodValidationPipe } from 'src/pipes/ZodValidationPipe';
 import { UserId } from 'src/decorators/user-id';
 import { SelfOrAdminGuard } from 'src/guards/self-or-admin';
 import { QueryPipe } from 'src/pipes/query.pipe';
-import { QueryType } from 'src/types/query';
+import { QueryType, QueryWithOrderedBy } from 'src/types/query';
+import { UserOrderByKeys, userOrderByKeys } from '../user.schema';
 
 @Controller('users/:id/friends')
 export class FriendsController {
@@ -27,7 +28,8 @@ export class FriendsController {
   @UseGuards(AuthenticationGuard)
   async getFriends(
     @Param('id') userId: string,
-    @Query(new QueryPipe()) query: QueryType,
+    @Query(new QueryPipe(userOrderByKeys))
+    query: QueryWithOrderedBy<UserOrderByKeys>,
   ) {
     return await this.friendsService.getFriends(userId, query);
   }

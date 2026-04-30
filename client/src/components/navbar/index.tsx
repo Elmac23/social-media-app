@@ -1,44 +1,23 @@
 import Link from "next/link";
 import React from "react";
-import NavLink from "./NavLink";
 import { getUser } from "@/lib/getUser";
-import LoggedIn from "./LoggedIn";
 import Typography from "../ui/Typography";
 import SearchUsers from "../search";
+import NavbarCollapse from "./NavbarCollapse";
 
 async function Navbar() {
   const user = await getUser();
 
   return (
-    <div className="bg-background-lighter border-b-2shadow-2xl w-full z-50 fixed top-0">
-      <div className="flex p-4 justify-between items-center gap-4 container mx-auto ">
-        <div className="flex items-center gap-12 flex-1">
-          <Typography size="2xl" className="font-bold">
+    <div className="bg-background-lighter border-b-[1px] border-border shadow-2xl w-full z-50 fixed top-0 overflow-y-hidden lg:overflow-y-visible">
+      <div className="flex p-4 lg:pb-4 pb-0 flex-col lg:flex-row justify-between lg:items-center gap-2 lg:gap-4 container mx-auto ">
+        <div className="flex justify-center lg:justify-start text-center mb-4 lg:mb-0 gap-12 flex-1">
+          <Typography as="h2" size="2xl" className="font-bold">
             <Link href="/">Friendsy</Link>
           </Typography>
-          {user && <SearchUsers />}
+          <div className="hidden lg:block">{user && <SearchUsers />}</div>
         </div>
-        <nav>
-          <ul className="flex items-center gap-8">
-            {user && <LoggedIn user={user} />}
-
-            {!user && (
-              <>
-                <li>
-                  <NavLink
-                    className="hover:text-primary-foreground bg-primary-500 hover:bg-primary-900"
-                    href="/auth/login"
-                  >
-                    Login
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink href="/auth/register">Register</NavLink>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
+        <NavbarCollapse user={user} />
       </div>
     </div>
   );

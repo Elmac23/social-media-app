@@ -5,78 +5,22 @@ import { CreateMessageDto, MessageOrderByKeys } from './messages.schema';
 import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import getResponse from 'src/utils/getResponse';
 import { parseOrderBy } from 'src/utils/parseOrderBy';
+import { parseUserWhere } from 'src/utils/parseUserWhere';
 
 @Injectable()
 export class MessagesService {
   constructor(private prismaService: PrismaService) {}
 
-  async getMessages({
-    limit,
-    page,
-    search,
-    orderBy,
-  }: QueryWithOrderedBy<MessageOrderByKeys>) {
-    let where = {};
-
-    if (search.split(' ').length === 1) {
-      where = {
-        OR: [
-          {
-            sender: {
-              OR: [
-                { login: { contains: search, mode: 'insensitive' } },
-                { id: { contains: search, mode: 'insensitive' } },
-                { name: { contains: search, mode: 'insensitive' } },
-                { lastname: { contains: search, mode: 'insensitive' } },
-              ],
-            },
-          },
-          {
-            content: { contains: search, mode: 'insensitive' },
-          },
-        ],
-      };
-    } else if (search.split(' ').length === 2) {
-      const names = search.split(' ');
-      const firstName = names[0];
-      const lastName = names[1];
-
-      where = {
-        OR: [
-          { content: { contains: search, mode: 'insensitive' } },
-          {
-            sender: {
-              OR: [
-                {
-                  AND: [
-                    { name: { contains: firstName, mode: 'insensitive' } },
-                    { lastname: { contains: lastName, mode: 'insensitive' } },
-                  ],
-                },
-                {
-                  AND: [
-                    { name: { contains: lastName, mode: 'insensitive' } },
-                    {
-                      lastname: { contains: firstName, mode: 'insensitive' },
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-      };
-    } else {
-      where = {
-        content: { contains: search, mode: 'insensitive' },
-      };
-    }
-
+  async getUserMessages(
+    userId: string,
+    { limit, page, search, orderBy }: QueryWithOrderedBy<MessageOrderByKeys>,
+  ) {
     const finalWhere = {
       AND: [
-        where,
         {
-          type: 'DEFAULT',
+          type: 'DEFAULT' as const,
+          senderId: userId,
+          content: { contains: search, mode: 'insensitive' as const },
         },
       ],
     };
@@ -109,6 +53,74 @@ export class MessagesService {
     return getResponse(messages, count);
   }
 
+  async getMessageById(id: string) {
+    return await this.prismaService.message.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        groupChat: true,
+        sender: {
+          omit: {
+            hashedPassword: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getMessages({
+    limit,
+    page,
+    search,
+    orderBy,
+  }: QueryWithOrderedBy<MessageOrderByKeys>) {
+    const where = {
+      AND: [
+        {
+          OR: [
+            {
+              content: { contains: search, mode: 'insensitive' as const },
+            },
+            {
+              sender: parseUserWhere(search),
+            },
+          ],
+        },
+        {
+          type: 'DEFAULT' as const,
+        },
+      ],
+    };
+
+    const orderByResult = parseOrderBy(orderBy, {
+      author: (v) => {
+        return {
+          sender: {
+            login: v,
+          },
+        };
+      },
+    });
+
+    const [messages, count] = await Promise.all([
+      this.prismaService.message.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where,
+        orderBy: orderByResult,
+        include: {
+          sender: {
+            omit: { hashedPassword: true },
+          },
+        },
+      }),
+      this.prismaService.message.count({ where }),
+    ]);
+
+    return getResponse(messages, count);
+  }
+
   async createMessage(messageDto: CreateMessageDto) {
     const message = await this.prismaService.message.create({
       data: {
@@ -122,17 +134,54 @@ export class MessagesService {
     return message;
   }
 
-  async getMessagesByGroupChatId(groupChatId: string, query?: QueryType) {
-    const { limit, page } = query;
+  async getMessagesByGroupChatId(
+    groupChatId: string,
+    query: QueryWithOrderedBy<MessageOrderByKeys> = {
+      limit: 20,
+      page: 1,
+      orderBy: 'createdAt-desc',
+      search: '',
+    },
+  ) {
+    const { limit, page, search, orderBy } = query;
+
+    const orderByResult = parseOrderBy(orderBy, {
+      author: (v) => {
+        return {
+          sender: {
+            login: v,
+          },
+        };
+      },
+    });
+
+    const where = {
+      AND: [
+        {
+          groupChatId,
+        },
+        {
+          OR: [
+            {
+              content: { contains: search, mode: 'insensitive' as const },
+            },
+            {
+              sender: parseUserWhere(search),
+            },
+          ],
+        },
+      ],
+    };
+
     const messages = await this.prismaService.message.findMany({
-      where: { groupChatId },
+      where,
       include: { sender: { omit: { hashedPassword: true } } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: orderByResult,
       skip: (page - 1) * limit,
       take: limit,
     });
     const count = await this.prismaService.message.count({
-      where: { groupChatId },
+      where,
     });
 
     return getResponse(messages, count);

@@ -12,6 +12,21 @@ export const getMessages = (query: Query, accessToken?: string) => {
   return extractDataFromAxios(fn);
 };
 
+export const getUserMessages = (
+  id: string,
+  query: Query,
+  accessToken?: string,
+) => {
+  const url = withQuery(`users/${id}/messages`, query);
+  const fn = api.get<WithCount<Message>>(url, withToken(accessToken));
+  return extractDataFromAxios(fn);
+};
+
+export const getMessageById = (id: string, accessToken?: string) => {
+  const fn = api.get<Message>(`messages/${id}`, withToken(accessToken));
+  return extractDataFromAxios(fn);
+};
+
 export const getGroupChatsMessages = (
   chatId: string,
   query?: Query,

@@ -23,6 +23,7 @@ function GroupChatComponent({
   currentSearch,
   isNotification,
 }: GroupChatProps) {
+  console.log(groupChat);
   const chatName = useRef("some chat");
   const chatAvatarUrl = useRef("");
   const url = currentSearch

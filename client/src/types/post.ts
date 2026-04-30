@@ -13,3 +13,11 @@ export type Post = {
   isSharedByMe?: boolean;
   updatedAt?: string;
 };
+
+export type PostAction = {
+  id: string;
+  userId: string;
+  postId: string;
+  createdAt: string;
+  user: Pick<User, "avatarUrl" | "name" | "login" | "lastname" | "id">;
+};

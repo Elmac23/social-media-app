@@ -1,3 +1,5 @@
+"use client";
+
 import FormControl from "@/components/ui/formControl";
 import Input from "@/components/ui/formControl/Input";
 import Label from "@/components/ui/formControl/Label";
@@ -18,6 +20,7 @@ import Pagination from "./Pagination";
 import { Query } from "@/types/query";
 import { WithCount } from "@/types/withCount";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import Card from "@/components/ui/Card";
 
 type ObjWithId = {
   id: string;
@@ -48,15 +51,24 @@ function AdminTab<T extends ObjWithId>({
   queryFn,
   renderDescription,
 }: AdminTabProps<T>) {
-  const [page, setPage] = useState(10);
+  const [page, setPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(20);
   const [input, setInput, debouncedInput] = useDebouncedState("");
   const [orderedBy, setOrderedBy] = useState<string | undefined>();
   const { data, isSuccess, isLoading } = useQuery({
     queryKey: [queryKey, debouncedInput, page, pageLimit, orderedBy],
     queryFn: async () =>
-      queryFn({ limit: pageLimit, page, search: input, orderBy: orderedBy }),
+      queryFn({
+        limit: pageLimit,
+        page,
+        search: debouncedInput,
+        orderBy: orderedBy,
+      }),
   });
+
+  useEffect(() => {
+    console.log(input);
+  }, [input]);
 
   function handleChangeOrderedBy(key: string) {
     if (!orderedBy?.includes(key)) return setOrderedBy(`${key}-asc`);
@@ -76,76 +88,103 @@ function AdminTab<T extends ObjWithId>({
 
   useEffect(() => {
     setPage(1);
-  }, [input, pageLimit]);
+  }, [debouncedInput, pageLimit]);
 
-  if (isLoading) return <Typography>Loading...</Typography>;
-
-  if (isSuccess)
-    return (
-      <>
-        <div className="flex items-baseline justify-between mb-4">
-          <Typography bold size="lg">
-            {title}
-          </Typography>
-          <div className="flex gap-8">
-            <FormControl className="flex items-baseline gap-4">
-              <Label>Items per Page</Label>
-              <Select setValue={setPageLimit} value={pageLimit}>
-                <Option value={5}>5</Option>
-                <Option value={10}>10</Option>
-                <Option value={20}>20</Option>
-                <Option value={50}>50</Option>
-              </Select>
-            </FormControl>
-            <FormControl className="flex items-baseline gap-4">
-              <Label>Search</Label>
-              <Input
-                value={input}
-                onChange={(e) => {
-                  setInput(e.currentTarget.value);
-                  setPage(1);
-                }}
-              />
-            </FormControl>
-          </div>
-        </div>
-        <Table>
-          <THeader>
-            <Tr>
+  return (
+    <div className="p-2 w-full">
+      <div className="flex flex-col lg:flex-row items-baseline justify-between mb-4">
+        <Typography bold size="lg">
+          {title}
+        </Typography>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <FormControl className="flex items-baseline gap-4 xl:hidden justify-between">
+            <Label>Sort by</Label>
+            <Select setValue={setOrderedBy} value={orderedBy || ""}>
               {tableColumns.map((col) => {
-                if (typeof col === "string")
-                  return (
-                    <Th className="select-none" key={col}>
-                      {col}
-                    </Th>
-                  );
+                if (typeof col === "string") return null;
 
                 return (
-                  <Th
-                    className="select-none"
-                    key={col.key}
-                    onClick={() => handleChangeOrderedBy(col.key)}
-                  >
-                    {col.display}
-                    {handleArrow(col.key)}
-                  </Th>
+                  <Option key={col.key} value={`${col.key}-asc`}>
+                    {`${col.display} ascending`}
+                  </Option>
                 );
               })}
-            </Tr>
-          </THeader>
-          <TBody>{data.data.map((entry) => renderRow(entry))}</TBody>
-        </Table>
-        <TableDescription>{renderDescription(data)}</TableDescription>
-        <Pagination
-          setPage={setPage}
-          itemsPerPage={pageLimit}
-          total={data.count}
-          page={page}
-          setNext={() => setPage((p) => p + 1)}
-          setPrev={() => setPage((p) => p - 1)}
-        />
-      </>
-    );
+              {tableColumns.map((col) => {
+                if (typeof col === "string") return null;
+
+                return (
+                  <Option key={col.key} value={`${col.key}-desc`}>
+                    {`${col.display} descending`}
+                  </Option>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <FormControl className="flex items-baseline gap-4 justify-between">
+            <Label>Items per Page</Label>
+            <Select setValue={setPageLimit} value={pageLimit}>
+              <Option value={5}>5</Option>
+              <Option value={10}>10</Option>
+              <Option value={20}>20</Option>
+              <Option value={50}>50</Option>
+            </Select>
+          </FormControl>
+          <FormControl className="flex items-baseline gap-4 justify-between">
+            <Label>Search</Label>
+            <Input
+              value={input}
+              onChange={(e) => {
+                setInput(e.currentTarget.value);
+                setPage(1);
+              }}
+            />
+          </FormControl>
+        </div>
+      </div>
+      <Card className="border-0 bg-transparent xl:bg-background-lighter xl:border-1">
+        {isLoading && <Typography>Loading...</Typography>}
+        {isSuccess && (
+          <>
+            <Table>
+              <THeader>
+                <Tr>
+                  {tableColumns.map((col) => {
+                    if (typeof col === "string")
+                      return (
+                        <Th className="select-none" key={col}>
+                          {col}
+                        </Th>
+                      );
+
+                    return (
+                      <Th
+                        className="select-none"
+                        key={col.key}
+                        onClick={() => handleChangeOrderedBy(col.key)}
+                      >
+                        {col.display}
+                        {handleArrow(col.key)}
+                      </Th>
+                    );
+                  })}
+                </Tr>
+              </THeader>
+              <TBody>{data.data.map((entry) => renderRow(entry))}</TBody>
+            </Table>
+            <TableDescription>{renderDescription(data)}</TableDescription>
+            <Pagination
+              setPage={setPage}
+              itemsPerPage={pageLimit}
+              total={data.count}
+              page={page}
+              setNext={() => setPage((p) => p + 1)}
+              setPrev={() => setPage((p) => p - 1)}
+            />
+          </>
+        )}
+      </Card>
+    </div>
+  );
 }
 
 export default AdminTab;

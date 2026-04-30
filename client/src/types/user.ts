@@ -6,6 +6,7 @@ export type User = {
   email: string;
   avatarUrl?: string;
   name: string;
+  createdAt: string;
   role: Role;
   lastname?: string;
   dateOfBirth?: string;
@@ -29,6 +30,12 @@ export type UserData = {
 export type UpdateUser = Partial<UserProfile>;
 
 export type UserProfile = User & {
+  followersCount: number;
+  followingCount: number;
+  friendsCount: number;
+  postsCount: number;
+  commentsCount: number;
+
   userData?: UserData;
 };
 

@@ -5,12 +5,16 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticationGuard } from 'src/guards/authentication';
 
 import { UserId } from 'src/decorators/user-id';
 import { UserFollowersService } from './user-followers.service';
+import { QueryWithOrderedBy } from 'src/types/query';
+import { userOrderByKeys, UserOrderByKeys } from '../user.schema';
+import { QueryPipe } from 'src/pipes/query.pipe';
 @Controller('users/:id/followers')
 export class UserFollowersController {
   constructor(private userFollowersService: UserFollowersService) {}
@@ -26,8 +30,12 @@ export class UserFollowersController {
 
   @Get()
   @UseGuards(AuthenticationGuard)
-  async getFollowers(@Param('id') userId: string) {
-    return await this.userFollowersService.getFollowers(userId);
+  async getFollowers(
+    @Param('id') userId: string,
+    @Query(new QueryPipe(userOrderByKeys))
+    query: QueryWithOrderedBy<UserOrderByKeys>,
+  ) {
+    return await this.userFollowersService.getFollowers(userId, query);
   }
 
   @Delete()

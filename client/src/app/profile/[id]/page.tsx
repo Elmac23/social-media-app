@@ -73,7 +73,7 @@ async function UserProfile({ params, searchParams }: Props) {
         )}
       </div>
 
-      <div className="md:sticky md:top-24 md:self-start">
+      <div className="lg:sticky md:top-24 md:self-start w-full lg:w-auto">
         {isSelf ? (
           <YourBio userId={user.id} value={user.bio} />
         ) : (

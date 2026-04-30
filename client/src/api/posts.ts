@@ -1,4 +1,4 @@
-import { Post } from "@/types/post";
+import { Post, PostAction } from "@/types/post";
 import { api } from ".";
 import { UpdatePost } from "@/schema/postSchema";
 import { Query } from "@/types/query";
@@ -57,6 +57,30 @@ export const createPost = (data: FormData, accessToken?: string) => {
 
 export const deletePost = (id: string, accessToken?: string) => {
   const fn = api.delete(`/posts/${id}`, withToken(accessToken));
+  return extractDataFromAxios(fn);
+};
+
+export const getPostLikes = (
+  id: string,
+  query: Query,
+  accessToken?: string,
+) => {
+  const fn = api.get<WithCount<PostAction>>(
+    withQuery(`/posts/${id}/likes`, query),
+    withToken(accessToken),
+  );
+  return extractDataFromAxios(fn);
+};
+
+export const getPostReposts = (
+  id: string,
+  query: Query,
+  accessToken?: string,
+) => {
+  const fn = api.get<WithCount<PostAction>>(
+    withQuery(`/posts/${id}/reposts`, query),
+    withToken(accessToken),
+  );
   return extractDataFromAxios(fn);
 };
 

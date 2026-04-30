@@ -30,7 +30,7 @@ function PrivacySelect() {
   return (
     <Select
       size="small"
-      className="bg-primary-500 text-primary-foreground"
+      className=""
       value={privacy}
       setValue={(e) => mutate(e as PrivacyOptions)}
     >

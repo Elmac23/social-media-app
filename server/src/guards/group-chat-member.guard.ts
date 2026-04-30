@@ -16,7 +16,7 @@ export class GroupChatMemberGuard implements CanActivate {
       },
     });
 
-    const allMemberships = await this.prismaService.userInGroupChat.findMany();
+    if (user.role === 'ADMIN') return true;
 
     const membership = await this.prismaService.userInGroupChat.findFirst({
       where: {

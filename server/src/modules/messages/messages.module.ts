@@ -5,11 +5,16 @@ import { UsersModule } from '../users/users.module';
 import { GroupChatMessagesController } from './group-chat-messages.controller';
 import { MessagesGateway } from './messages.gateway';
 import { GroupChatsModule } from '../group-chats/group-chats.module';
+import { UserMessagesController } from './user-messages.controller';
 
 @Module({
   imports: [UsersModule, GroupChatsModule],
   providers: [MessagesService, MessagesGateway],
-  controllers: [MessagesController, GroupChatMessagesController],
+  controllers: [
+    MessagesController,
+    GroupChatMessagesController,
+    UserMessagesController,
+  ],
   exports: [MessagesService],
 })
 export class MessagesModule {}

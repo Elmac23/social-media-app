@@ -1,4 +1,3 @@
-import React from "react";
 import NavLink from "./NavLink";
 import Avatar from "../ui/Avatar";
 import { UserWithToken } from "@/types/user";
@@ -17,39 +16,47 @@ import {
 } from "react-icons/md";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
 import Notifications from "../notifications";
-import { getUserNotifications } from "@/api/notifications";
+import SearchUsers from "../search";
 
 export type LoggedInProps = {
   user: UserWithToken;
+  hideMenu: () => void;
 };
 
-async function LoggedIn({ user }: LoggedInProps) {
+function LoggedIn({ user, hideMenu }: LoggedInProps) {
   const avatarUrl = getAvatarUrl(user.avatarUrl);
   const displayedName = `${user.name} ${user.lastname}`;
-
-  const userNotifications = await getUserNotifications(user.accessToken);
   const isAdmin = user.role === "ADMIN";
   return (
     <>
-      <li>
-        <NavLink href="/feed" icon={<MdHome />}>
+      <li onClick={hideMenu}>
+        <NavLink className="flex justify-center" href="/feed" icon={<MdHome />}>
           Browse
         </NavLink>
       </li>
-      <li>
-        <NavLink icon={<MdChat />} href="/chat">
+      <li onClick={hideMenu}>
+        <NavLink icon={<MdChat />} href="/chat" className="flex justify-center">
           Chat
         </NavLink>
       </li>
-      <Notifications initialNotifications={userNotifications} />
+
+      <Notifications />
+
+      <li className="lg:hidden">
+        <SearchUsers />
+      </li>
+
       <Dropdown>
         <DropdownTrigger>
-          <Button variant="ghost" className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 w-full lg:w-auto justify-center"
+          >
             {displayedName}
             <Avatar url={avatarUrl} alt={displayedName} />
           </Button>
         </DropdownTrigger>
-        <DropdownBody className="space-y-2 divide-y-2 divide-background/30 right-0 mt-8">
+        <DropdownBody className="space-y-2 divide-y-2 divide-background/30 lg:right-0 lg:top-auto top-90 lg:mt-8 h-min lg:h-auto">
           {isAdmin && (
             <NavLink href={`/admin`} icon={<MdDashboard />}>
               Dashboard

@@ -1,0 +1,135 @@
+<html lang='pl'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Potwierdzenie adresu e-mail</title>
+  </head>
+  <body
+    style='margin: 0; padding: 0; background-color: #f4efe7; font-family: Verdana, Geneva, sans-serif; color: #1f2937;'
+  >
+    <table
+      role='presentation'
+      cellpadding='0'
+      cellspacing='0'
+      width='100%'
+      style='background: linear-gradient(180deg, #f4efe7 0%, #efe4d3 100%); margin: 0; padding: 32px 16px;'
+    >
+      <tr>
+        <td align='center'>
+          <table
+            role='presentation'
+            cellpadding='0'
+            cellspacing='0'
+            width='100%'
+            style='max-width: 620px; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 18px 50px rgba(40, 28, 18, 0.12);'
+          >
+            <tr>
+              <td
+                style='padding: 44px 40px 28px; background: linear-gradient(135deg, #1f6f78 0%, #124559 100%); color: #ffffff;'
+              >
+                <div
+                  style='display: inline-block; padding: 8px 14px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.16); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;'
+                >
+                  Potwierdzenie konta
+                </div>
+                <h1
+                  style='margin: 20px 0 12px; font-size: 30px; line-height: 1.2; font-weight: 700;'
+                >
+                  Witaj,
+                  {{login}}!
+                </h1>
+                <p
+                  style='margin: 0; font-size: 16px; line-height: 1.7; color: #dbeafe;'
+                >
+                  Twój profil jest prawie gotowy. Potwierdź adres e-mail, aby
+                  aktywować konto i dokończyć rejestrację.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style='padding: 36px 40px 18px;'>
+                <p
+                  style='margin: 0 0 16px; font-size: 16px; line-height: 1.7; color: #374151;'
+                >
+                  Kliknij przycisk poniżej, aby potwierdzić swój adres e-mail.
+                  Link może zawierać token weryfikacyjny, więc najlepiej użyć go
+                  bezpośrednio z tej wiadomości.
+                </p>
+
+                <table
+                  role='presentation'
+                  cellpadding='0'
+                  cellspacing='0'
+                  style='margin: 28px 0 24px;'
+                >
+                  <tr>
+                    <td
+                      align='center'
+                      style='border-radius: 14px; background-color: #c06c48;'
+                    >
+                      <a
+                        href='{{confirmUrl}}'
+                        style='display: inline-block; padding: 16px 28px; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none;'
+                      >
+                        Potwierdź adres e-mail
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p
+                  style='margin: 0 0 10px; font-size: 14px; line-height: 1.7; color: #6b7280;'
+                >
+                  Jeśli przycisk nie działa, skopiuj i otwórz ten link w
+                  przeglądarce:
+                </p>
+                <p
+                  style='margin: 0; padding: 14px 16px; border-radius: 14px; background-color: #f8f5f1; font-size: 13px; line-height: 1.7; word-break: break-all; color: #124559;'
+                >
+                  <a
+                    href='{{confirmUrl}}'
+                    style='color: #124559; text-decoration: none;'
+                  >
+                    {{confirmUrl}}
+                  </a>
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style='padding: 10px 40px 34px;'>
+                <div
+                  style='padding: 18px 20px; border-radius: 16px; background-color: #fcfaf7; border: 1px solid #eadfce;'
+                >
+                  <p
+                    style='margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #1f2937;'
+                  >
+                    Dla konta:
+                  </p>
+                  <p
+                    style='margin: 0; font-size: 15px; line-height: 1.6; color: #374151;'
+                  >
+                    Login:
+                    <strong>{{login}}</strong>
+                  </p>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style='padding: 0 40px 36px;'>
+                <p
+                  style='margin: 0; font-size: 13px; line-height: 1.7; color: #6b7280;'
+                >
+                  Jeśli to nie Ty zakładałeś konto, możesz zignorować tę
+                  wiadomość.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

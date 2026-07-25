@@ -18,6 +18,7 @@ function SocketProvider({ children }: React.PropsWithChildren) {
   const { accessToken, setAccessToken } = useAuth();
 
   useEffect(() => {
+    // if (!accessToken) return;
     const s = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:81", {
       auth: {
         token: accessToken,
@@ -37,6 +38,10 @@ function SocketProvider({ children }: React.PropsWithChildren) {
 
     function onDisonnect() {
       setIsConnected(false);
+    }
+
+    function onJoinGroupChat(data: { groupChatId: string }) {
+      socket?.emit("join-room", data.groupChatId);
     }
 
     async function onUnauthorized() {
@@ -62,11 +67,13 @@ function SocketProvider({ children }: React.PropsWithChildren) {
     socket?.on("connect", onConnect);
     socket?.on("disconnect", onDisonnect);
     socket?.on("unauthorized", onUnauthorized);
+    socket?.on("join-groupchat", onJoinGroupChat);
 
     return () => {
       socket?.off("connect", onConnect);
       socket?.off("disconnect", onDisonnect);
       socket?.off("unauthorized", onUnauthorized);
+      socket?.off("join-groupchat", onJoinGroupChat);
     };
   }, [socket, setAccessToken]);
 

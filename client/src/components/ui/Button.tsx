@@ -45,6 +45,7 @@ function Button({
   size,
   fullWidth,
   center,
+  disabled,
   hideTextOnSm = true,
   className,
   ...props
@@ -70,6 +71,7 @@ function Button({
     <button
       className={cn(
         buttonVariants({ variant, size, fullWidth, center }),
+        disabled && "opacity-50",
         className,
       )}
       {...props}

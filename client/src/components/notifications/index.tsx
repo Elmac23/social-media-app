@@ -14,6 +14,7 @@ import { useSocket } from "../SocketProvider";
 import { WithCount } from "@/types/withCount";
 import { useQuery } from "@tanstack/react-query";
 import { getUserNotifications } from "@/api/notifications";
+import { useTranslations } from "next-intl";
 
 function Notifications() {
   const { data } = useQuery({
@@ -60,6 +61,8 @@ function Notifications() {
     };
   }, [socket, addNotification]);
 
+  const t = useTranslations("Notifications");
+
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -73,12 +76,12 @@ function Notifications() {
           <Typography as="span" className="text-primary-500 inline-block mr-2">
             <NotificationCounter count={notifications.length} />
           </Typography>
-          Notifications
+          {t("notifications")}
         </Button>
       </DropdownTrigger>
       <DropdownBody className="space-y-2 divide-y-2 divide-background/30 lg:top-unset top-90 lg:right-0 lg:mt-8 lg:w-90">
         <Typography className="p-2" bold>
-          Notifications
+          {t("notifications")}
         </Typography>
         <NotificationsList
           notifications={notifications}

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Button from "../ui/Button";
 import ButtonLink from "../ui/ButtonLink";
 import { createGroupChat } from "@/api/groupChats";
@@ -8,6 +7,7 @@ import { CreateGroupChat } from "@/types/groupChat";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "../AuthProvider";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type MessageButtonProps = {
   chatId?: string;
@@ -26,8 +26,10 @@ function MessageButton({ chatId, recipentId }: MessageButtonProps) {
     },
   });
 
+  const t = useTranslations("UserProfile.friends");
+
   if (chatId) {
-    return <ButtonLink href={`/chat/${chatId}`}>Message</ButtonLink>;
+    return <ButtonLink href={`/chat/${chatId}`}> {t("message")}</ButtonLink>;
   }
 
   if (!user) {
@@ -47,7 +49,7 @@ function MessageButton({ chatId, recipentId }: MessageButtonProps) {
         })
       }
     >
-      Message
+      {t("message")}
     </Button>
   );
 }

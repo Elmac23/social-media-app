@@ -3,6 +3,7 @@
 import React from "react";
 import { MdImage } from "react-icons/md";
 import Button from "../Button";
+import { useTranslations } from "next-intl";
 
 type FileInputProps = {
   selectedImage: File | null;
@@ -12,6 +13,8 @@ type FileInputProps = {
 function FileInput({ selectedImage, setSelectedImage }: FileInputProps) {
   const imageInputRef = React.useRef<HTMLInputElement>(null);
 
+  const t = useTranslations("UserProfile.posts");
+
   return (
     <>
       <Button
@@ -19,7 +22,7 @@ function FileInput({ selectedImage, setSelectedImage }: FileInputProps) {
         type="button"
         onClick={() => imageInputRef.current?.click()}
       >
-        {selectedImage ? "Change Image" : "Add Image"}
+        {selectedImage ? t("changeImage") : t("addImage")}
       </Button>
 
       <input

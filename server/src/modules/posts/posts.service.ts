@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { PostOrderByKeys, UpdatePostDto } from './posts.schema';
 import { unzipCountFields } from 'src/utils/unzip-count-fields';
-import { Post } from 'generated/prisma';
+import { Post, PrivacyLevel } from 'generated/prisma';
 import { unlink } from 'fs/promises';
 import { QueryType, QueryWithOrderedBy } from 'src/types/query';
 import { count } from 'console';
@@ -14,12 +14,18 @@ import { parseUserWhere } from 'src/utils/parseUserWhere';
 export class PostsService {
   constructor(private prismaService: PrismaService) {}
 
-  async createPost(authorId: string, content: string, imageUrl?: string) {
+  async createPost(
+    authorId: string,
+    content: string,
+    privacy: PrivacyLevel,
+    fileId?: string,
+  ) {
     return this.prismaService.post.create({
       data: {
         authorId,
         content,
-        imageUrl,
+        privacy,
+        fileId,
       },
     });
   }
@@ -27,12 +33,20 @@ export class PostsService {
   async deletePost(postId: string) {
     const post = await this.prismaService.post.delete({
       where: { id: postId },
+      include: {
+        file: true,
+      },
     });
 
-    const { imageUrl } = post;
-    if (imageUrl) {
+    const { file } = post;
+    if (file) {
       try {
-        await unlink(__dirname + '/../../../' + imageUrl);
+        await unlink(__dirname + '/../../../' + file.path);
+        await this.prismaService.file.delete({
+          where: {
+            id: file.id,
+          },
+        });
       } catch (err) {
         console.error('Error deleting file:', err);
       }

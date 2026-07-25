@@ -1,0 +1,174 @@
+{
+  "Header": {
+    "searchUsers": "Szukaj użytkowników...",
+    "browse": "Przeglądaj",
+    "chat": "Czat",
+    "profile": "Profil",
+    "friends": "Znajomi",
+    "settings": "Ustawienia",
+    "logOut": "Wyloguj się",
+    "login": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "dashboard": "Panel"
+  },
+  "Search": {
+    "recentSearches": "Ostatnie wyszukiwania",
+    "noRecentSearches": "Brak ostatnich wyszukiwań",
+    "notFound": "Nie znaleziono użytkowników...",
+    "showMore": "Pokaż więcej"
+  },
+  "Notifications": {
+    "notifications": "Powiadomienia",
+    "noNotifications": "Brak powiadomień"
+  },
+  "Footer": {
+    "cookies": "Pliki cookie",
+    "termsOfUse": "Warunki korzystania"
+  },
+  "Login": {
+    "loginOrEmail": "Login lub e-mail",
+    "password": "Hasło",
+    "login": "Zaloguj się",
+    "forgotPassword": "Nie pamiętasz hasła...",
+    "loginVerification": "Weryfikacja logowania",
+    "description": "Wprowadź kod OTP wysłany na Twój adres e-mail, aby dokończyć logowanie.",
+    "otpCode": "Kod OTP",
+    "resendCode": "Wyślij kod ponownie",
+    "verifyCode": "Zweryfikuj kod"
+  },
+  "ForgotPassword": {
+    "resetPassword": "Zresetuj hasło",
+    "email": "E-mail",
+    "exampleMail": "przyklad@przyklad.com",
+    "description": "Wprowadź swój adres e-mail, aby zresetować hasło."
+  },
+  "ResetPassword": {
+    "resetPassword": "Zresetuj hasło",
+    "descriptionOne": "Jednorazowy kod został wysłany na Twój adres e-mail.",
+    "descriptionTwo": "Wprowadź kod oraz nowe hasło.",
+    "otpCode": "Kod OTP",
+    "newPassword": "Nowe hasło",
+    "repeatNewPassword": "Powtórz nowe hasło"
+  },
+  "EmailConfirmation": {
+    "emailConfirmation": "Potwierdzenie e-maila",
+    "descriptionOne": "Potwierdź swój adres e-mail, a następnie zaloguj się.",
+    "descriptionTwo": "Sprawdź folder spam, jeśli e-mail nie został wysłany.",
+    "resend": "Wyślij ponownie",
+    "confirm": "Potwierdź",
+    "confirmDescription": "Naciśnij przycisk, aby potwierdzić swoje konto i przejść do logowania!"
+  },
+  "Register": {
+    "register": "Zarejestruj się",
+    "login": "Login",
+    "email": "E-mail",
+    "name": "Imię",
+    "lastname": "Nazwisko",
+    "dob": "Data urodzenia",
+    "password": "Hasło"
+  },
+  "UserProfile": {
+    "navigation": {
+      "posts": "Posty",
+      "about": "Informacje",
+      "friends": "Znajomi",
+      "photos": "Zdjęcia",
+      "groups": "Grupy"
+    },
+    "avatar": {
+      "editAvatar": "Edytuj awatar",
+      "addImage": "Dodaj zdjęcie",
+      "scale": "Skala",
+      "save": "Zapisz",
+      "changeImage": "Zmień zdjęcie"
+    },
+    "bio": {
+      "aboutMe": "O mnie",
+      "addBio": "Dodaj opis",
+      "cancel": "Anuluj",
+      "edit": "Edytuj",
+      "save": "Zapisz",
+      "bioPlaceholder": "Nie dodano jeszcze opisu..."
+    },
+    "friends": {
+      "friends": "Znajomi",
+      "friendCount": "{count, plural, =0 {Brak znajomych} =1 {1 znajomy} other {# znajomych}}",
+      "noFriends": "Brak znajomych...",
+      "addFriend": "Wyślij zaproszenie",
+      "accept": "Zaakceptuj",
+      "message": "Napisz",
+      "cancel": "Anuluj",
+      "friend": "Znajomy",
+      "follow": "Zaobserwuj",
+      "unfollow": "Odobserwuj",
+      "inviteSent": "Wysłano zaproszenie",
+      "dismiss": "Odrzuć",
+      "invites": "Zaproszenia",
+      "followers": "Obserwujący",
+      "following": "Obserwowani"
+    },
+    "posts": {
+      "createPost": "Utwórz post",
+      "postPlaceholder": "Co słychać?",
+      "addImage": "Dodaj zdjęcie",
+      "upload": "Prześlij",
+      "cancel": "Anuluj",
+      "noPosts": "Brak postów...",
+      "featured": "Wyróżnione",
+      "changeImage": "Zmień Obraz",
+      "edited": "edytowano",
+      "like": "Lubię to",
+      "update": "Zmień",
+      "comment": "Skomentuj",
+      "share": "Udostępnij",
+      "unshare": "Nie udostępniaj",
+      "responses": "Odpowiedzi",
+      "editComment": "Edytuj komentarz",
+      "deleteComment": "Usuń komentarz",
+      "editPost": "Edytuj post",
+      "deletePost": "Usuń post",
+      "report": "Zgłoś",
+      "loading": "Ładowanie",
+      "yourThoughts": "Twoje przemyślenia...",
+      "visibility": {
+        "hidden": "Ukryte",
+        "friends": "Znajomi",
+        "public": "Publiczne"
+      }
+    },
+    "about": {
+      "about": "Informacje",
+      "name": "Imię",
+      "lastname": "Nazwisko",
+      "login": "Login",
+      "email": "E-mail",
+      "location": "Lokalizacja",
+      "country": "Kraj",
+      "city": "Miasto",
+      "sex": "Płeć",
+      "notSpecified": "Nie podano",
+      "visibility": {
+        "hidden": "Ukryte",
+        "friends": "Znajomi",
+        "public": "Publiczne"
+      },
+      "male": "Mężczyzna",
+      "female": "Kobieta",
+      "edit": "Edytuj",
+      "add": "Dodaj",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+
+      "navigation": {
+        "overview": "Przegląd",
+        "education": "Edukacja",
+        "work": "Praca",
+        "relationships": "Związki"
+      }
+    },
+    "photos": {
+      "userPhotos": "Zdjęcia {name} {lastname}",
+      "yourPhotos": "Twoje zdjęcia"
+    }
+  }
+}

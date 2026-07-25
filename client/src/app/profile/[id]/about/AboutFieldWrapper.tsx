@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { AxiosResponse } from "axios";
 import PrivacySelect from "./PrivacySelect";
+import { useTranslations } from "next-intl";
 
 export type UserEdit = Partial<Record<keyof (User & UserData), string>>;
 
@@ -77,6 +78,8 @@ function AboutFieldWrapper({
 
   const isAddable = isYour && !displayValue(value);
 
+  const t = useTranslations("UserProfile.about");
+
   return (
     <aboutFieldContext.Provider
       value={{
@@ -100,7 +103,7 @@ function AboutFieldWrapper({
                 variant={isAddable ? "primary" : "outline"}
                 icon={isAddable ? <MdAdd /> : <MdEdit />}
               >
-                {isAddable ? "Add" : "Edit"}
+                {isAddable ? t("add") : t("edit")}
               </Button>
             </>
           )}

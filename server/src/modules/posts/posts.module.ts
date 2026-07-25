@@ -9,14 +9,16 @@ import { diskStorage } from 'multer';
 import { join } from 'path';
 import { UserRepostsPostsController } from './user-reposts.controller';
 import { UserFeedController } from './user-feed.controller';
+import { FilesModule } from '../files/files.module';
 
 @Module({
   imports: [
     CommentsModule,
     PostCommentsModule,
+    FilesModule,
     MulterModule.register({
       storage: diskStorage({
-        destination: join(__dirname, '../../../public/posts'),
+        destination: join(__dirname, '../../../files/posts'),
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);

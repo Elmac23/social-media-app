@@ -7,6 +7,7 @@ import EditableInput from "./EditableInput";
 import { updateUser } from "@/api/users";
 import EditableSelect from "./EditableSelect";
 import { Option } from "@/components/ui/formControl/Select";
+import { useTranslations } from "next-intl";
 
 function AboutTab({
   profile,
@@ -57,6 +58,8 @@ function AboutTab({
     return "";
   };
 
+  const t = useTranslations("UserProfile.about");
+
   return (
     <div className="flex flex-col gap-4">
       <AboutFieldWrapper
@@ -72,11 +75,11 @@ function AboutTab({
         }}
         isYour={isSelf}
         displayValue={displayName}
-        mainLabel={"Name"}
+        mainLabel={t("name")}
         privacySettings={privacySettings}
       >
-        <EditableInput label="Name" name="name" />
-        <EditableInput label="Lastname" name="lastname" />
+        <EditableInput label={t("name")} name="name" />
+        <EditableInput label={t("lastname")} name="lastname" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
         privacySettings={privacySettings}
@@ -90,9 +93,9 @@ function AboutTab({
         }}
         isYour={isSelf}
         displayValue={displayLogin}
-        mainLabel="Login"
+        mainLabel={t("login")}
       >
-        <EditableInput label="Login" name="login" />
+        <EditableInput label={t("login")} name="login" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
         privacySettings={privacySettings}
@@ -107,10 +110,10 @@ function AboutTab({
         isYour={isSelf}
         forbidEdit
         displayValue={displayEmail}
-        mainLabel="Email"
+        mainLabel={t("email")}
         withPrivacy
       >
-        <EditableInput label="Email" name="email" />
+        <EditableInput label={t("email")} name="email" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
         privacySettings={privacySettings}
@@ -128,11 +131,11 @@ function AboutTab({
         }}
         isYour={isSelf}
         displayValue={displayLocation}
-        mainLabel="Location"
+        mainLabel={t("location")}
         withPrivacy
       >
-        <EditableInput label="Country" name="country" />
-        <EditableInput label="City" name="city" />
+        <EditableInput label={t("country")} name="country" />
+        <EditableInput label={t("city")} name="city" />
       </AboutFieldWrapper>
       <AboutFieldWrapper
         privacySettings={privacySettings}
@@ -141,7 +144,7 @@ function AboutTab({
         }}
         isYour={isSelf}
         displayValue={displaySex}
-        mainLabel="Sex"
+        mainLabel={t("sex")}
         onSubmit={(value) =>
           submit({
             userData: {
@@ -150,10 +153,10 @@ function AboutTab({
           })
         }
       >
-        <EditableSelect label="Sex" name="sex">
-          <Option value={""}>Not specified</Option>
-          <Option value="MALE">Male</Option>
-          <Option value="FEMALE">Female</Option>
+        <EditableSelect label={t("sex")} name="sex">
+          <Option value={""}>{t("notSpecified")}</Option>
+          <Option value="MALE">{t("male")}</Option>
+          <Option value="FEMALE">{t("female")}</Option>
         </EditableSelect>
       </AboutFieldWrapper>
     </div>

@@ -13,6 +13,7 @@ import React from "react";
 import UsersList from "./UsersList";
 import { getFollowers } from "@/api/followers";
 import UsersListWithSearch from "./UsersListWithSearch";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -39,20 +40,31 @@ async function FriendsPage({ params }: Props) {
 
   const isSelf = loggedInUser.id === id;
 
+  const t = await getTranslations("UserProfile.friends");
+
   return (
     <div>
       <Typography as="h3" className="font-bold mb-4" size="xl">
-        Friends
+        {t("friends")}
       </Typography>
 
       <VerticalTabs initial="friends">
         <VerticalTabsButtons>
-          <VerticalTabsButton tabName="friends">Friends</VerticalTabsButton>
+          <VerticalTabsButton tabName="friends">
+            {" "}
+            {t("friends")}
+          </VerticalTabsButton>
           {isSelf && (
-            <VerticalTabsButton tabName="invites">Invites</VerticalTabsButton>
+            <VerticalTabsButton tabName="invites">
+              {t("invites")}
+            </VerticalTabsButton>
           )}
-          <VerticalTabsButton tabName="followers">Followers</VerticalTabsButton>
-          <VerticalTabsButton tabName="following">Following</VerticalTabsButton>
+          <VerticalTabsButton tabName="followers">
+            {t("followers")}
+          </VerticalTabsButton>
+          <VerticalTabsButton tabName="following">
+            {t("following")}
+          </VerticalTabsButton>
         </VerticalTabsButtons>
         <VerticalTabsSection>
           <Tab tabName="friends">

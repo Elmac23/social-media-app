@@ -3,7 +3,6 @@
 import Button from "@/components/ui/Button";
 import { useDeleteFriend } from "@/hooks/useDeleteFriend";
 import React from "react";
-import { MdCancel } from "react-icons/md";
 
 type RemoveFriendButtonProps = React.ComponentProps<typeof Button> & {
   yourId: string;

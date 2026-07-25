@@ -15,6 +15,8 @@ import CreatePost from "@/components/createPost";
 import { tryOrUndefined } from "@/lib/tryOrUndefined";
 import { Post as PostType } from "@/types/post";
 import Post from "@/components/post";
+import { getTranslations } from "next-intl/server";
+import JSONDebug from "@/components/JSONDebug";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -44,13 +46,16 @@ async function UserProfile({ params, searchParams }: Props) {
 
   if (featuredPost && featuredPost.author.id !== user.id)
     featuredPost = undefined;
+
+  const t = await getTranslations("UserProfile");
+
   return (
     <div className="flex gap-8 flex-col-reverse lg:flex-row">
       <div className="grow">
         {featuredPost && (
           <>
             <Typography size="lg" bold={true} color="primary" className="mb-2">
-              Featured
+              {t("posts.featured")}
             </Typography>
             <Post
               post={featuredPost}
@@ -60,12 +65,12 @@ async function UserProfile({ params, searchParams }: Props) {
           </>
         )}
         <Typography as="h3" className="font-bold mb-4" size="xl">
-          Posts
+          {t("navigation.posts")}
         </Typography>
 
         {isSelf && <CreatePost />}
         {feedPosts.count === 0 && (
-          <Typography color="muted">No posts yet</Typography>
+          <Typography color="muted"> {t("posts.noPosts")}</Typography>
         )}
 
         {feedPosts.count > 0 && (
@@ -80,22 +85,22 @@ async function UserProfile({ params, searchParams }: Props) {
           <Bio
             header={
               <Typography size="lg" as="h3" className="font-bold">
-                About me
+                {t("bio.aboutMe")}
               </Typography>
             }
           >
             <Typography as="pre" color={user.bio ? "primary" : "muted"}>
-              {user.bio || "No bio added yet."}
+              {user.bio || t("bio.bioPlaceholder")}
             </Typography>
           </Bio>
         )}
         <Typography size="lg" as="h3" className="font-bold mb-4">
-          Friends
+          {t("friends.friends")}
         </Typography>
 
         <div className="grid grid-cols-2 gap-4">
           {friends.count === 0 && (
-            <Typography color="muted">No friends yet</Typography>
+            <Typography color="muted"> {t("friends.noFriends")}</Typography>
           )}
           {friends.count > 0 &&
             friends.data

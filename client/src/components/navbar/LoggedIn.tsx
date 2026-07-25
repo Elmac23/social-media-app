@@ -17,6 +17,7 @@ import {
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
 import Notifications from "../notifications";
 import SearchUsers from "../search";
+import { useTranslations } from "next-intl";
 
 export type LoggedInProps = {
   user: UserWithToken;
@@ -27,16 +28,18 @@ function LoggedIn({ user, hideMenu }: LoggedInProps) {
   const avatarUrl = getAvatarUrl(user.avatarUrl);
   const displayedName = `${user.name} ${user.lastname}`;
   const isAdmin = user.role === "ADMIN";
+
+  const t = useTranslations("Header");
   return (
     <>
       <li onClick={hideMenu}>
         <NavLink className="flex justify-center" href="/feed" icon={<MdHome />}>
-          Browse
+          {t("browse")}
         </NavLink>
       </li>
       <li onClick={hideMenu}>
         <NavLink icon={<MdChat />} href="/chat" className="flex justify-center">
-          Chat
+          {t("chat")}
         </NavLink>
       </li>
 
@@ -56,20 +59,20 @@ function LoggedIn({ user, hideMenu }: LoggedInProps) {
             <Avatar url={avatarUrl} alt={displayedName} />
           </Button>
         </DropdownTrigger>
-        <DropdownBody className="space-y-2 divide-y-2 divide-background/30 lg:right-0 lg:top-auto top-90 lg:mt-8 h-min lg:h-auto">
+        <DropdownBody className="space-y-2 divide-y-2 w-max divide-background/30 lg:right-0 lg:top-auto top-90 lg:mt-8 h-min lg:h-auto">
           {isAdmin && (
             <NavLink href={`/admin`} icon={<MdDashboard />}>
-              Dashboard
+              {t("dashboard")}
             </NavLink>
           )}
           <NavLink href={`/profile/${user.id}`} icon={<MdAccountCircle />}>
-            Profile
+            {t("profile")}
           </NavLink>
           <NavLink href="/friends" icon={<MdGroup />}>
-            Friends
+            {t("friends")}
           </NavLink>
           <NavLink href="/settings" icon={<MdSettings />}>
-            Settings
+            {t("settings")}
           </NavLink>
           <NavLogoutButton />
         </DropdownBody>

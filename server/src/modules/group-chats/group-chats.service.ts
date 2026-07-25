@@ -209,6 +209,8 @@ export class GroupChatsService {
       },
     });
 
+    console.log(orderByResult);
+
     const [chats, count] = await Promise.all([
       this.prismaService.groupChat.findMany({
         skip: (page - 1) * limit,

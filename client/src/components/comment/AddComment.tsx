@@ -5,6 +5,7 @@ import Input from "../ui/formControl/Input";
 import { MdUpload } from "react-icons/md";
 import IconButton from "../ui/IconButton";
 import { useAddComment } from "@/hooks/useAddComment";
+import { useTranslations } from "next-intl";
 
 type AddCommentProps = {
   parentCommentId?: string;
@@ -20,6 +21,8 @@ function AddComment({
     parentCommentId,
   });
 
+  const t = useTranslations("UserProfile.posts");
+
   return (
     <form
       className="flex my-4"
@@ -30,7 +33,7 @@ function AddComment({
     >
       <Input
         borderClassName="rounded-r-none"
-        placeholder="Your thoughts"
+        placeholder={t("yourThoughts")}
         className="rounded-none"
         fullWidth
         value={message}

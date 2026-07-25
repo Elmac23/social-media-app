@@ -15,15 +15,16 @@ import Label from "@/components/ui/formControl/Label";
 import Typography from "@/components/ui/Typography";
 import { AxiosError } from "axios";
 import { useDeviceId } from "@/hooks/useDeviceId";
+import { useTranslations } from "next-intl";
 
 function RegisterForm() {
   const [errorMessage, setErrorMessage] = React.useState("");
-  const deviceId = useDeviceId();
+  useDeviceId();
   const router = useRouter();
   const { mutate } = useMutation({
     mutationFn: registerUser,
-    onSuccess: () => {
-      router.push("/auth/login");
+    onSuccess: (_, data) => {
+      router.push(`/auth/confirm-email?email=${data.email}`);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -38,58 +39,59 @@ function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterDto>({
     defaultValues: {
-      login: "elmac",
-      email: "a@wp.pl",
+      login: "jakubsternik",
+      email: "sakus04@wp.pl",
       password: "zaq1@WSX",
       dateOfBirth: "2000-01-01",
-      lastname: "ee",
-      name: "jakuc",
-      deviceId: deviceId,
+      lastname: "Sternik",
+      name: "Jakub",
     },
     resolver: zodResolver(registerSchema),
   });
   const onSubmit = (data: RegisterDto) => mutate(data);
+
+  const t = useTranslations("Register");
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl className="mb-4" error={errors.login?.message}>
-        <Label>Login</Label>
+        <Label>{t("login")}</Label>
         <Input {...register("login")} fullWidth />
         <FormError />
       </FormControl>
 
       <FormControl className="mb-4" error={errors.email?.message}>
-        <Label>Email</Label>
+        <Label>{t("email")}</Label>
         <Input {...register("email")} fullWidth />
         <FormError />
       </FormControl>
 
       <div className="grid grid-cols-2 gap-8">
         <FormControl className="mb-4" error={errors.name?.message}>
-          <Label>Name</Label>
+          <Label>{t("name")}</Label>
           <Input {...register("name")} />
           <FormError />
         </FormControl>
 
         <FormControl className="mb-4" error={errors.lastname?.message}>
-          <Label>Lastname</Label>
+          <Label>{t("lastname")}</Label>
           <Input {...register("lastname")} />
           <FormError />
         </FormControl>
       </div>
 
       <FormControl className="mb-4" error={errors.dateOfBirth?.message}>
-        <Label>Date of birth</Label>
+        <Label>{t("dob")}</Label>
         <Input type="date" {...register("dateOfBirth")} fullWidth />
         <FormError />
       </FormControl>
 
       <FormControl className="mb-4" error={errors.password?.message}>
-        <Label>Password</Label>
+        <Label>{t("password")}</Label>
         <Input type="password" {...register("password")} fullWidth />
         <FormError />
       </FormControl>
       <Typography className="text-red-500 mb-4">{errorMessage}</Typography>
-      <Button type="submit">Submit</Button>
+      <Button type="submit">{t("register")}</Button>
     </form>
   );
 }

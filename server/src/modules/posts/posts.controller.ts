@@ -31,16 +31,21 @@ import { ConfigService } from '@nestjs/config';
 import { AdminGuard } from 'src/guards/admin';
 import { QueryPipe } from 'src/pipes/query.pipe';
 import { QueryType, QueryWithOrderedBy } from 'src/types/query';
+import { FilesService } from '../files/files.service';
+import { v4 as uuid } from 'uuid';
+import { PostPrivacyInterceptor } from 'src/interceptors/post-privacy';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private postsService: PostsService,
     private configService: ConfigService,
+    private filesService: FilesService,
   ) {}
 
   @Get()
   @UseGuards(AuthenticationGuard, AdminGuard)
+  @UseInterceptors(PostPrivacyInterceptor)
   async getPosts(
     @Query(new QueryPipe(postOrderByKeys))
     query: QueryWithOrderedBy<PostOrderByKeys>,
@@ -49,14 +54,17 @@ export class PostsController {
   }
 
   @Get(':id')
-  async getPostById(@Param('id') id: string) {
-    return await this.postsService.getPostById(id);
+  @UseGuards(AuthenticationGuard)
+  @UseInterceptors(PostPrivacyInterceptor)
+  async getPostById(@Param('id') id: string, @UserId() userId?: string) {
+    console.log('postt');
+    return await this.postsService.getPostById(id, userId);
   }
 
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
-      dest: 'public/posts',
+      dest: 'files/posts',
     }),
   )
   @UseGuards(AuthenticationGuard)
@@ -65,11 +73,36 @@ export class PostsController {
     @Body(new ZodValidationPipe(postSchema)) body: PostDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const { content } = body;
+    const { content, privacy } = body;
+    console.log(privacy);
 
-    const imageUrl = image ? `/public/posts/${image.filename}` : undefined;
+    let fileId: string | undefined = undefined;
 
-    return await this.postsService.createPost(authorId, content, imageUrl);
+    if (image) {
+      const imagePath = image.filename;
+      const file = await this.filesService.createFile(
+        {
+          privacy,
+          userId: authorId,
+          mimeType: image.mimetype,
+        },
+        `/files/posts/${imagePath}`,
+      );
+      fileId = file.id;
+    }
+
+    const post = await this.postsService.createPost(
+      authorId,
+      content,
+      privacy,
+      fileId,
+    );
+
+    if (fileId) {
+      await this.filesService.updateFile(fileId, { postId: post.id });
+    }
+
+    return post;
   }
 
   @Patch(':id')

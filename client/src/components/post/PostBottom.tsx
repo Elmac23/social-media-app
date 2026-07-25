@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPostComments } from "@/api/comments";
 import ShareButton from "./ShareButton";
 import { useAuth } from "../AuthProvider";
+import { useTranslations } from "next-intl";
 
 type PostBottomProps = {
   post: Post;
@@ -42,7 +43,7 @@ function PostBottom({ post }: PostBottomProps) {
     queryFn: () => getPostComments(post.id, { limit: 50 }),
   });
 
-  console.log(comments);
+  const t = useTranslations("UserProfile.posts");
 
   const { user } = useAuth();
 
@@ -72,7 +73,7 @@ function PostBottom({ post }: PostBottomProps) {
           }}
           center
         >
-          Comment ({post.commentsCount || 0})
+          {t("comment")} ({post.commentsCount || 0})
         </Button>
         {post.author.id !== user?.id && (
           <ShareButton post={post} isSharedByMe={post.isSharedByMe} />

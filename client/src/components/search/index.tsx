@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useTransition } from "react";
 import Input from "../ui/formControl/Input";
 import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "@/api/users";
@@ -16,6 +16,7 @@ import RecentSearches from "./RecentSearches";
 import { addSearch } from "@/store/searches";
 import SearchElement from "./SearchElement";
 import { useAppDispatch } from "@/hooks/reduxHooks";
+import { useLocale, useTranslations } from "next-intl";
 
 function SearchUsers() {
   const [input, setInput] = React.useState("");
@@ -66,12 +67,15 @@ function SearchUsers() {
 
   const isEmptyInput = input.trim() === "";
 
+  const tHeader = useTranslations("Header");
+  const tSearch = useTranslations("Search");
+
   return (
     <form onSubmit={handleSubmit(false)}>
       <Dropdown isOpen={isFocus}>
         <DropdownTrigger>
           <Input
-            placeholder="Search users..."
+            placeholder={tHeader("searchUsers")}
             value={input}
             fullWidth
             onInput={(e) => setInput(e.currentTarget.value)}
@@ -80,7 +84,7 @@ function SearchUsers() {
         </DropdownTrigger>
         <DropdownBody className="flex flex-col gap-2 items-stretch lg:w-70 lg:mt-8 top-90 lg:top-auto">
           {data?.count === 0 && input !== "" && (
-            <Typography className="p-2">No users found...</Typography>
+            <Typography className="p-2">{tSearch("notFound")}</Typography>
           )}
           {!isEmptyInput &&
             data?.data.slice(0, 5).map((user) => (

@@ -7,6 +7,7 @@ import IconButton from "../ui/IconButton";
 import { MdClose, MdMenu } from "react-icons/md";
 import { useToggle } from "@/hooks/useToggle";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "next-intl";
 
 type NavbarCollapseProps = {
   user?: UserWithToken;
@@ -21,6 +22,8 @@ function NavbarCollapse({ user }: NavbarCollapseProps) {
   const closeMenu = () => {
     if (!isPC) setFalse();
   };
+
+  const t = useTranslations("Header");
 
   return (
     <>
@@ -74,11 +77,11 @@ function NavbarCollapse({ user }: NavbarCollapseProps) {
                     className="text-primary-foreground bg-primary-500 hover:bg-primary-900 hover:text-primary-foreground"
                     href="/auth/login"
                   >
-                    Login
+                    {t("login")}
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink href="/auth/register">Register</NavLink>
+                  <NavLink href="/auth/register">{t("register")}</NavLink>
                 </li>
               </>
             )}

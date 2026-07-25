@@ -1,3 +1,4 @@
+import ThemeSelect from "@/components/ui/ThemeSelect";
 import VerticalTabs, {
   VerticalTabsButtons,
   VerticalTabsButton,
@@ -28,6 +29,7 @@ async function AdminLayout({ children }: React.PropsWithChildren) {
           <VerticalTabsButton href="/admin/group-chats">
             Group Chats
           </VerticalTabsButton>
+          <ThemeSelect />
         </VerticalTabsButtons>
         <VerticalTabsSection>{children}</VerticalTabsSection>
       </VerticalTabs>

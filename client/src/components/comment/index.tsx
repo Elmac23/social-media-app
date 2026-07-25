@@ -21,6 +21,7 @@ import DeleteCommentButton from "./DeleteCommentButton";
 import EditComment from "./EditComment";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
 import { TextToLinksParser } from "@/lib/TextToLinksParser";
+import { useTranslations } from "next-intl";
 
 type CommentProps = React.PropsWithChildren & {
   comment: AppComment;
@@ -51,6 +52,7 @@ function Comment({ comment }: CommentProps) {
   });
 
   const avatarUrl = getAvatarUrl(author.avatarUrl);
+  const t = useTranslations("UserProfile.posts");
 
   return (
     <div>
@@ -78,14 +80,14 @@ function Comment({ comment }: CommentProps) {
                       variant="ghost"
                       onClick={toggleIsEdited}
                     >
-                      Edit Comment
+                      {t("editComment")}
                     </Button>
                     <DeleteCommentButton commentId={comment.id} />
                   </div>
                 )}
                 {!isYourComment && (
                   <Button center fullWidth variant="ghost">
-                    Report
+                    {t("report")}
                   </Button>
                 )}
               </DropdownBody>
@@ -134,7 +136,7 @@ function Comment({ comment }: CommentProps) {
                 toggleAnswerVisible();
               }}
             >
-              Responses
+              {t("responses")}
             </Button>
           </div>
         </div>
@@ -153,7 +155,7 @@ function Comment({ comment }: CommentProps) {
             )}
             {subCommentsError && (
               <Typography size="sm" color="danger">
-                Error loading comments
+                {t("loading")}
               </Typography>
             )}
             {subComments?.data &&

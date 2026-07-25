@@ -33,7 +33,7 @@ export class GroupChatsController {
 
   @Get()
   @UseGuards(AuthenticationGuard, AdminGuard)
-  async getComments(
+  async getChats(
     @Query(new QueryPipe(groupChatOrderByKeys))
     query: QueryWithOrderedBy<GroupChatOrderByKeys>,
   ) {

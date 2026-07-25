@@ -6,6 +6,7 @@ import React from "react";
 import GalleryPhoto from "./GalleryPhoto";
 import { getUsersPosts } from "@/api/posts";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -21,10 +22,15 @@ async function PhotosPage({ params }: Props) {
 
   const userPosts = await getUsersPosts(id, loggedInUser.accessToken);
 
+  const t = await getTranslations("UserProfile.photos");
+  const { name, lastname } = user;
+
   return (
     <div>
       <Typography as="h3" className="font-bold mb-4" size="xl">
-        {isSelf ? "Your photos" : `${user.name} ${user.lastname}'s photos`}
+        {isSelf
+          ? t("yourPhotos")
+          : t("userPhotos", { name, lastname: lastname ?? "" })}
       </Typography>
       <div className="grid grid-cols-4 gap-4">
         <GalleryPhoto alt={user.name} src={getAvatarUrl(user.avatarUrl)} />

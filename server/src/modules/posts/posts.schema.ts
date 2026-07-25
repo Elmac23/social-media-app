@@ -2,11 +2,13 @@ import z from 'zod';
 
 export const postSchema = z.object({
   content: z.string().min(1, 'Content is required'),
+  privacy: z.enum(['PRIVATE', 'PUBLIC', 'FRIENDS']),
 });
 export type PostDto = z.infer<typeof postSchema>;
 
 export const updatePostSchema = z.object({
   content: z.string().min(1, 'Content is required').optional(),
+  privacy: z.enum(['PRIVATE', 'PUBLIC', 'FRIENDS']).optional(),
 });
 
 export const postOrderByKeys = [

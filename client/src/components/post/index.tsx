@@ -40,6 +40,7 @@ function Post({ post, profileId, className }: PostProps) {
       />
       {isEdit && (
         <EditPost
+          privacy={post.privacy}
           postId={post.id}
           value={post.content}
           stopEditing={setIsNotEdit}
@@ -52,11 +53,7 @@ function Post({ post, profileId, className }: PostProps) {
         </Typography>
       )}
 
-      {post.imageUrl && (
-        <PostImage
-          imageUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}${post.imageUrl}`}
-        />
-      )}
+      {post.fileId && <PostImage imageId={post.fileId} />}
       <PostBottom post={post} />
     </Card>
   );

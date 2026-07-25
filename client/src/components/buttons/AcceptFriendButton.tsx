@@ -8,6 +8,7 @@ import React from "react";
 import { MdPersonAdd } from "react-icons/md";
 import { useSocket } from "../SocketProvider";
 import { ReceivedFriendIvite } from "@/types/friendRequest";
+import { useTranslations } from "next-intl";
 
 type AcceptFriendButtonProps = {
   invite: ReceivedFriendIvite;
@@ -27,9 +28,10 @@ function AcceptFriendButton({ invite }: AcceptFriendButtonProps) {
       });
     },
   });
+  const t = useTranslations("UserProfile.friends");
   return (
     <Button icon={<MdPersonAdd />} onClick={() => mutate()}>
-      Accept
+      {t("accept")}
     </Button>
   );
 }

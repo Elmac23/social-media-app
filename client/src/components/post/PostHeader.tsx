@@ -5,6 +5,8 @@ import PostDropdown from "./PostDropdown";
 import { Post } from "@/types/post";
 import Link from "next/link";
 import { getAvatarUrl } from "@/lib/getAvatarUrl";
+import { useTranslations } from "next-intl";
+import { PrivacyOptions } from "@/types/user";
 
 type PostHeaderProps = {
   isYourPost: boolean;
@@ -21,6 +23,7 @@ function PostHeader({
 }: PostHeaderProps) {
   const { author } = post;
   const avatarUrl = getAvatarUrl(post.author.avatarUrl);
+  const t = useTranslations("UserProfile.posts");
 
   return (
     <>
@@ -47,11 +50,24 @@ function PostHeader({
       <Typography size="sm" color="muted" className="mb-4">
         <Link href={`/profile/${author.id}`}>
           @{author.login} {new Date(post.createdAt).toLocaleDateString()}{" "}
-          {post.createdAt !== post.updatedAt && "(edited)"}
+          {post.createdAt !== post.updatedAt && `(${t("edited")})`} {" | "}
+          <Privacy privacy={post.privacy} />
         </Link>
       </Typography>
     </>
   );
+}
+
+function Privacy({ privacy }: { privacy: PrivacyOptions }) {
+  const t = useTranslations("UserProfile.posts.visibility");
+  switch (privacy) {
+    case "PUBLIC":
+      return <>{t("public")}</>;
+    case "FRIENDS":
+      return <>{t("friends")}</>;
+    case "PRIVATE":
+      return <>{t("hidden")}</>;
+  }
 }
 
 export default PostHeader;

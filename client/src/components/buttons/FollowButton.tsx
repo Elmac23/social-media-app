@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useSocket } from "../SocketProvider";
+import { useTranslations } from "next-intl";
 
 type FollowButtonProps = {
   initialIsFollowing?: boolean;
@@ -42,6 +43,8 @@ function FollowButton({ userId, initialIsFollowing }: FollowButtonProps) {
     },
   });
 
+  const t = useTranslations("UserProfile.friends");
+
   return (
     <Button
       variant={isFollowing ? "outline" : "primary"}
@@ -53,7 +56,7 @@ function FollowButton({ userId, initialIsFollowing }: FollowButtonProps) {
         }
       }}
     >
-      {isFollowing ? "Unfollow" : "Follow"}
+      {isFollowing ? t("unfollow") : t("follow")}
     </Button>
   );
 }

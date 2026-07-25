@@ -45,6 +45,11 @@ export const updatePost = (
   return extractDataFromAxios(fn);
 };
 
+export const getFileById = (fileId: string, accessToken?: string) => {
+  const fn = api.get("/files/" + fileId, withToken(accessToken));
+  return extractDataFromAxios(fn);
+};
+
 export const createPost = (data: FormData, accessToken?: string) => {
   const fn = api.post("/posts", data, {
     headers: {

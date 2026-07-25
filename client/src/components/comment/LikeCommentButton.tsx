@@ -4,6 +4,7 @@ import React from "react";
 import Button from "../ui/Button";
 import { useLikeComment } from "@/hooks/useLikeComment";
 import { Comment } from "@/types/comment";
+import { useTranslations } from "next-intl";
 
 function LikeCommentButton({
   likeCount,
@@ -19,6 +20,7 @@ function LikeCommentButton({
     comment,
     isLiked,
   });
+  const t = useTranslations("UserProfile.posts");
   return (
     <Button
       className={value ? "text-primary-500" : ""}
@@ -27,7 +29,7 @@ function LikeCommentButton({
       center
       onClick={handleLike}
     >
-      Like ({newLikeCount || 0})
+      {t("like")} ({newLikeCount || 0})
     </Button>
   );
 }

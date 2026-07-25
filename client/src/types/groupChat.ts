@@ -18,6 +18,7 @@ export type GroupChat = {
   name: string;
   description: string;
   createdAt: string;
+  membersCount: number;
   updatedAt: string;
   members?: User[];
   usersInGroupChatCount?: number;

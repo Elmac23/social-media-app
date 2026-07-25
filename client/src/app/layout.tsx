@@ -8,6 +8,8 @@ import QueryProvider from "@/components/QueryProvider";
 import { getUser } from "@/lib/getUser";
 import Footer from "@/components/footer";
 import SocketProvider from "@/components/SocketProvider";
+import { AppTheme } from "./AppTheme";
+import { NextIntlClientProvider } from "next-intl";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -27,20 +29,24 @@ export default async function RootLayout({
 }>) {
   const user = await getUser();
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${roboto.variable} antialiased bg-background`}>
-        <QueryProvider>
-          <StoreProvider>
-            <SocketProvider>
-              <AuthProvider user={user}>
-                <Navbar />
+        <AppTheme>
+          <NextIntlClientProvider>
+            <QueryProvider>
+              <StoreProvider>
+                <SocketProvider>
+                  <AuthProvider user={user}>
+                    <Navbar />
 
-                <div className="pt-20">{children}</div>
-                <Footer />
-              </AuthProvider>
-            </SocketProvider>
-          </StoreProvider>
-        </QueryProvider>
+                    <div className="pt-20">{children}</div>
+                    <Footer />
+                  </AuthProvider>
+                </SocketProvider>
+              </StoreProvider>
+            </QueryProvider>
+          </NextIntlClientProvider>
+        </AppTheme>
       </body>
     </html>
   );

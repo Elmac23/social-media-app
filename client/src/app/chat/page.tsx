@@ -10,13 +10,21 @@ type ChatLayoutProps = React.PropsWithChildren & {};
 async function ChatLayout({ children }: ChatLayoutProps) {
   const user = await getUser();
   if (!user) redirect("/auth/login");
-  const groupChats = await getUsersGroupChats(user.id, {}, user.accessToken);
+  const groupChats = await getUsersGroupChats(
+    user.id,
+    {
+      limit: 20,
+      page: 1,
+      orderBy: "lastMessageAt-desc",
+    },
+    user.accessToken,
+  );
   return (
     <main className="max-w-7xl mx-auto p-8">
       <Typography size="2xl" bold className="mb-4">
         Chats
       </Typography>
-      <Card className="flex divide-black/50 gap-4 divide-x h-175">
+      <Card className="flex divide-border gap-4 divide-x h-175">
         <GroupChatList groupChats={groupChats.data} />
 
         <div className="grow p-4">{children}</div>

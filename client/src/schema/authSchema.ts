@@ -2,8 +2,8 @@ import z from "zod";
 
 export const loginSchema = z.object({
   loginOrEmail: z.string().min(1, "Login or email is required"),
+  otp: z.string().length(6).optional(),
   password: z.string().min(1, "Password is required"),
-  deviceId: z.string(),
 });
 
 export const registerSchema = z.object({
@@ -13,7 +13,6 @@ export const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
   lastname: z.string().min(1, "Lastname is required"),
   dateOfBirth: z.iso.date(),
-  deviceId: z.string(),
 });
 
 export type LoginDto = z.infer<typeof loginSchema>;

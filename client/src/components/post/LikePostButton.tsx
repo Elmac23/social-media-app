@@ -6,6 +6,7 @@ import Button from "../ui/Button";
 
 import { useLikePost } from "@/hooks/useLikePost";
 import { Post } from "@/types/post";
+import { useTranslations } from "next-intl";
 
 function LikePostButton({
   likeCount,
@@ -21,6 +22,8 @@ function LikePostButton({
     post,
     isLiked,
   });
+
+  const t = useTranslations("UserProfile.posts");
   return (
     <Button
       icon={<MdFavorite />}
@@ -30,7 +33,7 @@ function LikePostButton({
       center
       onClick={handleLike}
     >
-      Like ({newLikeCount || 0})
+      {t("like")} ({newLikeCount || 0})
     </Button>
   );
 }

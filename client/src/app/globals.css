@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Domyślny motyw = .blue */
   --color-background: #0f172a;
   --color-background-lighter: #1e293b;
   --color-foreground: #f0f0f0;
@@ -8,18 +9,9 @@
   --color-primary-500: #34d399;
   --color-primary-900: #26ae7c;
   --color-primary-foreground: #010705;
-  /* --color-background: #1a1b1e;
-  --color-background-lighter: #2a2b2e;
-  --color-foreground: #f0f0f0;
-  --color-primary-400: #a385ff;
-  --color-primary-500: #8c5cff;
-  --color-primary-900: #49169c; */
-  /* --color-primary-foreground: #ffffff; */
-  /* --color-muted: #888888; */
   --color-muted: #6b7280;
   --color-border: #4b5563;
 
-  /* Scrollbar variables (dark theme defaults) */
   --scroll-track: rgba(255, 255, 255, 0.02);
   --scroll-thumb: rgba(255, 255, 255, 0.12);
   --scroll-thumb-hover: rgba(255, 255, 255, 0.18);
@@ -27,16 +19,26 @@
   --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.green {
-  --color-background: hsl(160, 50%, 4%);
-  --color-background-lighter: hsl(160, 45%, 7%);
-  --color-border: hsl(160, 30%, 18%);
-  --color-foreground: hsl(150, 40%, 98%);
-  --color-primary-400: hsl(330, 90%, 75%);
-  --color-primary-500: hsl(330, 90%, 65%);
-  --color-primary-900: hsl(330, 90%, 55%);
-  --color-muted: hsl(150, 20%, 65%);
-  --color-primary-foreground: #000;
+/* ==========================================================================
+   CIEMNE MOTYWY
+   ========================================================================== */
+
+.blue {
+  --color-background: #0f172a;
+  --color-background-lighter: #1e293b;
+  --color-foreground: #f0f0f0;
+  --color-primary-400: #5edcae;
+  --color-primary-500: #34d399;
+  --color-primary-900: #26ae7c;
+  --color-primary-foreground: #010705;
+  --color-muted: #6b7280;
+  --color-border: #4b5563;
+
+  --scroll-track: rgba(255, 255, 255, 0.02);
+  --scroll-thumb: rgba(255, 255, 255, 0.12);
+  --scroll-thumb-hover: rgba(255, 255, 255, 0.18);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.12);
+  --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .purple {
@@ -49,25 +51,202 @@
   --color-primary-900: hsl(270, 70%, 60%);
   --color-muted: hsl(270, 10%, 65%);
   --color-primary-foreground: hsl(270, 45%, 4%);
+
+  --scroll-track: rgba(255, 255, 255, 0.02);
+  --scroll-thumb: rgba(200, 170, 255, 0.14);
+  --scroll-thumb-hover: rgba(200, 170, 255, 0.22);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.12);
+  --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.light {
-  --color-background: #c3e2e0;
-  --color-background-lighter: #ffffff;
-  --color-foreground: #1d1f24;
-  --color-primary-400: #6650ff;
-  --color-primary-500: #4c3fff;
-  --color-primary-900: #2a1a99;
-  --color-border-color: rgb(255, 255, 255, 0.3);
-  --color-muted: #777777;
-  --color-primary-foreground: #d8f1f0;
+/* Poprawione: nazwa "green" = faktyczna zieleń (wcześniej primary było różowe) */
+.green {
+  --color-background: hsl(160, 50%, 4%);
+  --color-background-lighter: hsl(160, 45%, 7%);
+  --color-border: hsl(160, 30%, 18%);
+  --color-foreground: hsl(150, 40%, 98%);
+  --color-primary-400: hsl(150, 70%, 65%);
+  --color-primary-500: hsl(150, 70%, 50%);
+  --color-primary-900: hsl(150, 70%, 38%);
+  --color-muted: hsl(150, 20%, 65%);
+  --color-primary-foreground: hsl(150, 60%, 6%);
 
-  /* Scrollbar variables for light theme */
-  --scroll-track: rgba(0, 0, 0, 0.04);
+  --scroll-track: rgba(255, 255, 255, 0.02);
+  --scroll-thumb: rgba(150, 255, 200, 0.12);
+  --scroll-thumb-hover: rgba(150, 255, 200, 0.2);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.12);
+  --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Ciepły, kawowo-bursztynowy */
+.amber {
+  --color-background: hsl(30, 15%, 6%);
+  --color-background-lighter: hsl(30, 14%, 10%);
+  --color-border: hsl(30, 20%, 20%);
+  --color-foreground: hsl(40, 30%, 96%);
+  --color-primary-400: hsl(38, 92%, 68%);
+  --color-primary-500: hsl(35, 90%, 55%);
+  --color-primary-900: hsl(30, 85%, 42%);
+  --color-muted: hsl(35, 15%, 60%);
+  --color-primary-foreground: hsl(30, 40%, 8%);
+
+  --scroll-track: rgba(255, 255, 255, 0.02);
+  --scroll-thumb: rgba(255, 200, 130, 0.14);
+  --scroll-thumb-hover: rgba(255, 200, 130, 0.22);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.12);
+  --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Głęboka czerwień/krwista rubinowa */
+.crimson {
+  --color-background: hsl(345, 55%, 4%);
+  --color-background-lighter: hsl(345, 45%, 7%);
+  --color-border: hsl(345, 30%, 18%);
+  --color-foreground: hsl(350, 30%, 97%);
+  --color-primary-400: hsl(350, 90%, 72%);
+  --color-primary-500: hsl(350, 85%, 58%);
+  --color-primary-900: hsl(350, 80%, 42%);
+  --color-muted: hsl(350, 15%, 62%);
+  --color-primary-foreground: hsl(350, 60%, 6%);
+
+  --scroll-track: rgba(255, 255, 255, 0.02);
+  --scroll-thumb: rgba(255, 130, 160, 0.14);
+  --scroll-thumb-hover: rgba(255, 130, 160, 0.22);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.12);
+  --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* FUNKY: neonowy cyberpunk – fioletowo-czarne tło, elektryczny cyjan */
+.cyberpunk {
+  --color-background: hsl(260, 60%, 3%);
+  --color-background-lighter: hsl(260, 50%, 6%);
+  --color-border: hsl(190, 60%, 25%);
+  --color-foreground: hsl(180, 40%, 96%);
+  --color-primary-400: hsl(185, 95%, 68%);
+  --color-primary-500: hsl(185, 95%, 50%);
+  --color-primary-900: hsl(185, 90%, 38%);
+  --color-muted: hsl(200, 20%, 62%);
+  --color-primary-foreground: hsl(260, 60%, 3%);
+
+  --scroll-track: rgba(255, 255, 255, 0.02);
+  --scroll-thumb: rgba(80, 240, 255, 0.18);
+  --scroll-thumb-hover: rgba(80, 240, 255, 0.3);
+  --scroll-thumb-border: rgba(0, 0, 0, 0.2);
+  --scroll-thumb-boxshadow: 0 0 10px rgba(80, 240, 255, 0.4);
+}
+
+/* ==========================================================================
+   JASNE MOTYWY
+   ========================================================================== */
+
+.blue-light {
+  --color-background: hsl(200, 20%, 98%);
+  --color-background-lighter: hsl(200, 25%, 94%);
+  --color-border: hsl(200, 15%, 85%);
+  --color-foreground: hsl(210, 30%, 12%);
+  --color-primary-400: hsl(165, 70%, 45%);
+  --color-primary-500: hsl(165, 75%, 38%);
+  --color-primary-900: hsl(165, 80%, 28%);
+  --color-muted: hsl(210, 10%, 45%);
+  --color-primary-foreground: #ffffff;
+
+  --scroll-track: rgba(0, 0, 0, 0.03);
+  --scroll-thumb: rgba(0, 0, 0, 0.15);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.4);
+  --scroll-thumb-boxshadow: none;
+}
+
+.green-light {
+  --color-background: hsl(140, 30%, 97%);
+  --color-background-lighter: hsl(140, 25%, 93%);
+  --color-border: hsl(140, 20%, 83%);
+  --color-foreground: hsl(150, 35%, 10%);
+  --color-primary-400: hsl(150, 60%, 45%);
+  --color-primary-500: hsl(150, 65%, 36%);
+  --color-primary-900: hsl(150, 70%, 26%);
+  --color-muted: hsl(150, 10%, 45%);
+  --color-primary-foreground: #ffffff;
+
+  --scroll-track: rgba(0, 0, 0, 0.03);
+  --scroll-thumb: rgba(0, 0, 0, 0.15);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.4);
+  --scroll-thumb-boxshadow: none;
+}
+
+.purple-light {
+  --color-background: hsl(270, 30%, 97%);
+  --color-background-lighter: hsl(270, 25%, 93%);
+  --color-border: hsl(270, 20%, 85%);
+  --color-foreground: hsl(270, 30%, 12%);
+  --color-primary-400: hsl(270, 65%, 60%);
+  --color-primary-500: hsl(270, 70%, 50%);
+  --color-primary-900: hsl(270, 75%, 38%);
+  --color-muted: hsl(270, 10%, 45%);
+  --color-primary-foreground: #ffffff;
+
+  --scroll-track: rgba(0, 0, 0, 0.03);
+  --scroll-thumb: rgba(0, 0, 0, 0.15);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.4);
+  --scroll-thumb-boxshadow: none;
+}
+
+.amber-light {
+  --color-background: hsl(40, 40%, 97%);
+  --color-background-lighter: hsl(38, 35%, 92%);
+  --color-border: hsl(35, 25%, 80%);
+  --color-foreground: hsl(30, 30%, 12%);
+  --color-primary-400: hsl(30, 85%, 55%);
+  --color-primary-500: hsl(28, 80%, 45%);
+  --color-primary-900: hsl(25, 75%, 35%);
+  --color-muted: hsl(30, 15%, 45%);
+  --color-primary-foreground: #ffffff;
+
+  --scroll-track: rgba(0, 0, 0, 0.03);
+  --scroll-thumb: rgba(0, 0, 0, 0.15);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.4);
+  --scroll-thumb-boxshadow: none;
+}
+
+/* Minimalistyczny, "schludny" motyw neutralny (papier) */
+.paper {
+  --color-background: #fafafa;
+  --color-background-lighter: #f0f0f0;
+  --color-border: #e0e0e0;
+  --color-foreground: #1a1a1a;
+  --color-primary-400: #4b5563;
+  --color-primary-500: #374151;
+  --color-primary-900: #1f2937;
+  --color-muted: #6b7280;
+  --color-primary-foreground: #ffffff;
+
+  --scroll-track: rgba(0, 0, 0, 0.02);
   --scroll-thumb: rgba(0, 0, 0, 0.12);
-  --scroll-thumb-hover: rgba(0, 0, 0, 0.18);
-  --scroll-thumb-border: rgba(255, 255, 255, 0.9);
-  --scroll-thumb-boxshadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.2);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.4);
+  --scroll-thumb-boxshadow: none;
+}
+
+/* FUNKY: pastelowo-różowy, wesoły */
+.candy {
+  --color-background: hsl(320, 60%, 97%);
+  --color-background-lighter: hsl(320, 50%, 93%);
+  --color-border: hsl(320, 40%, 85%);
+  --color-foreground: hsl(320, 40%, 15%);
+  --color-primary-400: hsl(330, 90%, 68%);
+  --color-primary-500: hsl(330, 90%, 58%);
+  --color-primary-900: hsl(330, 85%, 45%);
+  --color-muted: hsl(320, 15%, 50%);
+  --color-primary-foreground: #ffffff;
+
+  --scroll-track: rgba(0, 0, 0, 0.03);
+  --scroll-thumb: rgba(255, 100, 170, 0.25);
+  --scroll-thumb-hover: rgba(255, 100, 170, 0.4);
+  --scroll-thumb-border: rgba(255, 255, 255, 0.4);
+  --scroll-thumb-boxshadow: none;
 }
 
 body {

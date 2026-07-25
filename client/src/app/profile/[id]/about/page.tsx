@@ -11,6 +11,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import OvierviewTab from "./OverviewTab";
 import { getPrivacy } from "@/api/privacy";
+import { getTranslations } from "next-intl/server";
 
 type AboutPageProps = {
   params: Promise<{ id: string }>;
@@ -30,19 +31,27 @@ async function AboutPage({ params }: AboutPageProps) {
 
   const isSelf = loggedUser.id === profile.id;
 
+  const t = await getTranslations("UserProfile.about");
+
   return (
     <>
       <Typography as="h3" className="font-bold mb-4" size="xl">
-        About
+        {t("about")}
       </Typography>
 
       <VerticalTabs initial="overview">
         <VerticalTabsButtons>
-          <VerticalTabsButton tabName="overview">Overview</VerticalTabsButton>
-          <VerticalTabsButton tabName="education">Education</VerticalTabsButton>
-          <VerticalTabsButton tabName="work">Work</VerticalTabsButton>
+          <VerticalTabsButton tabName="overview">
+            {t("navigation.overview")}
+          </VerticalTabsButton>
+          <VerticalTabsButton tabName="education">
+            {t("navigation.education")}
+          </VerticalTabsButton>
+          <VerticalTabsButton tabName="work">
+            {t("navigation.work")}
+          </VerticalTabsButton>
           <VerticalTabsButton tabName="relationships">
-            Relationships
+            {t("navigation.relationships")}
           </VerticalTabsButton>
         </VerticalTabsButtons>
         <VerticalTabsSection>

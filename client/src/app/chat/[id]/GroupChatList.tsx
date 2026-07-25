@@ -47,6 +47,7 @@ function GroupChatList({ groupChats }: GroupChatListProps) {
         limit: 10,
         page: pageParam as number,
         search,
+        orderBy: "lastMessageAt-desc",
       });
       return res.data;
     },

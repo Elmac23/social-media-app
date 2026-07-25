@@ -8,6 +8,7 @@ import { useAboutField } from "./AboutFieldWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { updatePrivacy } from "@/api/privacy";
 import { useAuth } from "@/components/AuthProvider";
+import { useTranslations } from "next-intl";
 
 function PrivacySelect() {
   const { privacyName, privacySettings } = useAboutField();
@@ -27,16 +28,17 @@ function PrivacySelect() {
     },
   });
 
+  const t = useTranslations("UserProfile.about.visibility");
+
   return (
     <Select
       size="small"
-      className=""
       value={privacy}
       setValue={(e) => mutate(e as PrivacyOptions)}
     >
-      <Option value="PUBLIC">Public</Option>
-      <Option value="FRIENDS">Friends</Option>
-      <Option value="PRIVATE">Hidden</Option>
+      <Option value="PUBLIC">{t("public")}</Option>
+      <Option value="FRIENDS">{t("friends")}</Option>
+      <Option value="PRIVATE">{t("hidden")}</Option>
     </Select>
   );
 }

@@ -7,6 +7,7 @@ import DropdownTrigger from "../ui/dropdown/DropdownTrigger";
 import IconButton from "../ui/IconButton";
 import DeletePostButton from "./DeletePostButton";
 import { Post } from "@/types/post";
+import { useTranslations } from "next-intl";
 
 type PostDropdownProps = {
   isYourPost: boolean;
@@ -15,6 +16,7 @@ type PostDropdownProps = {
 };
 
 function PostDropdown({ isYourPost, post, toggleIsEdit }: PostDropdownProps) {
+  const t = useTranslations("UserProfile.posts");
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -32,7 +34,7 @@ function PostDropdown({ isYourPost, post, toggleIsEdit }: PostDropdownProps) {
               variant="ghost"
               onClick={toggleIsEdit}
             >
-              Edit Post
+              {t("editPost")}
             </Button>
             <DeletePostButton postId={post.id} />
           </>

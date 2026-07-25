@@ -4,12 +4,13 @@ import Button from "@/components/ui/Button";
 
 import Typography from "@/components/ui/Typography";
 import { useToggle } from "@/hooks/useToggle";
-import React from "react";
+import React, { useTransition } from "react";
 import Bio from "./Bio";
 import { useMutation } from "@tanstack/react-query";
 import { updateUser } from "@/api/users";
 import { useRouter } from "next/navigation";
 import Textarea from "@/components/ui/formControl/Textarea";
+import { useTranslations } from "next-intl";
 
 type BioProps = {
   value?: string;
@@ -20,6 +21,7 @@ function YourBio({ userId, value }: BioProps) {
   const { setFalse, value: isEdited, toggle } = useToggle(false);
   const [editedValue, setEditedValue] = React.useState(value || "");
   const router = useRouter();
+  const t = useTranslations("UserProfile");
 
   const { mutate } = useMutation({
     mutationFn: (bio: string) => updateUser(userId, { bio }),
@@ -40,13 +42,13 @@ function YourBio({ userId, value }: BioProps) {
         header={
           <>
             <Typography size="lg" as="h3" className="font-bold">
-              About me
+              {t("bio.aboutMe")}
             </Typography>
             <div className="flex gap-2">
               {isEdited && (
                 <>
                   <Button size="small" variant="primary" type="submit">
-                    Save
+                    {t("bio.save")}
                   </Button>
                   <Button
                     size="small"
@@ -56,13 +58,13 @@ function YourBio({ userId, value }: BioProps) {
                     }}
                     variant="ghost"
                   >
-                    Cancel
+                    {t("bio.cancel")}
                   </Button>
                 </>
               )}
               {!isEdited && (
                 <Button size="small" onClick={toggle} variant="primary">
-                  {value ? "Edit" : "Add Bio"}
+                  {value ? t("bio.edit") : t("bio.addBio")}
                 </Button>
               )}
             </div>
@@ -82,7 +84,7 @@ function YourBio({ userId, value }: BioProps) {
         )}
         {!isEdited && (
           <Typography as="pre" color={value ? "primary" : "muted"}>
-            {value || "No bio added yet."}
+            {value || t("bio.bioPlaceholder")}
           </Typography>
         )}
       </Bio>

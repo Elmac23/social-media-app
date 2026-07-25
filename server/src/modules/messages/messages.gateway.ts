@@ -14,7 +14,6 @@ import { SocketClientId } from 'src/decorators/socket-client-id';
 import { NotificationDto } from '../notifications/notification.schema';
 import { Socket } from 'socket.io';
 import { UsersService } from '../users/users.service';
-import { Client } from 'socket.io/dist/client';
 import { GroupChatsService } from '../group-chats/group-chats.service';
 
 type UserWrittingMessagePayload = {

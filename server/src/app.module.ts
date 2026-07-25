@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
@@ -23,6 +23,11 @@ import { SocketModule } from './modules/socket/socket.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { GroupChatsModule } from './modules/group-chats/group-chats.module';
 import { MessagesModule } from './modules/messages/messages.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter';
+import { EmailModule } from './modules/email/email.module';
+import { FilesController } from './modules/files/files.controller';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -43,14 +48,42 @@ import { MessagesModule } from './modules/messages/messages.module';
     PostLikesModule,
     PostsModule,
     JwtModule.register({ secret: process.env.JWT_SECRET, global: true }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        transport: {
+          host: config.get('MAIL_SERVER'),
+          port: +config.get('MAIL_PORT'),
+          secure: false, // true dla portu 465, false dla 587/25
+          auth: {
+            user: config.get('MAIL_LOGIN'),
+            pass: config.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: '"No Reply" <noreply@example.com>',
+        },
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+    }),
+
     CommentsModule,
     InvitesModule,
     CommentLikesModule,
     PostRepostsModule,
     PostCommentsModule,
     UserFollowersModule,
+    EmailModule,
+    FilesModule,
   ],
-  controllers: [],
+  controllers: [FilesController],
   providers: [],
 })
 export class AppModule {}

@@ -33,7 +33,7 @@ export class SocketGateway implements OnGatewayConnection {
       return;
     }
 
-    const payload = await this.authService.verifyToken(token);
+    const payload = await this.authService.verifyTokenJWT(token);
     if (!payload) {
       client.emit('unauthorized', 'Invalid token');
       client.disconnect();

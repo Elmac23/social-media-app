@@ -1,14 +1,12 @@
 "use client";
-
-import { v4 as uuid } from "uuid";
-import { useLocalStorage } from "./useLocalStorage";
+import { createDeviceId } from "@/api/auth";
+import { useEffect } from "react";
 
 export function useDeviceId() {
-  const initialId = uuid();
-
-  const [deviceId, setDeviceId] = useLocalStorage<string>(
-    "deviceId",
-    initialId
-  );
-  return deviceId;
+  useEffect(() => {
+    async function createDevice() {
+      await createDeviceId();
+    }
+    createDevice();
+  }, []);
 }

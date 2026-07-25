@@ -21,6 +21,7 @@ export const getUsersGroupChats = (
   accessToken?: string,
 ) => {
   const url = withQuery(`/users/${userId}/group-chats`, query);
+  console.log(url);
   const fn = api.get<WithCount<GroupChat>>(url, withToken(accessToken));
   return extractDataFromAxios(fn);
 };

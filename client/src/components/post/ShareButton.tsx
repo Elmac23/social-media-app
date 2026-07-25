@@ -5,10 +5,10 @@ import { MdShare } from "react-icons/md";
 import Button from "../ui/Button";
 import { useMutation } from "@tanstack/react-query";
 import { addRepost, deleteRepost } from "@/api/posts";
-import { useAuth } from "../AuthProvider";
 import { useRouter } from "next/navigation";
 import { useSocket } from "../SocketProvider";
 import { Post } from "@/types/post";
+import { useTranslations } from "next-intl";
 
 type ShareButtonProps = {
   post: Post;
@@ -33,6 +33,8 @@ function ShareButton({ post, isSharedByMe }: ShareButtonProps) {
       router.refresh();
     },
   });
+
+  const t = useTranslations("UserProfile.posts");
   return (
     <Button
       icon={<MdShare />}
@@ -48,7 +50,7 @@ function ShareButton({ post, isSharedByMe }: ShareButtonProps) {
         }
       }}
     >
-      {isSharedByMe ? "Unshare" : "Share"}
+      {isSharedByMe ? t("unshare") : t("share")}
     </Button>
   );
 }

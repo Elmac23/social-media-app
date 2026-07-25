@@ -12,6 +12,7 @@ import DeclineInviteButton from "../../components/buttons/DeclineInviteButton";
 import RemoveFriendButton from "@/components/buttons/RemoveFriendButton";
 import MessageButton from "@/components/buttons/MessageButton";
 import JSONDebug from "@/components/JSONDebug";
+import { getTranslations } from "next-intl/server";
 
 type ProfileHeaderProps = {
   user: UserProfile;
@@ -43,6 +44,7 @@ async function ProfileHeader({ user }: ProfileHeaderProps) {
   );
 
   const isInvitable = !receivedInvite && !sentInvite && !isFriend && !isSelf;
+  const t = await getTranslations("UserProfile.friends");
 
   return (
     <header className="flex mb-8 gap-4">
@@ -59,7 +61,7 @@ async function ProfileHeader({ user }: ProfileHeaderProps) {
             </Typography>
             {!!user.friendsCount && (
               <Typography size="md" color="muted">
-                {user.friendsCount} friend{user.friendsCount !== 1 && "s"}
+                {t("friendCount", { count: user.friendsCount })}
               </Typography>
             )}
           </div>
@@ -70,7 +72,7 @@ async function ProfileHeader({ user }: ProfileHeaderProps) {
           {isInvitable && <AddFriendButton userId={user.id} />}
           {isFriend && (
             <RemoveFriendButton yourId={loggedInUser.id} friendId={user.id}>
-              Friends
+              {t("friend")}
             </RemoveFriendButton>
           )}
           {receivedInvite && (
@@ -80,13 +82,13 @@ async function ProfileHeader({ user }: ProfileHeaderProps) {
                 variant="outline"
                 inviteId={receivedInvite.id}
               >
-                Dismiss
+                {t("dismiss")}
               </DeclineInviteButton>
             </>
           )}
           {sentInvite && (
             <DeclineInviteButton variant="outline" inviteId={sentInvite.id}>
-              Invite Sent
+              {t("inviteSent")}
             </DeclineInviteButton>
           )}
           <MessageButton chatId={user.chatId} recipentId={user.id} />

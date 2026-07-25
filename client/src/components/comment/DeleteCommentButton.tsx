@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteComment } from "@/api/comments";
 import { queryClient } from "../QueryProvider";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 function DeleteCommentButton({ commentId }: { commentId: string }) {
   const router = useRouter();
@@ -18,6 +19,8 @@ function DeleteCommentButton({ commentId }: { commentId: string }) {
     },
   });
 
+  const t = useTranslations("UserProfile.posts");
+
   return (
     <Button
       icon={<MdDelete />}
@@ -26,7 +29,7 @@ function DeleteCommentButton({ commentId }: { commentId: string }) {
       variant="ghost"
       onClick={() => mutate()}
     >
-      Delete Comment
+      {t("deleteComment")}
     </Button>
   );
 }

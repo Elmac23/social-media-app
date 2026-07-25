@@ -1,7 +1,14 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { UserId } from 'src/decorators/user-id';
 import { AuthenticationGuard } from 'src/guards/authentication';
+import { PostPrivacyInterceptor } from 'src/interceptors/post-privacy';
 
 @Controller('users/:id/posts')
 export class UserPostsController {
@@ -9,6 +16,7 @@ export class UserPostsController {
 
   @Get()
   @UseGuards(AuthenticationGuard)
+  @UseInterceptors(PostPrivacyInterceptor)
   async getUserPosts(@Param('id') id: string, @UserId() userId: string) {
     return await this.postsService.getUserPosts(id, userId);
   }

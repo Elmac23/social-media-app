@@ -9,15 +9,17 @@ import Button from "../ui/Button";
 import FormError from "../ui/formControl/FormError";
 import { useMutation } from "@tanstack/react-query";
 import { createPost } from "@/api/posts";
-import { useAuth } from "../AuthProvider";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { postSchema, type CreatePost } from "@/schema/postSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MdDelete } from "react-icons/md";
 import IconButton from "../ui/IconButton";
 import PostImage from "../post/PostImage";
 import FileInput from "../ui/formControl/FileInput";
+import { useTranslations } from "next-intl";
+import Select, { Option } from "../ui/formControl/Select";
+import { PrivacyOptions } from "@/types/user";
 
 function CreatePost() {
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
@@ -36,10 +38,16 @@ function CreatePost() {
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<CreatePost>({
     resolver: zodResolver(postSchema),
+    defaultValues: {
+      content: "",
+      privacy: "PUBLIC",
+    },
   });
 
   const router = useRouter();
@@ -68,6 +76,7 @@ function CreatePost() {
     mutationFn: async (data: CreatePost) => {
       const formData = new FormData();
       formData.append("content", data.content);
+      formData.append("privacy", data.privacy);
       if (selectedImage) {
         formData.append("image", selectedImage);
       }
@@ -75,14 +84,35 @@ function CreatePost() {
     },
   });
 
+  const t = useTranslations("UserProfile.posts");
+
   return (
     <Card className="mb-4">
       <form onSubmit={handleSubmit(submitHandler)}>
         <FormControl error={errors.content?.message}>
-          <Label className="mb-2">Create Post</Label>
+          <div className="flex mb-4 justify-between">
+            <Label className="mb-2">{t("createPost")}</Label>
+            <Controller
+              control={control}
+              name="privacy"
+              render={({ field: { value } }) => (
+                <Select
+                  size="small"
+                  setValue={(v: PrivacyOptions) => setValue("privacy", v)}
+                  value={value}
+                  className="ml-auto"
+                >
+                  <Option value="PUBLIC">{t("visibility.public")}</Option>
+                  <Option value="FRIENDS">{t("visibility.friends")}</Option>
+                  <Option value="PRIVATE">{t("visibility.hidden")}</Option>
+                </Select>
+              )}
+            />
+          </div>
+
           <div className="mb-4">
             <Textarea
-              placeholder="What's on your mind?"
+              placeholder={t("postPlaceholder")}
               {...register("content")}
             />
             <FormError />
@@ -108,9 +138,9 @@ function CreatePost() {
             selectedImage={selectedImage}
             setSelectedImage={setSelectedImage}
           />
-          <Button type="submit">Upload</Button>
+          <Button type="submit">{t("upload")}</Button>
           <Button type="button" variant="ghost" onClick={() => handleReset()}>
-            Cancel
+            {t("cancel")}
           </Button>
         </div>
       </form>

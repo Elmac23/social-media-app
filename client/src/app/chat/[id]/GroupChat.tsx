@@ -49,6 +49,7 @@ function GroupChatComponent({
   }
 
   const newestMessage = groupChat.messages[0];
+  console.log(groupChat.messages);
   const chatSubText = newestMessage
     ? `${newestMessage.sender.name} ${newestMessage.sender.lastname}: ${newestMessage.content}`
     : "";

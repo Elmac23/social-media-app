@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
@@ -9,7 +10,10 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "5000",
-        pathname: "/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
       },
     ],
     localPatterns: [
@@ -22,4 +26,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(nextConfig);

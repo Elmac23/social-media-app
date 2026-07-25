@@ -1,0 +1,174 @@
+{
+  "Header": {
+    "searchUsers": "Search users...",
+    "browse": "Browse",
+    "chat": "Chat",
+    "profile": "Profile",
+    "friends": "Friends",
+    "settings": "Settings",
+    "logOut": "Log Out",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard"
+  },
+  "Search": {
+    "recentSearches": "Recent searches",
+    "noRecentSearches": "No recent searches",
+    "notFound": "No users found...",
+    "showMore": "Show more"
+  },
+  "Notifications": {
+    "notifications": "Notifications",
+    "noNotifications": "No notifications"
+  },
+  "Footer": {
+    "cookies": "Cookies",
+    "termsOfUse": "Terms of Use"
+  },
+  "Login": {
+    "loginOrEmail": "Login or Email",
+    "password": "Password",
+    "login": "Login",
+    "forgotPassword": "Forgot password...",
+    "loginVerification": "Login Verification",
+    "description": "Enter the OTP code sent to your email to complete sign in.",
+    "otpCode": "OTP Code",
+    "resendCode": "Resend Code",
+    "verifyCode": "Verify Code"
+  },
+  "ForgotPassword": {
+    "resetPassword": "Reset Password",
+    "email": "Email",
+    "exampleMail": "example@example.com",
+    "description": "Please enter your email address in order to reset your password."
+  },
+  "ResetPassword": {
+    "resetPassword": "Reset Password",
+    "descriptionOne": "One time code was sent to your email.",
+    "descriptionTwo": "Please enter the code and your new password.",
+    "otpCode": "OTP Code",
+    "newPassword": "New Password",
+    "repeatNewPassword": "Repeat New Password"
+  },
+  "EmailConfirmation": {
+    "emailConfirmation": "Email Confirmation",
+    "descriptionOne": "Please confirm your email address, then proceed with login.",
+    "descriptionTwo": "Check your spam folder if an email was not send.",
+    "resend": "Send Again",
+    "confirm": "Confirm",
+    "confirmDescription": "Press the button in order to confirm your account and proceed to login!"
+  },
+  "Register": {
+    "register": "Register",
+    "login": "Login",
+    "email": "Email",
+    "name": "Name",
+    "lastname": "Lastname",
+    "dob": "Date of Birth",
+    "password": "Password"
+  },
+  "UserProfile": {
+    "navigation": {
+      "posts": "Posts",
+      "about": "About",
+      "friends": "Friends",
+      "photos": "Photos",
+      "groups": "Groups"
+    },
+    "avatar": {
+      "editAvatar": "Edit Avatar",
+      "addImage": "Add Image",
+      "scale": "Scale",
+      "save": "Save",
+      "changeImage": "Change Image"
+    },
+    "bio": {
+      "aboutMe": "About Me",
+      "addBio": "Add Bio",
+      "cancel": "Cancel",
+      "save": "Save",
+      "edit": "Edit",
+      "bioPlaceholder": "No bio added yet..."
+    },
+    "friends": {
+      "friends": "Friends",
+      "friendCount": "{count, plural, =0 {No friends} =1 {1 friend} other {# friends}}",
+      "noFriends": "No friends yet...",
+      "addFriend": "Add Friend",
+      "friend": "Friend",
+      "message": "Message",
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "inviteSent": "Invite sent",
+      "dismiss": "Dismiss",
+      "invites": "Invites",
+      "followers": "Followers",
+      "following": "Following"
+    },
+    "posts": {
+      "createPost": "Create Post",
+      "postPlaceholder": "What's on your mind?",
+      "addImage": "Add Image",
+      "changeImage": "Change Image",
+      "upload": "Upload",
+      "cancel": "Cancel",
+      "featured": "Featured",
+      "noPosts": "No posts yet...",
+      "edited": "edited",
+      "update": "Update",
+      "like": "Like",
+      "comment": "Comment",
+      "share": "Share",
+      "unshare": "Unshare",
+      "loading": "Loading",
+      "responses": "Responses",
+      "editComment": "Edit Comment",
+      "deleteComment": "Delete Comment",
+      "editPost": "Edit Post",
+      "deletePost": "Delete Post",
+      "report": "Report",
+      "yourThoughts": "Your thoughts",
+      "visibility": {
+        "hidden": "Hidden",
+        "friends": "Friends",
+        "public": "Public"
+      }
+    },
+    "about": {
+      "about": "About",
+      "name": "Name",
+      "lastname": "Lastname",
+      "login": "Login",
+      "email": "Email",
+      "location": "Location",
+      "country": "Country",
+      "city": "City",
+      "sex": "Sex",
+      "notSpecified": "Not specified",
+      "male": "Male",
+      "female": "Female",
+      "edit": "Edit",
+      "add": "Add",
+      "visibility": {
+        "hidden": "Hidden",
+        "friends": "Friends",
+        "public": "Public"
+      },
+      "save": "Save",
+      "cancel": "Cancel",
+
+      "navigation": {
+        "overview": "Overview",
+        "education": "Education",
+        "work": "Work",
+        "relationships": "Relationships"
+      }
+    },
+    "photos": {
+      "userPhotos": "{name} {lastname} Photos",
+      "yourPhotos": "Your Photos"
+    }
+  }
+}

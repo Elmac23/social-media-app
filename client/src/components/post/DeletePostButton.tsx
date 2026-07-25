@@ -6,6 +6,7 @@ import Button from "../ui/Button";
 import { useMutation } from "@tanstack/react-query";
 import { deletePost } from "@/api/posts";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 function DeletePostButton({ postId }: { postId: string }) {
   const router = useRouter();
@@ -15,6 +16,8 @@ function DeletePostButton({ postId }: { postId: string }) {
       router.refresh();
     },
   });
+
+  const t = useTranslations("UserProfile.posts");
 
   return (
     <Button
@@ -26,7 +29,7 @@ function DeletePostButton({ postId }: { postId: string }) {
         deletePostMutation();
       }}
     >
-      Delete Post
+      {t("deletePost")}
     </Button>
   );
 }

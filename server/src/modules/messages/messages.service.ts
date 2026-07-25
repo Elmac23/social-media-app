@@ -145,6 +145,8 @@ export class MessagesService {
   ) {
     const { limit, page, search, orderBy } = query;
 
+    console.log('K' + orderBy);
+
     const orderByResult = parseOrderBy(orderBy, {
       author: (v) => {
         return {
@@ -154,6 +156,8 @@ export class MessagesService {
         };
       },
     });
+
+    // console.log(orderByResult);
 
     const where = {
       AND: [

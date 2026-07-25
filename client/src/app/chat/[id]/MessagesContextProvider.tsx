@@ -59,6 +59,7 @@ function MessagesContextProvider({
       const res = await getGroupChatsMessages(groupChatId, {
         limit: 10,
         page: pageParam as number,
+        orderBy: "createdAt-desc",
       });
       return res.data;
     },
